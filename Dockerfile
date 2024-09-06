@@ -12,7 +12,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
-COPY ./src /app
+COPY . /app
 
 # Install mamba
 RUN conda install -c conda-forge mamba
@@ -24,11 +24,11 @@ RUN mamba create -n myenv python=3.11
 SHELL ["mamba", "run", "-n", "myenv", "/bin/bash", "-c"]
 
 # Install any needed packages specified in requirements.txt
-COPY src/requirements.txt /app/
+COPY requirements.txt /app/
 RUN mamba install --yes --file requirements.txt
 
 # Make ports available to the world outside this container
 EXPOSE 5003
 
 # Set the default command to run when starting the container
-CMD ["mamba", "run", "--no-capture-output", "-n", "myenv", "streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["mamba", "run", "--no-capture-output", "-n", "myenv", "streamlit", "run", "streamlit_client.py", "--server.port=8501", "--server.address=0.0.0.0"]
