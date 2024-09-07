@@ -4,20 +4,20 @@
 
 ### Setup
 
-1. To get started, first clone the repository to your local machine:
+### 1. To get started, first clone the repository to your local machine:
 
 ```
 git clone https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3.git
-
-2. After cloning the repository, navigate to the project directory:
+```
+### 2. After cloning the repository, navigate to the project directory:
 ```
 cd csusb_fall2024_cse6550_team3
 ```
-3. Once you are in correct folder, build the Docker image:
+### 3. Once you are in correct folder, build the Docker image:
 ```
 docker build -t textbookrag .
 ```
-4. Now, run the Docker container:
+### 4. Now, run the Docker container:
 ```
 docker run -p 5003:8501 textbookrag
 ```
