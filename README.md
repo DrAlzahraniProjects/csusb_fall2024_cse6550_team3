@@ -6,7 +6,7 @@
 
 1. To get started, first clone the repository to your local machine:
 
-```bash
+```
 git clone https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3.git
 
 2. After cloning the repository, navigate to the project directory:
