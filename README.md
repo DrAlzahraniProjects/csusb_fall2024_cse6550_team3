@@ -21,7 +21,7 @@ docker build -t textbookrag .
 ```
 docker run -p 5003:8501 textbookrag
 ```
-5. The Application will be available at: http://127.0.0.1:5003/
+### 5. The Application will be available at: http://127.0.0.1:5003/
 
 
 
