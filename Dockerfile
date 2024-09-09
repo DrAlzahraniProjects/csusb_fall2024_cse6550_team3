@@ -1,5 +1,5 @@
-# Use the official Conda image as the base
-FROM continuumio/miniconda3:latest
+# Use Ubuntu as the base image
+FROM ubuntu:22.04
 
 # Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
@@ -11,24 +11,47 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Set the working directory in the container
 WORKDIR /app
 
+# Update and install necessary packages
+RUN apt-get update && apt-get install -y \
+    wget \
+    bzip2 \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Mambaforge for the appropriate architecture
+RUN arch=$(uname -m) && \
+    if [ "${arch}" = "x86_64" ]; then \
+        wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh" -O mambaforge.sh; \
+    elif [ "${arch}" = "aarch64" ]; then \
+        wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-aarch64.sh" -O mambaforge.sh; \
+    else \
+        echo "Unsupported architecture: ${arch}"; \
+        exit 1; \
+    fi && \
+    bash mambaforge.sh -b -p /opt/mambaforge && \
+    rm mambaforge.sh
+
+# Add Mambaforge to PATH
+ENV PATH=/opt/mambaforge/bin:$PATH
+
+# Create a new environment with Python 3.11
+RUN mamba create -n team3_env python=3.11 -y
+
+# Activate the new environment
+SHELL ["mamba", "run", "-n", "team3_env", "/bin/bash", "-c"]
+
+# Copy requirements.txt into the container
+COPY requirements.txt /app/requirements.txt
+
+# Install Python packages from requirements.txt
+RUN mamba install --yes --file requirements.txt && \
+	mamba clean --all -f -y
+
 # Copy the current directory contents into the container at /app
 COPY . /app
 
-# Install mamba
-RUN conda install -c conda-forge mamba
-
-# Create a new environment with Python 3.11 using mamba
-RUN mamba create -n myenv python=3.11
-
-# Activate the new environment
-SHELL ["mamba", "run", "-n", "myenv", "/bin/bash", "-c"]
-
-# Install any needed packages specified in requirements.txt
-COPY requirements.txt /app/
-RUN mamba install --yes --file requirements.txt
-
-# Make ports available to the world outside this container
+# Make port 5003 available to the world outside this container
 EXPOSE 5003
 
 # Set the default command to run when starting the container
-CMD ["mamba", "run", "--no-capture-output", "-n", "myenv", "streamlit", "run", "streamlit_client.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["mamba", "run", "-n", "team3_env", "streamlit", "run", "app.py", "--server.port=8501"]

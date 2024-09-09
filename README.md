@@ -1,27 +1,36 @@
-# csusb_fall2024_cse6550_team3
+# Textbook Chatbot (Team 3)
 
-## Streamlit RAG Text Book Application
+CSE 6550: Software Engineer Concepts, Fall 24
 
-### Setup
+California State University, San Bernardino
 
-### 1. To get started, first clone the repository to your local machine:
-
+## Setup
+To get started, first clone the repository to your local machine:
 ```
 git clone https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3.git
 ```
-### 2. After cloning the repository, navigate to the project directory:
+
+After cloning the repository, navigate to the project directory:
 ```
 cd csusb_fall2024_cse6550_team3
 ```
-### 3. Once you are in correct folder, build the Docker image:
+
+Once you are in correct folder, build the Docker image:
 ```
 docker build -t textbookrag .
 ```
-### 4. Now, run the Docker container:
+
+Now, run the Docker container:
 ```
 docker run -p 5003:8501 textbookrag
 ```
-### 5. The Application will be available at: http://127.0.0.1:5003/
+The application will be available at: http://127.0.0.1:5003/ or http://localhost:5003/
 
+---
+## Project Structure
 
-
+- `.gitignore`: List files that Git should ignore
+- `app.py`: Application entry point
+- `Dockerfile`: Defines instructions to build the Docker image
+- `environment.yml`: Specifies the Mamba environment for the project
+- `requirements.txt`: Lists Python package dependencies
