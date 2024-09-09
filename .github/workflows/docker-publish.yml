@@ -23,20 +23,23 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Push image to GitHub Container Registry
-      run: |
-        IMAGE_ID=ghcr.io/${{ github.repository_owner }}/my-image-name
-        
-        # Strip git ref prefix from version
-        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-        
-        # Strip "v" prefix from tag name
-        [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-        
-        # Use Docker `latest` tag convention
-        [ "$VERSION" == "main" ] && VERSION=latest
-        
-        echo IMAGE_ID=$IMAGE_ID
-        echo VERSION=$VERSION
-        
-        docker tag my-image-name:$(date +%s) $IMAGE_ID:$VERSION
-        docker push $IMAGE_ID:$VERSION
+  run: |
+    IMAGE_ID=ghcr.io/${{ github.repository_owner }}/my-image-name
+    
+    # Convert IMAGE_ID to lowercase
+    IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+    
+    # Strip git ref prefix from version
+    VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+    
+    # Strip "v" prefix from tag name
+    [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+    
+    # Use Docker `latest` tag convention
+    [ "$VERSION" == "main" ] && VERSION=latest
+    
+    echo IMAGE_ID=$IMAGE_ID
+    echo VERSION=$VERSION
+    
+    docker tag my-image-name:$(date +%s) $IMAGE_ID:$VERSION
+    docker push $IMAGE_ID:$VERSION
