@@ -34,3 +34,31 @@ The application will be available at: http://127.0.0.1:5003/ or http://localhost
 - `Dockerfile`: Defines instructions to build the Docker image
 - `environment.yml`: Specifies the Mamba environment for the project
 - `requirements.txt`: Lists Python package dependencies
+
+---
+## To update local repository
+
+Navigate to Your Local Repository:
+
+```
+cd path/to/your/repo
+```
+Fetch the Latest Changes from the Remote Repository
+```
+git fetch
+```
+(Optional) Pull Changes Directly
+```
+git pull
+```
+Resolve Any Merge Conflicts
+```
+git add <resolved-file>
+git commit
+```
+Verify Your Changes
+```
+git status
+git log
+```
+
