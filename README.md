@@ -41,7 +41,7 @@ The application will be available at: http://127.0.0.1:5003/ or http://localhost
 Navigate to Your Local Repository:
 
 ```
-cd path/to/your/repo
+cd path/to/your/local/repo
 ```
 Fetch the Latest Changes from the Remote Repository
 ```
