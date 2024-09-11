@@ -17,12 +17,12 @@ cd csusb_fall2024_cse6550_team3
 
 Once you are in correct folder, build the Docker image:
 ```
-docker build -t textbookrag .
+docker build -t team3-app .
 ```
 
 Now, run the Docker container:
 ```
-docker run -p 5003:5003 textbookrag
+docker run -p 5003:5003 team3-app
 ```
 The application will be available at: http://127.0.0.1:5003/ or http://localhost:5003/
 
