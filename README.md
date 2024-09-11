@@ -22,7 +22,7 @@ docker build -t textbookrag .
 
 Now, run the Docker container:
 ```
-docker run -p 5003:8501 textbookrag
+docker run -p 5003:5003 textbookrag
 ```
 The application will be available at: http://127.0.0.1:5003/ or http://localhost:5003/
 
