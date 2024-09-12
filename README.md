@@ -42,7 +42,7 @@ The application will be available at: http://127.0.0.1:5003/ or http://localhost
 Navigate to Your Local Repository:
 
 ```
-cd path\to\csub_fall2024_cse6550_team3
+cd csusb_fall2024_cse6550_team3
 ```
 
 Pull Changes Directly (Fetch and Merge in one command): 
