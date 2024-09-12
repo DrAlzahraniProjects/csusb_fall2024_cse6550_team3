@@ -42,24 +42,22 @@ The application will be available at: http://127.0.0.1:5003/ or http://localhost
 Navigate to Your Local Repository:
 
 ```
-cd path/to/your/local/repo
+cd path\to\csub_fall2024_cse6550_team3
 ```
-Fetch the Latest Changes from the Remote Repository
+
+Pull Changes Directly (Fetch and Merge in one command): 
 ```
-git fetch
+git pull origin main
 ```
-(Optional) Pull Changes Directly
+ Force Update (if necessary): Ensures your local repository exactly matches the remote one by discarding any local changes
 ```
-git pull
-```
-Resolve Any Merge Conflicts
-```
-git add <resolved-file>
-git commit
+git reset --hard origin/main
 ```
 Verify Your Changes
 ```
 git status
+```
+To View Recent Commit History:
+```
 git log
 ```
-
