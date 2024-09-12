@@ -29,11 +29,12 @@ The application will be available at: http://127.0.0.1:5003/ or http://localhost
 ---
 ## Project Structure
 
-- `.gitignore`: List files that Git should ignore
-- `app.py`: Application entry point
-- `Dockerfile`: Defines instructions to build the Docker image
-- `environment.yml`: Specifies the Mamba environment for the project
-- `requirements.txt`: Lists Python package dependencies
+- `.github/workflows/docker-publish.yml`: Defines a GitHub Action workflow to automate Docker publishing
+- `.gitignore`: Specifies which files and directories should be ignored by Git
+- `Dockerfile`: Contains instructions to build the Docker image for the project
+- `README.md`: Project documentation containing setup instructions and information about the project
+- `app.py`: Main entry point for the application
+- `requirements.txt`: Lists Python package dependencies required for the project
 
 ---
 ## To update local repository
