@@ -15,6 +15,11 @@ After cloning the repository, navigate to the project directory:
 cd csusb_fall2024_cse6550_team3
 ```
 
+Update Local Repository
+```
+git pull origin main
+```
+
 Once you are in correct folder, build the Docker image:
 ```
 docker build -t team3-app .
