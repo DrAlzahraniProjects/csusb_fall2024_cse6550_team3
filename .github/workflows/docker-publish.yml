@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest  # Use a GitHub-hosted runner. Replace if using self-hosted.
+    runs-on: ubuntu-latest  
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -54,8 +54,8 @@ jobs:
         push: true
         platforms: linux/amd64,linux/arm64  # Multi-platform support for x86_64 and ARM
         tags: |
-          ghcr.io/${{ env.REPO }}/textbookrag:latest
-          ghcr.io/${{ env.REPO }}/textbookrag:${{ github.sha }}
+          ghcr.io/${{ env.REPO }}/team3-app:latest
+          ghcr.io/${{ env.REPO }}/team3-app:${{ github.sha }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
