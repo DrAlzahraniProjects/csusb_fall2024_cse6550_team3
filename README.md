@@ -3,7 +3,10 @@
 CSE 6550: Software Engineer Concepts, Fall 24
 
 California State University, San Bernardino
+## Description
+Textbook Chatbot for CSE 6550 The project will design and develop a chatbot application to facilitate the needs of inquiries related to textbooks. This project will implement a working software system that can be deployed into a containerized environment using Docker.
 
+In particular, this application uses a GitHub repository, Docker, and Python-based web services. It can be used to answer questions, fetch information, and possibly interact with textbook content by the users. The focus of the project is to provide collaborative development, containerization to ensure seamless deployment, and automation via GitHub workflows.
 ## Setup
 To get started, first clone the repository to your local machine:
 ```
