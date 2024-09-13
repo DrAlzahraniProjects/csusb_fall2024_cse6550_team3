@@ -44,8 +44,7 @@ SHELL ["mamba", "run", "-n", "team3_env", "/bin/bash", "-c"]
 COPY requirements.txt /app/requirements.txt
 
 # Install Python packages from requirements.txt
-RUN mamba install --yes --file requirements.txt && \
-	mamba clean --all -f -y
+RUN mamba install --yes --file requirements.txt && mamba clean --all -f -y
 
 # Copy the current directory contents into the container at /app
 COPY . /app
@@ -53,5 +52,8 @@ COPY . /app
 # Make port 5003 available to the world outside this container
 EXPOSE 5003
 
-# Set the default command to run when starting the container
-CMD ["mamba", "run", "-n", "team3_env", "streamlit", "run", "app.py", "--server.port=5003"]
+# Add the conda environment's bin directory to PATH
+ENV PATH=/opt/mambaforge/envs/team3_env/bin:$PATH
+
+ENTRYPOINT ["python"]
+CMD ["app.py"]
