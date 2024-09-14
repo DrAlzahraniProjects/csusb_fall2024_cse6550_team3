@@ -8,8 +8,10 @@ The Textbook Chatbot project for CSE 6550 is designed to assist with queries rel
 
 The project involves building a Python-based web application, containerized using Docker for easy deployment. GitHub is used for version control, and GitHub Actions automate Docker publishing. The aim is to streamline access to textbook material, enhancing the learning experience for software engineering students.
 
-## Textbook Reference
+## Citation
 Pressman, R. S., & Maxim, B. R. (2020). Software engineering: A practitioner's approach (9th ed.). McGraw-Hill Education.
+
+
 ## Setup
 To get started, first clone the repository to your local machine:
 ```
