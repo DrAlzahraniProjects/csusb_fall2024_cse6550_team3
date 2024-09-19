@@ -1,0 +1,53 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    # Build the Docker image
+docker build -t your-image-name:tag .
+
+# If you're using buildx for multi-platform builds
+docker buildx build --platform linux/amd64,linux/arm64 -t your-image-name:tag .
+
+# Push the image to a registry (replace 'your-registry' with your actual registry)
+docker push your-registry/your-image-name:tag
+
+    # Install Mambaforge
+    - name: Install Mambaforge
+      run: |
+        wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh" -O mambaforge.sh
+        bash mambaforge.sh -b -p $HOME/mambaforge
+        echo "$HOME/mambaforge/bin" >> $GITHUB_PATH
+    # Create a Mamba environment and install dependencies
+    - name: Create Mamba environment
+      run: |
+        source $HOME/mambaforge/bin/activate
+        mamba init bash
+        mamba create -n team3_env python=3.11 -y
+        mamba install --yes --file requirements.txt
+      shell: bash
+
+    # Build and push Docker image with multi-architecture support
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        platforms: linux/amd64,linux/arm64  # Multi-platform support for x86_64 and ARM
+        tags: |
+          ghcr.io/${{ env.REPO }}/team3-app:latest
+          ghcr.io/${{ env.REPO }}/team3-app:${{ github.sha }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Image digest
+      run: echo ${{ steps.docker_build.outputs.digest }}
