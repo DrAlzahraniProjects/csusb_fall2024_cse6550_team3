@@ -6,6 +6,7 @@ def main():
 	st.title("Hello World! - Team 3")
 
 if __name__ == "__main__":
+		main()
 	# If streamlit instance is running
 	if os.environ.get("STREAMLIT_RUNNING") == "1":
 		main()
