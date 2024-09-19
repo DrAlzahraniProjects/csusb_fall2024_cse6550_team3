@@ -9,17 +9,16 @@ on:
 permissions:
   contents: read
   packages: write
-
+  
 jobs:
-  build-and-push:
-    # Build the Docker image
-docker build -t your-image-name:tag .
-# If you're using buildx for multi-platform builds
-docker buildx build --platform linux/amd64,linux/arm64 -t your-image-name:tag .
-
-# Push the image to a registry (replace 'your-registry' with your actual registry)
-docker push your-registry/your-image-name:tag
-
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Docker image
+        run: |
+          docker build -t your-image-name:tag .
+          
     # Install Mambaforge
     - name: Install Mambaforge
       run: |
