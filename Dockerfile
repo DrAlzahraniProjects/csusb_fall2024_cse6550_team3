@@ -54,7 +54,8 @@ RUN mamba install -c conda-forge jupyter -y
 COPY . /app
 
 # Copy NGINX config
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY config/nginx.conf /etc/nginx/nginx.conf
+
 
 # Make port 5003 available to the world outside this container
 EXPOSE 5003
