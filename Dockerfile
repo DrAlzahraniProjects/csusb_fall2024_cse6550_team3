@@ -37,6 +37,7 @@ RUN echo "source /root/miniconda3/bin/activate team3_env" >> ~/.bashrc
 COPY requirements.txt /app/requirements.txt
 
 # Install Python packages from requirements.txt
+
 RUN /bin/bash -c "source ~/.bashrc && mamba install --yes --file /app/requirements.txt && mamba clean --all -f -y"
 
 # Install Jupyter Notebook
@@ -49,6 +50,8 @@ RUN apt-get update && apt-get install -y nginx
 # Copy NGINX config
 COPY nginx.conf /etc/nginx/nginx.conf
 
+RUN mamba install --yes --file requirements.txt && mamba clean --all -f -y
+
 # Copy the current directory contents into the container
 COPY . /app
 
@@ -59,3 +62,9 @@ EXPOSE 8888
 
 # Start NGINX, Streamlit, and Jupyter
 CMD service nginx start && streamlit run app.py --server.port=5003 && jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root
+
+# Add the conda environment's bin directory to PATH
+ENV PATH=/opt/mambaforge/envs/team3_env/bin:$PATH
+
+ENTRYPOINT ["python"]
+CMD ["app.py"]
