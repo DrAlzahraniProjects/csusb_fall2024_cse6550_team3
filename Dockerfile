@@ -45,6 +45,7 @@ RUN /bin/bash -c "source ~/.bashrc && mamba install -c conda-forge jupyter"
 # Install NGINX
 RUN apt-get update && apt-get install -y nginx
 
+
 # Copy NGINX config
 COPY nginx.conf /etc/nginx/nginx.conf
 
