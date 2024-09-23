@@ -55,12 +55,9 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY . /app
 
 # Expose ports for NGINX, Streamlit, and Jupyter
-EXPOSE 80
+EXPOSE 83
 EXPOSE 5003
-EXPOSE 8888
+EXPOSE 6003
 
 # Start NGINX, Streamlit, and Jupyter
-CMD service nginx start && streamlit run app.py --server.port=5003 && jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root
-
-
-
+CMD service nginx start && streamlit run app.py --server.port=5003 && jupyter notebook --ip=0.0.0.0 --port=6003 --no-browser --allow-root
