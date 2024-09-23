@@ -35,9 +35,9 @@ docker build -t team3-app .
 
 Now, run the Docker container:
 ```
-docker run -p 80:80 -p 5003:5003 -p 8888:8888 team3-app
+docker run -p 83:83 -p 5003:5003 -p 6003:6003 team3-app
 ```
-The application will be available at: http://localhost/team3/ or http://127.0.0.1:5003/ or http://localhost:5003/
+The application will be available at: http://localhost:83/team3/ or http://127.0.0.1:5003/ or http://localhost:5003/
 
 ---
 ## Project Structure
@@ -47,6 +47,7 @@ The application will be available at: http://localhost/team3/ or http://127.0.0.
 - `Dockerfile`: Contains instructions to build the Docker image for the project
 - `README.md`: Project documentation containing setup instructions and information about the project
 - `app.py`: Main entry point for the application
+- `nginx.conf`: Nginx congifuration file
 - `requirements.txt`: Lists Python package dependencies required for the project
 
 ---
