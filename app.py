@@ -1,42 +1,47 @@
 import streamlit as st
-import os
-import subprocess
 
-def main():
-    """Main Streamlit app logic."""
-    st.set_page_config(layout="wide")
+# Set the title of the app
 
-    st.title("Hello from Team 3")
-    
-# Sidebar for chat history
-    st.sidebar.title("10 statistics reports")
-    chat_history = st.sidebar.empty()
+st.set_page_config(page_title="Team3ChatBot", layout="wide")
+
+# chatbot Heading
+st.title("Team3 Chatbot")
+
+# Sidebar header for static report metrics
+st.sidebar.header("10 Statistics Report")
+
+add_box = st.sidebar.selectbox("select any of them",("Number of questions",
+"Number of correct answers",
+"Number of incorrect answers",
+"User engagement metrics",
+"Response time analysis",
+"Accuracy rate",
+"Common topics or keywords",
+"User satisfaction ratings",
+"Improvement over time",
+"Feedback summary",
+"Statistics per day",
+"overall"))
+# Initialize session state if it doesn't exist
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []
+
+# Function to handle user input
+def handle_user_input_request(user_input):
+    st.session_state.chat_history.append({"role": "user", "content": user_input})
+    bot_response = user_input
+    st.session_state.chat_history.append({"role": "bot", "content": bot_response})
+
+# Display chat history
+for message in st.session_state.chat_history:
+    if message['role'] == 'user':
+        st.markdown(f"<div style=' text-align: right;'>{message['content']}</div>", unsafe_allow_html=True)
+    else:
+        st.markdown(f"<div style='text-align: left; '> I am still learning!!</div>", unsafe_allow_html=True)
 
 
-    if 'user_input' not in st.session_state:
-        st.session_state['user_input'] = ""
+user_input = st.chat_input("Enter your question here")
 
-    # Display the entered text in a text area above the input field if text exists
-    if st.session_state['user_input']:
-        st.text_area("Your input:", value=st.session_state['user_input'], height=100, disabled=True)
+if user_input:
+    handle_user_input_request(user_input)
 
-    # Create a container for input and button to align them properly
-    with st.container():
-        # Create two columns for input field and button
-        col1, col2 = st.columns([4, 1])
-
-        # Place the input box in the first column
-        with col1:
-            user_input_new = st.text_input("", placeholder="Enter something here")
-
-        # Place the button in the second column and set its position
-        with col2:
-            submit_button = st.button("Submit")
-
-    # Handle button click event
-    if submit_button and user_input_new:
-        # Update session state with the new input
-        st.session_state['user_input'] = user_input_new
-    
-if __name__ == "__main__":
-    main()
