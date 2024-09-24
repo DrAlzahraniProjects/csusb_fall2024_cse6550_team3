@@ -37,19 +37,14 @@ RUN echo "source /root/miniconda3/bin/activate team3_env" >> ~/.bashrc
 COPY requirements.txt /app/requirements.txt
 
 # Install Python packages from requirements.txt
-
 RUN /bin/bash -c "source ~/.bashrc && mamba install --yes --file /app/requirements.txt && mamba clean --all -f -y"
 
-# Install Jupyter Notebook
-RUN /bin/bash -c "source ~/.bashrc && mamba install -c conda-forge jupyter"
-
-# Install NGINX
-RUN apt-get update && apt-get install -y nginx
-
+# Install Jupyter Notebook and NGINX
+RUN /bin/bash -c "source ~/.bashrc && mamba install -c conda-forge jupyter" \
+    && apt-get update && apt-get install -y nginx
 
 # Copy NGINX config
 COPY nginx.conf /etc/nginx/nginx.conf
-
 
 # Copy the current directory contents into the container
 COPY . /app
