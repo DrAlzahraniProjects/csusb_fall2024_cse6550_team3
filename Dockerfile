@@ -39,8 +39,11 @@ COPY requirements.txt /app/requirements.txt
 # Install Python packages from requirements.txt
 RUN /bin/bash -c "source ~/.bashrc && mamba install --yes --file /app/requirements.txt && mamba clean --all -f -y"
 
-# Install Jupyter Notebook
-RUN /bin/bash -c "source ~/.bashrc && mamba install -c conda-forge jupyter"
+# Install Jupyter Notebook and necessary kernel
+RUN /bin/bash -c "source ~/.bashrc && mamba install -c conda-forge jupyter ipykernel"
+
+# Ensure kernel is installed for the environment
+RUN /root/miniconda3/envs/team3_env/bin/python -m ipykernel install --name team3_env --display-name "Python (team3_env)"
 
 # Install NGINX
 RUN apt-get update && apt-get install -y nginx
@@ -61,7 +64,12 @@ RUN mkdir -p /root/.jupyter && \
     echo "c.NotebookApp.allow_root = True" >> /root/.jupyter/jupyter_notebook_config.py && \
     echo "c.NotebookApp.ip = '0.0.0.0'" >> /root/.jupyter/jupyter_notebook_config.py && \
     echo "c.NotebookApp.port = 8888" >> /root/.jupyter/jupyter_notebook_config.py && \
-    echo "c.NotebookApp.open_browser = False" >> /root/.jupyter/jupyter_notebook_config.py
+    echo "c.NotebookApp.open_browser = False" >> /root/.jupyter/jupyter_notebook_config.py && \
+    echo "c.NotebookApp.token = ''" >> /root/.jupyter/jupyter_notebook_config.py && \
+    echo "c.NotebookApp.password = ''" >> /root/.jupyter/jupyter_notebook_config.py
+
+# Debugging: Enable verbose logging for Jupyter
+RUN echo "c.NotebookApp.log_level = 'DEBUG'" >> /root/.jupyter/jupyter_notebook_config.py
 
 # Start NGINX, Streamlit, and Jupyter
 CMD service nginx start && \
