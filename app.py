@@ -1,47 +1,60 @@
 import streamlit as st
+import os
 
-# Set the title of the app
+def main():
+    """Main Streamlit app logic."""
+    header = st.container()
 
-st.set_page_config(page_title="Team3ChatBot", layout="wide")
+    def load_css(file_name):
+        with open(file_name) as f:
+            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-# chatbot Heading
-st.title("Team3 Chatbot")
+    # Load the CSS file
+    load_css("Styles/style.css")
 
-# Sidebar header for static report metrics
-st.sidebar.header("10 Statistics Report")
+    header.title("Textbook Chatbot")
+    header.write("""<div class='fixed-header'/>""", unsafe_allow_html=True)
 
-add_box = st.sidebar.selectbox("select any of them",("Number of questions",
-"Number of correct answers",
-"Number of incorrect answers",
-"User engagement metrics",
-"Response time analysis",
-"Accuracy rate",
-"Common topics or keywords",
-"User satisfaction ratings",
-"Improvement over time",
-"Feedback summary",
-"Statistics per day",
-"overall"))
-# Initialize session state if it doesn't exist
-if 'chat_history' not in st.session_state:
-    st.session_state.chat_history = []
+    # Sidebar for chat history and statistics
+    st.sidebar.title("10 Statistics Reports")
 
-# Function to handle user input
-def handle_user_input_request(user_input):
-    st.session_state.chat_history.append({"role": "user", "content": user_input})
-    bot_response = user_input
-    st.session_state.chat_history.append({"role": "bot", "content": bot_response})
+    # List of statistics to display
+    statistics = [
+        "Number of correct answers",
+        "Number of incorrect answers",
+        "User engagement metrics",
+        "Response time analysis",
+        "Accuracy rate",
+        "Common topics or keywords",
+        "User satisfaction ratings",
+        "Improvement over time",
+        "Feedback summary",
+        "Statistics per day",
+        "Overall"
+    ]
 
-# Display chat history
-for message in st.session_state.chat_history:
-    if message['role'] == 'user':
-        st.markdown(f"<div style=' text-align: right;'>{message['content']}</div>", unsafe_allow_html=True)
-    else:
-        st.markdown(f"<div style='text-align: left; '> I am still learning!!</div>", unsafe_allow_html=True)
+    # Display statistics in the sidebar
+    for stat in statistics:
+        st.sidebar.write(stat)
+
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # Render existing messages
+    for message in st.session_state.messages:
+        if message["role"] == "assistant":
+            st.markdown(f"<div class='assistant-message'>Development in Process! {message['content']}</div>", unsafe_allow_html=True)
+        else:
+            st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
+
+    # Handle button click event
+    if prompt := st.chat_input("Ask your question?"):
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        st.session_state.messages.append({"role": "assistant", "content": prompt})
+
+        st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='assistant-message'>Development in Process! {prompt}</div>", unsafe_allow_html=True)
 
 
-user_input = st.chat_input("Enter your question here")
-
-if user_input:
-    handle_user_input_request(user_input)
-
+if __name__ == "__main__":
+    main()
