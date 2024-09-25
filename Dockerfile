@@ -39,6 +39,7 @@ COPY requirements.txt /app/requirements.txt
 # Install Python packages from requirements.txt
 RUN /bin/bash -c "source ~/.bashrc && mamba install --yes --file /app/requirements.txt && mamba clean --all -f -y"
 
+
 # Install Jupyter Notebook and necessary kernel
 RUN /bin/bash -c "source ~/.bashrc && mamba install -c conda-forge jupyter ipykernel"
 
@@ -47,6 +48,11 @@ RUN /root/miniconda3/envs/team3_env/bin/python -m ipykernel install --name team3
 
 # Install NGINX
 RUN apt-get update && apt-get install -y nginx
+
+# Install Jupyter Notebook and NGINX
+RUN /bin/bash -c "source ~/.bashrc && mamba install -c conda-forge jupyter" \
+    && apt-get update && apt-get install -y nginx
+
 
 # Copy NGINX config
 COPY nginx.conf /etc/nginx/nginx.conf
@@ -72,6 +78,10 @@ RUN mkdir -p /root/.jupyter && \
 RUN echo "c.NotebookApp.log_level = 'DEBUG'" >> /root/.jupyter/jupyter_notebook_config.py
 
 # Start NGINX, Streamlit, and Jupyter
+
 CMD service nginx start && \
     streamlit run app.py --server.port=5003 & \
     jupyter notebook --ip=0.0.0.0 --port=6003 --no-browser --allow-root
+
+CMD service nginx start && streamlit run app.py --server.port=5003 && jupyter notebook --ip=0.0.0.0 --port=6003 --no-browser --allow-root
+
