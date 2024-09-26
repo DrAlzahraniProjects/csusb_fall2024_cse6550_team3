@@ -38,6 +38,8 @@ RUN echo "source /root/mambaforge/bin/activate team3_env" >> ~/.bashrc
 # Copy requirements.txt into the container
 COPY requirements.txt /app/requirements.txt
 
+RUN mamba install -c conda-forge jupyter ipykernel
+
 # Install Python packages from requirements.txt
 RUN /bin/bash -c "source ~/.bashrc && mamba install --yes --file /app/requirements.txt && mamba clean --all -f -y"
 
