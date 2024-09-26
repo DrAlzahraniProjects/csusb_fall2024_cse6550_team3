@@ -7,31 +7,33 @@ WORKDIR /app
 # Install dependencies
 RUN apt-get update && apt-get install -y wget
 
-# Determine system architecture and install the corresponding version of Miniconda
+# Determine system architecture and install the corresponding version of Mambaforge
 RUN ARCH=$(uname -m) && \
     if [ "$ARCH" = "x86_64" ]; then \
-        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh; \
+        wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh; \
     elif [ "$ARCH" = "aarch64" ]; then \
-        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh; \
+        wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-aarch64.sh; \
     else \
         echo "Unsupported architecture: $ARCH" && exit 1; \
     fi && \
-    bash Miniconda3-latest-Linux-*.sh -b && \
-    ls -la /root/miniconda3 && \
-    rm Miniconda3-latest-Linux-*.sh && \
+    bash Mambaforge-Linux-*.sh -b && \
+    ls -la /root/mambaforge && \
+    rm Mambaforge-Linux-*.sh && \
     apt-get clean
 
-# Install Mamba using Miniconda and create a new environment with Python 3.11
-RUN /root/miniconda3/bin/conda install mamba -c conda-forge -y \
-    && /root/miniconda3/bin/mamba create -n team3_env python=3.11 -y \
-    && /root/miniconda3/bin/mamba clean --all -f -y
+# Set environment path to use Mambaforge
+ENV PATH="/root/mambaforge/bin:$PATH"
+
+# Create a new environment with Python 3.11 using mamba
+RUN /root/mambaforge/bin/mamba create -n team3_env python=3.11 -y \
+    && /root/mambaforge/bin/mamba clean --all -f -y
 
 # Set environment path to use team3_env and ensure bash is used
-ENV PATH="/root/miniconda3/envs/team3_env/bin:$PATH"
+ENV PATH="/root/mambaforge/envs/team3_env/bin:$PATH"
 
 # Activate the environment and install packages from requirements.txt
 SHELL ["/bin/bash", "-c"]
-RUN echo "source /root/miniconda3/bin/activate team3_env" >> ~/.bashrc
+RUN echo "source /root/mambaforge/bin/activate team3_env" >> ~/.bashrc
 
 # Copy requirements.txt into the container
 COPY requirements.txt /app/requirements.txt
