@@ -53,7 +53,15 @@ def main():
         st.session_state.messages.append({"role": "assistant", "content": prompt})
 
         st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
-        st.markdown(f"<div class='assistant-message'>Development in Process! {prompt}</div>", unsafe_allow_html=True)
+        st.markdown(f"""
+            <div class='assistant-message'>
+                I'm under development! {prompt}
+                <div class='feedback-buttons'>
+                    <span class='feedback-icon'>👍</span>
+                    <span class='feedback-icon'>👎</span>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
 
 
 if __name__ == "__main__":

@@ -52,6 +52,7 @@ EXPOSE 83
 EXPOSE 5003
 EXPOSE 6003
 
+
 CMD service nginx start && \
     streamlit run app.py --server.port=5003 & \
     jupyter notebook --ip=0.0.0.0 --port=6003 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password='' & \
