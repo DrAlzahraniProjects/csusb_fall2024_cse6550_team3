@@ -5,54 +5,37 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Install dependencies
-RUN apt-get update && apt-get install -y wget
+RUN apt-get update && apt-get install -y wget nginx && apt-get clean
 
-# Determine system architecture and install the corresponding version of Miniconda
+# Determine system architecture and install Mambaforge
 RUN ARCH=$(uname -m) && \
     if [ "$ARCH" = "x86_64" ]; then \
-        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh; \
+        wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh; \
     elif [ "$ARCH" = "aarch64" ]; then \
-        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh; \
+        wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-aarch64.sh; \
     else \
         echo "Unsupported architecture: $ARCH" && exit 1; \
     fi && \
-    bash Miniconda3-latest-Linux-*.sh -b && \
-    ls -la /root/miniconda3 && \
-    rm Miniconda3-latest-Linux-*.sh && \
+    bash Mambaforge-Linux-*.sh -b && \
+    rm Mambaforge-Linux-*.sh && \
     apt-get clean
 
-# Install Mamba using Miniconda and create a new environment with Python 3.11
-RUN /root/miniconda3/bin/conda install mamba -c conda-forge -y \
-    && /root/miniconda3/bin/mamba create -n team3_env python=3.11 -y \
-    && /root/miniconda3/bin/mamba clean --all -f -y
+# Set environment path to use Mambaforge
+ENV PATH="/root/mambaforge/bin:$PATH"
 
-# Set environment path to use team3_env and ensure bash is used
-ENV PATH="/root/miniconda3/envs/team3_env/bin:$PATH"
+# Create a new environment with Python 3.11 using mamba
+RUN mamba create -n team3_env python=3.11 -y && \
+    mamba clean --all -f -y
 
-# Activate the environment and install packages from requirements.txt
-SHELL ["/bin/bash", "-c"]
-RUN echo "source /root/miniconda3/bin/activate team3_env" >> ~/.bashrc
+# Set environment path to use team3_env
+ENV PATH="/root/mambaforge/envs/team3_env/bin:$PATH"
 
 # Copy requirements.txt into the container
 COPY requirements.txt /app/requirements.txt
 
 # Install Python packages from requirements.txt
-RUN /bin/bash -c "source ~/.bashrc && mamba install --yes --file /app/requirements.txt && mamba clean --all -f -y"
-
-
-# Install Jupyter Notebook and necessary kernel
-RUN /bin/bash -c "source ~/.bashrc && mamba install -c conda-forge jupyter ipykernel"
-
-# Ensure kernel is installed for the environment
-RUN /root/miniconda3/envs/team3_env/bin/python -m ipykernel install --name team3_env --display-name "Python (team3_env)"
-
-# Install NGINX
-RUN apt-get update && apt-get install -y nginx
-
-# Install Jupyter Notebook and NGINX
-RUN /bin/bash -c "source ~/.bashrc && mamba install -c conda-forge jupyter" \
-    && apt-get update && apt-get install -y nginx
-
+RUN mamba install --yes --file /app/requirements.txt && \
+    mamba clean --all -f -y
 
 # Copy NGINX config
 COPY nginx.conf /etc/nginx/nginx.conf
@@ -65,23 +48,5 @@ EXPOSE 83
 EXPOSE 5003
 EXPOSE 6003
 
-# Configure Jupyter Notebook settings
-RUN mkdir -p /root/.jupyter && \
-    echo "c.NotebookApp.allow_root = True" >> /root/.jupyter/jupyter_notebook_config.py && \
-    echo "c.NotebookApp.ip = '0.0.0.0'" >> /root/.jupyter/jupyter_notebook_config.py && \
-    echo "c.NotebookApp.port = 6003" >> /root/.jupyter/jupyter_notebook_config.py && \
-    echo "c.NotebookApp.open_browser = False" >> /root/.jupyter/jupyter_notebook_config.py && \
-    echo "c.NotebookApp.token = ''" >> /root/.jupyter/jupyter_notebook_config.py && \
-    echo "c.NotebookApp.password = ''" >> /root/.jupyter/jupyter_notebook_config.py
-
-# Debugging: Enable verbose logging for Jupyter
-RUN echo "c.NotebookApp.log_level = 'DEBUG'" >> /root/.jupyter/jupyter_notebook_config.py
-
-# Start NGINX, Streamlit, and Jupyter
-
-CMD service nginx start && \
-    streamlit run app.py --server.port=5003 & \
-    jupyter notebook --ip=0.0.0.0 --port=6003 --no-browser --allow-root
-
-CMD service nginx start && streamlit run app.py --server.port=5003 && jupyter notebook --ip=0.0.0.0 --port=6003 --no-browser --allow-root
-
+# Start NGINX and Jupyter Notebook
+CMD ["bash", "-c", "service nginx start && streamlit run app.py --server.port=5003 & jupyter notebook --ip=0.0.0.0 --port=6003 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password='' && wait"]
