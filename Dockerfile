@@ -48,7 +48,7 @@ COPY requirements.txt /app/requirements.txt
 RUN /bin/bash -c "source ~/.bashrc && mamba install --yes --file /app/requirements.txt && mamba clean --all -f -y"
 
 # Copy NGINX config
-COPY nginx.conf /etc/nginx/nginx.conf
+
 
 # Copy the current directory contents into the container
 COPY . /app
