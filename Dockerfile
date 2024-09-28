@@ -53,13 +53,9 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Copy the current directory contents into the container
 COPY . /app
 
-# Expose ports for NGINX, Streamlit, and Jupyter
-ENV STREAMLIT_SERVER_BASEURLPATH=/team3
-ENV STREAMLIT_SERVER_PORT=5003
-
 # Streamlit port
 EXPOSE 5003
-
+EXPOSE 6003
 
 
 ENV PATH=/opt/mambaforge/envs/team3_env/bin:$PATH
