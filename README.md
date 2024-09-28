@@ -37,7 +37,7 @@ Now, run the Docker container:
 ```
 docker run -p 83:83 -p 5003:5003 -p 6003:6003 team3-app
 ```
-The application will be available at: http://localhost:83/team3/ or http://127.0.0.1:5003/ or http://localhost:5003/
+The application will be available at: http://127.0.0.1:5003/ or http://localhost:5003/
 
 Accessing Jupyter Notebook http://localhost:6003/
 
