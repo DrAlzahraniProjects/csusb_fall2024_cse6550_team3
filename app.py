@@ -1,6 +1,5 @@
 import streamlit as st
 import os
-import subprocess
 
 def main():
     """Main Streamlit app logic."""
@@ -66,9 +65,4 @@ def main():
 
 
 if __name__ == "__main__":
-    if os.environ.get("STREAMLIT_RUNNING") == "1":
-        main()
-    else:
-        os.environ["STREAMLIT_RUNNING"] = "1"  # Set the environment variable to indicate Streamlit is running
-        subprocess.Popen(["streamlit", "run", __file__, "--server.port=5003", "--server.address=0.0.0.0"])
-        subprocess.run(["jupyter", "notebook", "--ip=0.0.0.0", "--port=6003", "--no-browser", "--allow-root", "--NotebookApp.token=''" ,"--NotebookApp.password=''"])
+    main()
