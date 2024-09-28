@@ -1,11 +1,5 @@
 # Use Python as the base image
 FROM python:3.11-slim
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Set environment variables
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
-
 
 # Set the working directory
 WORKDIR /app
@@ -53,12 +47,13 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Copy the current directory contents into the container
 COPY . /app
 
-# Streamlit port
+# Expose ports for NGINX, Streamlit, and Jupyter
+EXPOSE 83
 EXPOSE 5003
 EXPOSE 6003
 
 
-ENV PATH=/opt/mambaforge/envs/team3_env/bin:$PATH
-
-ENTRYPOINT ["python"]
-CMD ["app.py"]
+CMD service nginx start && \
+    streamlit run app.py --server.port=5003 & \
+    jupyter notebook --ip=0.0.0.0 --port=6003 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password='' & \
+    wait
