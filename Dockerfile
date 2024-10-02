@@ -1,64 +1,61 @@
-# Use Python as the base image
+# Use Python 3.11 slim image as the base
 FROM python:3.11-slim
-ENV DEBIAN_FRONTEND=noninteractive
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
+# Set environment variables for Python behavior
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    DEBIAN_FRONTEND=noninteractive
 
-
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Install dependencies
-RUN apt-get update && apt-get install -y wget && apt-get install -y nginx
+# Update and install necessary system packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget \
+    nginx \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-# Determine system architecture and install the corresponding version of Mambaforge
-RUN ARCH=$(uname -m) && \
-    if [ "$ARCH" = "x86_64" ]; then \
-        wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh; \
-    elif [ "$ARCH" = "aarch64" ]; then \
-        wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-aarch64.sh; \
+# Download and install Mambaforge based on the system architecture
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then \
+        wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh -O mambaforge.sh; \
+    elif [ "$ARCH" = "arm64" ]; then \
+        wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-aarch64.sh -O mambaforge.sh; \
     else \
         echo "Unsupported architecture: $ARCH" && exit 1; \
     fi && \
-    bash Mambaforge-Linux-*.sh -b && \
-    ls -la /root/mambaforge && \
-    rm Mambaforge-Linux-*.sh && \
-    apt-get clean
+    bash mambaforge.sh -b -p /opt/mambaforge && \
+    rm mambaforge.sh
 
-# Set environment path to use Mambaforge
-ENV PATH="/root/mambaforge/bin:$PATH"
+# Add Mambaforge to PATH
+ENV PATH=/opt/mambaforge/bin:$PATH
 
-# Create a new environment with Python 3.11 using mamba
-RUN /root/mambaforge/bin/mamba create -n team3_env python=3.11 -y \
-    && /root/mambaforge/bin/mamba clean --all -f -y
-
-# Set environment path to use team3_env and ensure bash is used
-ENV PATH="/root/mambaforge/envs/team3_env/bin:$PATH"
-
-# Activate the environment and install packages from requirements.txt
+# Set bash as the default shell
 SHELL ["/bin/bash", "-c"]
-RUN echo "source /root/mambaforge/bin/activate team3_env" >> ~/.bashrc
 
-# Copy requirements.txt into the container
-COPY requirements.txt /app/requirements.txt
+# Create a new mamba environment and activate it in .bashrc
+RUN mamba create -n team3_env python=3.11 -y && \
+    mamba clean --all -f -y && \
+    echo "source /opt/mambaforge/bin/activate team3_env" >> ~/.bashrc
 
-# Install Python packages from requirements.txt
-RUN /bin/bash -c "source ~/.bashrc && mamba install --yes --file /app/requirements.txt && mamba clean --all -f -y"
-
-# Copy NGINX config
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# Copy the current directory contents into the container
-COPY . /app
-
-# Streamlit port
-EXPOSE 5003
-EXPOSE 6003
-
-
+# Add the new environment to PATH
 ENV PATH=/opt/mambaforge/envs/team3_env/bin:$PATH
 
-ENTRYPOINT ["python"]
-CMD ["app.py"]
+# Copy requirements file and install dependencies
+COPY requirements.txt /app/
+RUN mamba run -n team3_env mamba install --yes --file requirements.txt && \
+    mamba clean --all -f -y
+
+# Copy Nginx configuration and application files
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY . /app
+
+# Expose ports for the application
+EXPOSE 5003 6003
+
+# Set the entrypoint to run commands in the mamba environment
+ENTRYPOINT ["mamba", "run", "-n", "team3_env"]
+
+# Set the default command to run the Python application
+CMD ["python", "app.py"]
