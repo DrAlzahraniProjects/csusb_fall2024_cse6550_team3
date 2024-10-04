@@ -34,15 +34,13 @@ docker build -t team3-app .
 ```
 
 Now, run the Docker container:
-
-- For CSE Server:
-```docker run -e PROD=1 -p 5003:5003 team3-app```
-- For local development:
-```docker run -e PROD=0 -p 5003:5003 -p 6003:6003 team3-app```
+```
+docker run -p 5003:5003 team3-app
+```
 
 The application will be available at:  http://localhost:5003/team3
 
-Accessing Jupyter Notebook http://localhost:6003/
+<!-- Accessing Jupyter Notebook http://localhost:6003/ -->
 
 ---
 ## Project Structure
