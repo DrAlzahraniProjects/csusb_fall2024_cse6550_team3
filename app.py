@@ -72,6 +72,6 @@ if __name__ == "__main__":
         os.environ["STREAMLIT_RUNNING"] = "1"  # Set the environment variable to indicate Streamlit is running
         subprocess.Popen(["streamlit", "run", __file__, "--server.port=5003", "--server.address=0.0.0.0", "--server.baseUrlPath=/team3"])
 
-         # Check if PROD environment variable is not set to 1
-        if os.environ.get("PROD") != "1":
-            jupyter_process = subprocess.Popen(["jupyter", "notebook", "--ip=0.0.0.0", "--port=6003", "--no-browser", "--allow-root", "--NotebookApp.token=''" ,"--NotebookApp.password=''"])
+        # # Check if PROD environment variable is not set to 1
+        # if os.environ.get("PROD") != "1":
+        #     jupyter_process = subprocess.Popen(["jupyter", "notebook", "--ip=0.0.0.0", "--port=6003", "--no-browser", "--allow-root", "--NotebookApp.token=''" ,"--NotebookApp.password=''"])

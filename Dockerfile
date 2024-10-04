@@ -51,8 +51,10 @@ RUN mamba run -n team3_env mamba install --yes --file requirements.txt && \
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY . /app
 
-# Expose ports for the application
-EXPOSE 5003 6003
+# Streamlit Port
+EXPOSE 5003
+# Jupyter Notebook Port
+# EXPOSE 6003
 
 # Set the entrypoint to run commands in the mamba environment
 ENTRYPOINT ["mamba", "run", "-n", "team3_env"]
