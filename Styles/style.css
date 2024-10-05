@@ -5,6 +5,11 @@ div[data-testid="stVerticalBlock"] div:has(div.fixed-header) {
     z-index: 999;
 }
 
+a {
+    text-decoration: none !important;
+    color: inherit;
+}
+
 .user-message {
     text-align: right;
     background-color: #f1f1f1;
@@ -41,4 +46,37 @@ div[data-testid="stVerticalBlock"] div:has(div.fixed-header) {
     padding: 2px;
     display: inline-block;
     position: relative;
+}
+
+.title-stat{
+    color: white;
+    font-weight: bold;
+    font-size: 2rem !important;
+    text-align: center;
+}
+
+.btn-stat-container{
+    display: flex;
+    justify-content: center;
+}
+
+.btn-stat {
+    text-decoration: none;
+    background-color: #0D1118;
+    color: white !important;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 8px;
+    width: 260px;
+    align-self: center !important;
+}
+
+.btn-stat:hover {
+    background-color: #555555;
+    color: white;
 }
