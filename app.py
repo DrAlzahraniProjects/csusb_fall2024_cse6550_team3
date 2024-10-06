@@ -30,8 +30,7 @@ def main():
         "User satisfaction ratings",
         "Improvement over time",
         "Feedback summary",
-        "Statistics per day",
-        "Overall"
+        "Statistics per day and overall"
     ]
 
     # Display statistics in the sidebar
