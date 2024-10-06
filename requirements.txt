@@ -1,3 +1,11 @@
+faiss_cpu
+langchain
+langchain_community
+langchain_core
+langchain_text_splitters
 streamlit
 jupyter
 ipykernel
+sentence-transformers
+bm25
+
