@@ -17,7 +17,7 @@ def main():
     header.write("""<div class='fixed-header'/>""", unsafe_allow_html=True)
 
     # Sidebar for chat history and statistics
-    st.sidebar.title("10 Statistics Reports")
+    st.sidebar.markdown(f'<h1 class="title-stat">Statistics Reports</h1>', unsafe_allow_html=True)
 
     # List of statistics to display
     statistics = [
@@ -30,13 +30,16 @@ def main():
         "User satisfaction ratings",
         "Improvement over time",
         "Feedback summary",
-        "Statistics per day",
-        "Overall"
+        "Statistics per day and overall"
     ]
 
     # Display statistics in the sidebar
     for stat in statistics:
-        st.sidebar.write(stat)
+        st.sidebar.markdown(f"""
+            <div class='btn-stat-container'>
+                <a href="#" class="btn-stat">{stat}</a>
+            </div>
+        """, unsafe_allow_html=True)
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
