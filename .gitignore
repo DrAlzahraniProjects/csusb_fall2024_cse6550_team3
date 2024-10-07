@@ -1,1 +1,10 @@
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Python
+__pycache__/
+
+# Environment Variables
+.env
+
 **/.DS_Store

@@ -16,6 +16,8 @@ RUN apt-get update && apt-get install -y \
 	wget \
 	bzip2 \
 	ca-certificates \
+	build-essential \
+	cmake \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Install Mambaforge for the appropriate architecture
@@ -45,6 +47,7 @@ COPY requirements.txt /app/requirements.txt
 
 # Install Python packages from requirements.txt
 RUN mamba install --yes --file requirements.txt && mamba clean --all -f -y
+RUN pip install rank_bm25 llama-cpp-python
 
 # Copy the current directory contents into the container at /app
 COPY . /app

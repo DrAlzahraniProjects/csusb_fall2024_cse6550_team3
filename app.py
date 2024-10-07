@@ -1,6 +1,7 @@
 import os
 import subprocess
 import streamlit as st
+from inference import chat_completion
 
 def main():
     """Main Streamlit app logic."""
@@ -17,11 +18,11 @@ def main():
     header.write("""<div class='fixed-header'/>""", unsafe_allow_html=True)
 
     # Sidebar for chat history and statistics
-    st.sidebar.title("10 Statistics Reports")
+    st.sidebar.markdown(f'<h1 class="title-stat">Statistics Reports</h1>', unsafe_allow_html=True)
 
     # List of statistics to display
     statistics = [
-        "Number of correct answers",
+    	"Number of correct answers",
         "Number of incorrect answers",
         "User engagement metrics",
         "Response time analysis",
@@ -30,13 +31,16 @@ def main():
         "User satisfaction ratings",
         "Improvement over time",
         "Feedback summary",
-        "Statistics per day",
-        "Overall"
+        "Statistics per day and overall"
     ]
 
     # Display statistics in the sidebar
     for stat in statistics:
-        st.sidebar.write(stat)
+        st.sidebar.markdown(f"""
+            <div class='btn-stat-container'>
+                <a href="#" class="btn-stat">{stat}</a>
+            </div>
+        """, unsafe_allow_html=True)
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -51,12 +55,14 @@ def main():
     # Handle button click event
     if prompt := st.chat_input("Ask your question?"):
         st.session_state.messages.append({"role": "user", "content": prompt})
-        st.session_state.messages.append({"role": "assistant", "content": prompt})
-
         st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
+       
+        # Get response using chat_completion
+        response = chat_completion(prompt)
+
         st.markdown(f"""
             <div class='assistant-message'>
-                I'm under development! {prompt}
+                {response}
                 <div class='feedback-buttons'>
                     <span class='feedback-icon'>👍</span>
                     <span class='feedback-icon'>👎</span>
