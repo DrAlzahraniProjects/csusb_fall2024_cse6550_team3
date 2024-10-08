@@ -27,14 +27,17 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Lowercase the repo name
+      run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
         tags: |
-          ghcr.io/${{ github.repository_owner }}/team3-app:latest
-          ghcr.io/${{ github.repository_owner }}/team3-app:${{ github.sha }}
+          ghcr.io/${{ env.REPO }}/team3-app:latest
+          ghcr.io/${{ env.REPO }}/team3-app:${{ github.sha }}
 
     - name: Image digest
       run: echo ${{ steps.build-and-push.outputs.digest }}
