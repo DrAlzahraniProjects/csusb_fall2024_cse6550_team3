@@ -1,3 +1,14 @@
 streamlit
 jupyter
 ipykernel
+langchain
+langchain-core
+langchain-community
+langchain-huggingface
+sentence-transformers
+langchain-text-splitters
+langchain-mistralai
+faiss-cpu
+mistralai
+pymilvus
+pdfplumber
