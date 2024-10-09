@@ -28,11 +28,10 @@ Update Local Repository
 git pull origin main
 ```
 
-Create a [Hugging Face acces token](https://huggingface.co/settings/tokens)
-
-Then create a .env file and add the following (Do not commit this file to git)
+Download [ollama]() and run the following
 ```
-HF_TOKEN = <Hugging face token>
+ollama pull llama3.2:3b-instruct-q4_K_M
+ollama serve
 ```
 
 Once you are in correct folder, build the Docker image:
@@ -42,7 +41,7 @@ docker build -t team3-app .
 
 Now, run the Docker container:
 ```
-docker run --env-file .env -p 5003:5003 -v $(pwd):/app team3-app
+docker run -p 5003:5003 -v $(pwd):/app team3-app
 ```
 
 The application will be available at:  http://localhost:5003/team3
