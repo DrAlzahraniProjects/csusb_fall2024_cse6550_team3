@@ -1,6 +1,7 @@
 import os
 import subprocess
 import streamlit as st
+from RAG import RAG
 
 def main():
     """Main Streamlit app logic."""
@@ -44,22 +45,42 @@ def main():
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
+    # Initialize RAG for processing
+    if "rag_instance" not in st.session_state:
+        try:
+            st.session_state.rag_instance = RAG()
+        except Exception as e:
+            st.error(f"Failed to initialize RAG instance: {e}")
+            return
+
     # Render existing messages
     for message in st.session_state.messages:
         if message["role"] == "assistant":
-            st.markdown(f"<div class='assistant-message'>Development in Process! {message['content']}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
         else:
             st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
 
-    # Handle button click event
+    # Handle user input
     if prompt := st.chat_input("Ask your question?"):
         st.session_state.messages.append({"role": "user", "content": prompt})
-        st.session_state.messages.append({"role": "assistant", "content": prompt})
+        
+        # Perform a search using RAG
+        try:
+            response = st.session_state.rag_instance.query(prompt)
+            if not response:
+                response = "I'm not sure about that. Can you try rephrasing your question?"
+        except Exception as e:
+            response = f"An error occurred while processing your query: {e}"
+            st.error(response)
 
+        # Add the assistant's response to the chat history
+        st.session_state.messages.append({"role": "assistant", "content": response})
+        
+        # Display the user and assistant messages
         st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
         st.markdown(f"""
             <div class='assistant-message'>
-                I'm under development! {prompt}
+                {response}
                 <div class='feedback-buttons'>
                     <span class='feedback-icon'>👍</span>
                     <span class='feedback-icon'>👎</span>
@@ -67,14 +88,9 @@ def main():
             </div>
         """, unsafe_allow_html=True)
 
-
 if __name__ == "__main__":
     if os.environ.get("STREAMLIT_RUNNING") == "1":
         main()
     else:
-        os.environ["STREAMLIT_RUNNING"] = "1"  # Set the environment variable to indicate Streamlit is running
-        subprocess.run(["streamlit", "run", __file__, "--server.port=5003", "--server.address=0.0.0.0", "--server.baseUrlPath=/team3"])
-
-        # # Check if PROD environment variable is not set to 1
-        # if os.environ.get("PROD") != "1":
-        #     jupyter_process = subprocess.Popen(["jupyter", "notebook", "--ip=0.0.0.0", "--port=6003", "--no-browser", "--allow-root", "--NotebookApp.token=''" ,"--NotebookApp.password=''"])
+        os.environ["STREAMLIT_RUNNING"] = "1"
+        subprocess.run(["streamlit", "run", "app.py", "--server.port=5003", "--server.address=0.0.0.0", "--server.baseUrlPath=/team3"])
