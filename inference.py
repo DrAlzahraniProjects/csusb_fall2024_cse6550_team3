@@ -17,7 +17,6 @@ from document_loading import (
 from dotenv import load_dotenv
 load_dotenv(override=True)
 
-
 ######################
 # HUGGING FACE LOGIN #
 ######################
@@ -48,53 +47,25 @@ retriever = get_hybrid_retriever(
 # MODEL INFERENCE #
 ###################
 
-# def load_llm(
-# 	repo_id="TheBloke/Mistral-7B-Instruct-v0.2-GGUF", # Mistral 7B Instruct
-# 	filename="mistral-7b-instruct-v0.2.Q4_K_M.gguf", # 4-Bit Quantized
-# ):
-# 	"""
-# 	Load and configure the LLM from Hugging Face.
-# 	Args:
-# 		repo_id (str): The repository ID on Hugging Face.
-# 		filename (str): The filename of the model to download.
-# 	Returns:
-# 		LlamaCpp: Configured LLM instance.
-# 	"""
-# 	# Download the model from hugging face
-# 	print(f'Loading model: {filename}')
-# 	model_path = hf_hub_download(repo_id=repo_id, filename=filename)
-# 	print(f'Model loaded at {model_path}\n')
-# 	# Set up the callback manager for verbose output
-# 	callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
-# 	return LlamaCpp(
-# 		model_path=model_path, # Path to the downloaded model file
-# 		temperature=0.2, # Controls randomness in output. Lower values make output more deterministic
-# 		callback_manager=callback_manager, # Manages callbacks, e.g., for streaming output
-# 		max_tokens=256, # Maximum number of tokens to generate in the response
-# 		top_p=0.4, # Nucleus sampling: only consider tokens with cumulative probability < top_p
-# 		n_ctx=8000, # Context window size (number of tokens the model can consider)
-# 		verbose=False,  # If True, prints additional information during inference
-# 		repeat_penalty=1.15, # Penalizes repetition in generated text. >1 reduces repetition
-# 	)
-
-def load_llm():
+# Get Mistral API Key from the environment variables
+api_key = os.getenv("MISTRAL_API_KEY")
+def load_llm_api():
 	"""
 	Load and configure the Mistral AI LLM.
 	Returns:
 			ChatMistralAI: Configured LLM instance.
 	"""
-	mistral_api_key = os.getenv('MISTRAL_API_KEY')
-	if not mistral_api_key:
+	if not api_key:
 		raise ValueError("MISTRAL_API_KEY not found in .env")
 
 	return ChatMistralAI(
-		model="mistral-tiny",  # This is the 7B Instruct model
-		mistral_api_key=mistral_api_key,
+		model="open-mistral-7b",
+		mistral_api_key=api_key,
 		temperature=0.2,
 		max_tokens=256,
 		top_p=0.4,
 	)
-llm = load_llm()
+llm = load_llm_api()
 
 
 system_prompt = """
@@ -122,5 +93,5 @@ def chat_completion(question):
 	question_answer_chain = create_stuff_documents_chain(llm, prompt)
 	rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 	response = rag_chain.invoke({"input": question})
-	print("Running prompt: {question}")
+	print(f"Running prompt: {question}")
 	return response['answer']

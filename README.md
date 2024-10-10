@@ -28,7 +28,7 @@ Update Local Repository
 git pull origin main
 ```
 
-Create a [Mistral AI token]()
+Create a [Mistral AI token](https://console.mistral.ai/api-keys/)
 
 Then create a .env file and add the following (Do not commit this file to git)
 ```

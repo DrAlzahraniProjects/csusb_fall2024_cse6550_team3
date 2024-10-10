@@ -5,7 +5,7 @@ jupyter
 langchain
 langchain-community
 langchain-huggingface
-langchain_mistralai
+langchain-mistralai
 pypdf
 python-dotenv
 streamlit

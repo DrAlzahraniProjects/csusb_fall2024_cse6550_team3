@@ -1,8 +1,3 @@
-**/.DS_Store
-
-# Docker
-*.dockerignore
-
 # Streamlit cache
 .streamlit/
 
@@ -14,3 +9,6 @@ __pycache__/
 
 # Environment Variables
 .env
+
+# MacOS
+**/.DS_Store

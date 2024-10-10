@@ -1,3 +1,4 @@
+# app.py
 import os
 import subprocess
 import streamlit as st
@@ -44,14 +45,6 @@ def main():
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
-
-    # Initialize RAG for processing
-    if "rag_instance" not in st.session_state:
-        try:
-            st.session_state.rag_instance = RAG()
-        except Exception as e:
-            st.error(f"Failed to initialize RAG instance: {e}")
-            return
 
     # Render existing messages
     for message in st.session_state.messages:
