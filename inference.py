@@ -112,16 +112,29 @@ prompt = ChatPromptTemplate.from_messages([
 	("human", "{input}"),
 ])
 
+def default_preprocessing_func(text):
+    if text is None:
+        return []  # Return an empty list or some default behavior
+    return text.split()
+
 def chat_completion(question):
-	"""
-	Generate a response to a given question using the RAG (Retrieval-Augmented Generation) chain.
-	Args:
-		question (str): The user question to be answered.
-	Returns:
-		str: The generated answer to the question.
-	"""
-	question_answer_chain = create_stuff_documents_chain(llm, prompt)
-	rag_chain = create_retrieval_chain(retriever, question_answer_chain)
-	response = rag_chain.invoke({"input": question})
-	print(f"Running prompt: {question}")
-	return response['answer']
+    """
+    Generate a response to a given question using the RAG (Retrieval-Augmented Generation) chain.
+    Args:
+        question (str): The user question to be answered.
+    Yields:
+        str: A stream of tokens (partial responses) to the question.
+    """
+    if question is None:
+        raise ValueError("The question provided is None.")
+    question_answer_chain = create_stuff_documents_chain(llm, prompt)
+    rag_chain = create_retrieval_chain(retriever, question_answer_chain)
+    
+    response_generator = rag_chain.stream({"input": question})
+    
+    # Stream tokens from the 'answer' field only
+    partial_answer = ""
+    for token in response_generator:
+        if 'answer' in token:
+            partial_answer += token['answer']
+            yield partial_answer
