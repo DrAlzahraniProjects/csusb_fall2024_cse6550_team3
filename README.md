@@ -28,6 +28,12 @@ Update Local Repository
 git pull origin main
 ```
 
+Download [ollama]() and run the following
+```
+ollama pull llama3.2:3b-instruct-q4_K_M
+ollama serve
+```
+
 Once you are in correct folder, build the Docker image:
 ```
 docker build -t team3-app .
@@ -35,7 +41,7 @@ docker build -t team3-app .
 
 Now, run the Docker container:
 ```
-docker run -p 5003:5003 team3-app
+docker run -p 5003:5003 -v $(pwd):/app team3-app
 ```
 (For development only)
 ```

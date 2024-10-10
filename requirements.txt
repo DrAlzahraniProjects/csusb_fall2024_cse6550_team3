@@ -1,3 +1,12 @@
-streamlit
-jupyter
+faiss-cpu
+huggingface_hub
 ipykernel
+jupyter
+langchain
+langchain-community
+langchain-huggingface
+pypdf
+python-dotenv
+streamlit
+sentence-transformers
+tiktoken
