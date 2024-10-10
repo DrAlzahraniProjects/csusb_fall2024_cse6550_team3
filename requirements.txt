@@ -1,13 +1,3 @@
-faiss-cpu
-huggingface_hub
-ipykernel
-jupyter
-langchain
-langchain-community
-langchain-huggingface
-langchain-mistralai
-pypdf
-python-dotenv
 streamlit
-sentence-transformers
-tiktoken
+jupyter
+ipykernel

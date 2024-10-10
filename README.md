@@ -28,13 +28,6 @@ Update Local Repository
 git pull origin main
 ```
 
-Create a [Mistral AI token](https://console.mistral.ai/api-keys/)
-
-Then create a .env file and add the following (Do not commit this file to git)
-```
-MISTRAL_API_KEY= = <Mistral AI>
-```
-
 Once you are in correct folder, build the Docker image:
 ```
 docker build -t team3-app .
@@ -42,7 +35,7 @@ docker build -t team3-app .
 
 Now, run the Docker container:
 ```
-docker run --env-file .env -p 5003:5003 -v $(pwd):/app team3-app
+docker run -p 5003:5003 team3-app
 ```
 (For development only)
 ```
