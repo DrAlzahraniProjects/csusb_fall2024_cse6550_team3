@@ -101,8 +101,8 @@ def chat_completion(question):
 	Returns:
 		str: The generated answer to the question.
 	"""
+	print(f"Running prompt: {question}")
 	question_answer_chain = create_stuff_documents_chain(llm, prompt)
 	rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 	response = rag_chain.invoke({"input": question})
-	print(f"Running prompt: {question}")
 	return response['answer']
