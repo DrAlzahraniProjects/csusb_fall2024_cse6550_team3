@@ -39,7 +39,7 @@ faiss_store = load_or_create_faiss_vector_store(documents, "pdf_collection", "fa
 retriever = get_hybrid_retriever(
 	documents = documents,
 	vector_store = faiss_store, 
-	k = 8
+	k = 5
 )
 
 
