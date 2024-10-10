@@ -1,9 +1,6 @@
-# app.py
 import os
 import subprocess
-import time
 import streamlit as st
-from inference import chat_completion
 
 def main():
     """Main Streamlit app logic."""
@@ -50,31 +47,26 @@ def main():
     # Render existing messages
     for message in st.session_state.messages:
         if message["role"] == "assistant":
-            st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='assistant-message'>Development in Process! {message['content']}</div>", unsafe_allow_html=True)
         else:
             st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
 
-    # Handle user input
+    # Handle button click event
     if prompt := st.chat_input("Ask your question?"):
         st.session_state.messages.append({"role": "user", "content": prompt})
+        st.session_state.messages.append({"role": "assistant", "content": prompt})
+
         st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
-
-        # Show spinner while generating response
-        with st.spinner("Generating response..."):
-            time.sleep(2)  # Increase this value to extend the spinner display time
-            response = chat_completion(prompt) # Get response using chat_completion
-
-        st.session_state.messages.append({"role": "assistant", "content": response})
-
         st.markdown(f"""
             <div class='assistant-message'>
-                {response}
+                I'm under development! {prompt}
                 <div class='feedback-buttons'>
                     <span class='feedback-icon'>👍</span>
                     <span class='feedback-icon'>👎</span>
                 </div>
             </div>
         """, unsafe_allow_html=True)
+
 
 if __name__ == "__main__":
     if os.environ.get("STREAMLIT_RUNNING") == "1":
