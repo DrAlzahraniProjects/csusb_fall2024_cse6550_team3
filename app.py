@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 import streamlit as st
 from inference import chat_completion
 
@@ -22,7 +23,7 @@ def main():
 
     # List of statistics to display
     statistics = [
-    	"Number of correct answers",
+        "Number of correct answers",
         "Number of incorrect answers",
         "User engagement metrics",
         "Response time analysis",
@@ -56,9 +57,13 @@ def main():
     if prompt := st.chat_input("Ask your question?"):
         st.session_state.messages.append({"role": "user", "content": prompt})
         st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
-       
-        # Get response using chat_completion
-        response = chat_completion(prompt)
+
+        # Show spinner while generating response
+        with st.spinner("Generating response..."):
+            time.sleep(2)  # Increase this value to extend the spinner display time
+            response = chat_completion(prompt) # Get response using chat_completion
+
+        st.session_state.messages.append({"role": "assistant", "content": response})
 
         st.markdown(f"""
             <div class='assistant-message'>

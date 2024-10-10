@@ -40,7 +40,7 @@ faiss_store = load_or_create_faiss_vector_store(documents, "pdf_collection", "fa
 retriever = get_hybrid_retriever(
 	documents = documents,
 	vector_store = faiss_store, 
-	k = 8
+	k = 10
 )
 
 
@@ -123,5 +123,5 @@ def chat_completion(question):
 	question_answer_chain = create_stuff_documents_chain(llm, prompt)
 	rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 	response = rag_chain.invoke({"input": question})
-	print(f'Running prompt: {question}')
+	print(f"Running prompt: {question}")
 	return response['answer']
