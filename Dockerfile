@@ -13,10 +13,12 @@ WORKDIR /app
 
 # Update and install necessary packages
 RUN apt-get update && apt-get install -y \
-    wget \
-    bzip2 \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+	wget \
+	bzip2 \
+	ca-certificates \
+	build-essential \
+	cmake \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Install Mambaforge for the appropriate architecture
 RUN arch=$(uname -m) && \
@@ -45,12 +47,7 @@ COPY requirements.txt /app/requirements.txt
 
 # Install Python packages from requirements.txt
 RUN mamba install --yes --file requirements.txt && mamba clean --all -f -y
-
-# Additional dependencies
-RUN pip install -qU langchain_milvus langchain-cohere
-
-# Ensure the Milvus directory is created
-RUN mkdir -p /app/milvus
+RUN pip install rank_bm25
 
 # Copy the current directory contents into the container at /app
 COPY . /app
