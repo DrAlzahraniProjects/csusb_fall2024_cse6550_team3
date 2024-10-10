@@ -1,7 +1,9 @@
+# app.py
 import os
 import subprocess
 import streamlit as st
-from RAG import RAG
+from dotenv import load_dotenv
+from ApiLLM import ApiLLM
 
 def main():
     """Main Streamlit app logic."""
@@ -45,12 +47,27 @@ def main():
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # Initialize RAG for processing
-    if "rag_instance" not in st.session_state:
+    # Load environment variables
+    load_dotenv()
+
+    # Get API Key from the environment variables
+    api_key = os.getenv("API_KEY")
+
+    # Validate if API Key is present
+    if not api_key:
+        st.error("API Key is missing. Please check your environment settings.")
+        return
+
+    # Debugging output for API Key
+    print(f"Loaded API_KEY: {api_key}")
+
+    # Initialize ApiLLM for processing
+    if "llm" not in st.session_state:
         try:
-            st.session_state.rag_instance = RAG()
+            # Ensure API key is passed as a string
+            st.session_state.llm = ApiLLM(api_key=str(api_key))
         except Exception as e:
-            st.error(f"Failed to initialize RAG instance: {e}")
+            st.error(f"Failed to initialize LLM instance: {e}")
             return
 
     # Render existing messages
@@ -63,10 +80,10 @@ def main():
     # Handle user input
     if prompt := st.chat_input("Ask your question?"):
         st.session_state.messages.append({"role": "user", "content": prompt})
-        
-        # Perform a search using RAG
+
+        # Perform a search using the LLM
         try:
-            response = st.session_state.rag_instance.query(prompt)
+            response = st.session_state.llm._call(prompt)
             if not response:
                 response = "I'm not sure about that. Can you try rephrasing your question?"
         except Exception as e:
@@ -75,7 +92,7 @@ def main():
 
         # Add the assistant's response to the chat history
         st.session_state.messages.append({"role": "assistant", "content": response})
-        
+
         # Display the user and assistant messages
         st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
         st.markdown(f"""
