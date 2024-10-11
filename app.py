@@ -3,22 +3,22 @@ import os
 import time
 import subprocess
 import streamlit as st
+from roman import toRoman
 from streamlit_pdf_viewer import pdf_viewer
 from inference import chat_completion
 
 TEXTBOOK_PATH = os.path.join(os.path.dirname(__file__), "data", "textbook")
 def serve_pdf():
-
-	
     file = st.query_params.get("file")
-    page = int(st.query_params.get("page", 1)) + 33
-	
-	
-
+    page = max(int(st.query_params.get("page", "1")), 1)
+    adjusted_page = page - 33
+    if adjusted_page < 1:
+        adjusted_page = toRoman(page)
+        
     if file:
         pdf_path = os.path.join(TEXTBOOK_PATH, file)
         if os.path.exists(pdf_path):
-            with st.spinner(f"Loading page {page} of the PDF..."):
+            with st.spinner(f"Loading page {adjusted_page} of the PDF..."):
                 pdf_viewer(
                     pdf_path,
                     width=700,

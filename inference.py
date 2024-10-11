@@ -1,4 +1,5 @@
 import os
+from roman import toRoman
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
@@ -91,12 +92,16 @@ def get_answer_with_source(response):
 	# Iterate over the list of context documents and collect up to 4 sources
 	for doc in response['context'][:4]:  # Limit to the top 4 contexts
 		source = doc.metadata.get('source', 'Unknown source')
-		page = doc.metadata.get('page', 'Unknown page')
-		page = int(page)
-		page = page -33
-
 		file_name = os.path.basename(source)
-		link = f'<a href="/team3/?view=pdf&file={file_name}&page={page}" target="_blank">[{page}]</a>'
+		page = doc.metadata.get('page', 'Unknown page')
+
+		adjusted_page = page - 33
+		if adjusted_page >= 1:
+			link = f'<a href="/team3/?view=pdf&file={file_name}&page={page}" target="_blank">[{adjusted_page}]</a>'
+		else:
+			adjusted_page = toRoman(page)
+			link = f'<a href="/team3/?view=pdf&file={file_name}&page={page}" target="_blank">[{adjusted_page}]</a>'
+
 		sources.append(link)
 
 	# Join the top 5 sources with newlines
