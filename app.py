@@ -56,25 +56,28 @@ def main():
 
     # Handle user input
     if prompt := st.chat_input("Ask your question?"):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
+        if not prompt.strip():  # Check if the input is empty
+            st.warning("Please enter a valid question.")
+        else:
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
 
-        # Show spinner while generating response
-        with st.spinner("Generating response..."):
-            time.sleep(2)  # Increase this value to extend the spinner display time
-            response = chat_completion(prompt) # Get response using chat_completion
+            # Display streaming response
+            response_placeholder = st.empty()
+            partial_response = ""
+            with st.spinner("Generating response..."):
+                for partial_answer in chat_completion(prompt):  # Ensure prompt is valid
+                    response_placeholder.markdown(f"<div class='assistant-message'>{partial_answer}</div>", unsafe_allow_html=True)
 
-        st.session_state.messages.append({"role": "assistant", "content": response})
+            st.session_state.messages.append({"role": "assistant", "content": partial_response})
 
-        st.markdown(f"""
-            <div class='assistant-message'>
-                {response}
-                <div class='feedback-buttons'>
-                    <span class='feedback-icon'>👍</span>
-                    <span class='feedback-icon'>👎</span>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+            st.markdown(f"""
+                    {partial_response}
+                    <div class='feedback-buttons'>
+                        <span class='feedback-icon'>👍</span>
+                        <span class='feedback-icon'>👎</span>
+                    </div>
+            """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     if os.environ.get("STREAMLIT_RUNNING") == "1":
