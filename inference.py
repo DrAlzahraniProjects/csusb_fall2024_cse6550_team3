@@ -2,7 +2,8 @@ import os
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_mistralai import ChatMistralAI
+# from langchain_mistralai import ChatMistralAI
+from langchain_ollama import ChatOllama
 from document_loading import (
 	load_documents_from_directory, 
 	load_or_create_faiss_vector_store,
@@ -50,8 +51,8 @@ def load_llm_api():
 		max_tokens=256,
 		top_p=0.4,
 	)
-# llm =  ChatOllama(model = 'qwen:0.5b')
-llm = load_llm_api()
+llm =  ChatOllama(model = 'qwen:0.5b')
+# llm = load_llm_api()
 
 
 system_prompt = """
@@ -91,6 +92,8 @@ def get_answer_with_source(response):
 	for doc in response['context'][:4]:  # Limit to the top 4 contexts
 		source = doc.metadata.get('source', 'Unknown source')
 		page = doc.metadata.get('page', 'Unknown page')
+		page = int(page)
+		page = page -33
 
 		file_name = os.path.basename(source)
 		link = f'<a href="/team3/?view=pdf&file={file_name}&page={page}" target="_blank">[{page}]</a>'

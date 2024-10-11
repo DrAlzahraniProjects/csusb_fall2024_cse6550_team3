@@ -8,9 +8,12 @@ from inference import chat_completion
 
 TEXTBOOK_PATH = os.path.join(os.path.dirname(__file__), "data", "textbook")
 def serve_pdf():
-	"""Display Textbook"""
+
+	
     file = st.query_params.get("file")
-    page = int(st.query_params.get("page", 1))
+    page = int(st.query_params.get("page", 1)) + 33
+	
+	
 
     if file:
         pdf_path = os.path.join(TEXTBOOK_PATH, file)
