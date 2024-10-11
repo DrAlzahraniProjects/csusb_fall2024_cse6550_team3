@@ -1,42 +1,84 @@
-# .github/workflows/docker-python.yml
-name: Docker Python CI
+name: Docker Image CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-and-push:
+    runs-on: ubuntu-latest  
+    resources:
+      limits:
+        memory: 8GB
+        cpu: 4
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Lowercase the repo name
+      run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
 
-      # Optional: Cache dependencies to speed up future installs
-      - name: Cache mamba packages
-        uses: actions/cache@v2
-        with:
-          path: /opt/conda/pkgs
-          key: ${{ runner.os }}-mamba-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-mamba-
+    - name: Create .env file
+      run: echo "MISTRAL_API_KEY=${{ secrets.MISTRAL_API_KEY }}" > .env
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+    - name: Install Mambaforge
+      run: |
+        wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh" -O mambaforge.sh
+        bash mambaforge.sh -b -p $HOME/mambaforge
+        echo "$HOME/mambaforge/bin" >> $GITHUB_PATH
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Create Mamba environment using YAML
+      run: |
+        source $HOME/mambaforge/bin/activate
+        mamba init bash
+        mamba env create -f environment.yml
+        mamba clean --all -f -y
+      shell: bash
 
-      - name: Build Docker image
-        run: docker build . -t my-python-app
+    # Optional: If you need to update the environment incrementally, use this:
+    # - name: Update Mamba environment
+    #   run: |
+    #     source $HOME/mambaforge/bin/activate
+    #     mamba env update -n team3_env --file environment.yml
+    #     mamba clean --all -f -y
+    #   shell: bash
 
-      - name: Run Docker container
-        run: docker run my-python-app
+    # OR: If you're still using requirements.txt instead of environment.yml
+    # - name: Install dependencies with Mamba (Verbose with Timeout)
+    #   run: |
+    #     source $HOME/mambaforge/bin/activate
+    #     mamba install --yes --file requirements.txt --solver-timeout 3600 -vv
+    #     mamba clean --all -f -y
+    #   shell: bash
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        platforms: linux/amd64,linux/arm64 
+        tags: |
+          ghcr.io/${{ env.REPO }}/team3-app:latest
+          ghcr.io/${{ env.REPO }}/team3-app:${{ github.sha }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Image digest
+      run: echo ${{ steps.docker_build.outputs.digest }}
