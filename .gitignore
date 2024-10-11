@@ -1,3 +1,6 @@
+# Streamlit cache
+.streamlit/
+
 # Jupyter Notebook
 .ipynb_checkpoints
 
@@ -7,4 +10,5 @@ __pycache__/
 # Environment Variables
 .env
 
+# MacOS
 **/.DS_Store

@@ -1,3 +1,4 @@
+# app.py
 import os
 import subprocess
 import time
@@ -49,11 +50,11 @@ def main():
     # Render existing messages
     for message in st.session_state.messages:
         if message["role"] == "assistant":
-            st.markdown(f"<div class='assistant-message'>Development in Process! {message['content']}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
         else:
             st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
 
-    # Handle button click event
+    # Handle user input
     if prompt := st.chat_input("Ask your question?"):
         st.session_state.messages.append({"role": "user", "content": prompt})
         st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
@@ -74,7 +75,6 @@ def main():
                 </div>
             </div>
         """, unsafe_allow_html=True)
-
 
 if __name__ == "__main__":
     if os.environ.get("STREAMLIT_RUNNING") == "1":

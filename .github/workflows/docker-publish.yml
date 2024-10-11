@@ -30,14 +30,15 @@ jobs:
     - name: Lowercase the repo name
       run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
 
-    # Install Mambaforge
+    - name: Create .env file
+      run: echo "MISTRAL_API_KEY=${{ secrets.MISTRAL_API_KEY }}" > .env
+
     - name: Install Mambaforge
       run: |
         wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh" -O mambaforge.sh
         bash mambaforge.sh -b -p $HOME/mambaforge
         echo "$HOME/mambaforge/bin" >> $GITHUB_PATH
 
-    # Create a Mamba environment and install dependencies
     - name: Create Mamba environment
       run: |
         source $HOME/mambaforge/bin/activate
@@ -46,13 +47,12 @@ jobs:
         mamba install --yes --file requirements.txt
       shell: bash
 
-    # Build and push Docker image with multi-architecture support
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
-        platforms: linux/amd64,linux/arm64  # Multi-platform support for x86_64 and ARM
+        platforms: linux/amd64,linux/arm64 
         tags: |
           ghcr.io/${{ env.REPO }}/team3-app:latest
           ghcr.io/${{ env.REPO }}/team3-app:${{ github.sha }}
@@ -61,3 +61,4 @@ jobs:
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
+
