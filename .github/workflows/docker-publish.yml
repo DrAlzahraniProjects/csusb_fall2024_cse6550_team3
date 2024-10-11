@@ -30,6 +30,10 @@ jobs:
     - name: Lowercase the repo name
       run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
 
+    # Create .env file with the API key from secrets
+    - name: Create .env file
+      run: echo "MISTRAL_API_KEY=${{ secrets.MISTRAL_API_KEY }}" > .env
+
     # Install Mambaforge
     - name: Install Mambaforge
       run: |
@@ -61,3 +65,4 @@ jobs:
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
+
