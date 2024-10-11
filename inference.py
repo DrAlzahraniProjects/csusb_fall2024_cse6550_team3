@@ -95,7 +95,7 @@ def get_answer_with_source(response):
     for doc in response['context'][:3]:  # Limit to the top 4 contexts
         source = doc.metadata.get('source', 'Unknown source')
         page = doc.metadata.get('page', 'Unknown page')
-        sources.append(f"(Source: {source}, Page: {page})")
+        sources.append(f"(Page: {page})")
     
     # Join the top 4 sources with newlines
     sources_info = "\n".join(sources)
