@@ -1,12 +1,10 @@
 import os
+from roman import toRoman
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_mistralai import ChatMistralAI
-# from langchain_community.llms import LlamaCpp
-# from langchain.callbacks.manager import CallbackManager
-# from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-# from llama_cpp import Llama
+# from langchain_ollama import ChatOllama
 from document_loading import (
 	load_documents_from_directory, 
 	load_or_create_faiss_vector_store,
@@ -16,17 +14,6 @@ from document_loading import (
 # Import and load environment variables
 from dotenv import load_dotenv
 load_dotenv(override=True)
-
-######################
-# HUGGING FACE LOGIN #
-######################
-# from huggingface_hub import login, hf_hub_download
-# hf_token = os.getenv('HF_TOKEN')
-# if hf_token:
-# 	login(token=hf_token)
-# else:
-#     print("HF_TOKEN not found in .env\n")
-
 
 ###################
 # LOAD EMBEDDINGS #
@@ -65,6 +52,7 @@ def load_llm_api():
 		max_tokens=256,
 		top_p=0.4,
 	)
+# llm =  ChatOllama(model = 'qwen:0.5b')
 llm = load_llm_api()
 
 
@@ -82,6 +70,47 @@ prompt = ChatPromptTemplate.from_messages([
 	("human", "{input}"),
 ])
 
+def get_answer_with_source(response):
+	"""
+	Extract the answer and relevant source information from the response.
+
+	This function processes the response from the RAG chain, extracting the answer
+	and up to 3 source references (page numbers) from the context documents.
+
+	Args:
+		response (dict): The response dictionary from the RAG chain, containing 'answer' and 'context' keys.
+
+	Returns:
+		str: A formatted string containing the answer followed by source information.
+	"""
+	# Extract the answer
+	answer = response.get('answer', 'No answer found.')
+
+	# Handle multiple contexts in the response (assuming response['context'] is a list)
+	sources = []
+
+	# Iterate over the list of context documents and collect up to 4 sources
+	for doc in response['context'][:4]:  # Limit to the top 4 contexts
+		source = doc.metadata.get('source', 'Unknown source')
+		file_name = os.path.basename(source)
+		page = doc.metadata.get('page', 'Unknown page')
+
+		adjusted_page = page - 33
+		if adjusted_page >= 1:
+			link = f'<a href="/team3/?view=pdf&file={file_name}&page={page}" target="_blank">[{adjusted_page}]</a>'
+		else:
+			adjusted_page = toRoman(page)
+			link = f'<a href="/team3/?view=pdf&file={file_name}&page={page}" target="_blank">[{adjusted_page}]</a>'
+
+		sources.append(link)
+
+	# Join the top 5 sources with newlines
+	sources_info = "\nSources: " + "".join(sources)
+	# Format the final answer with the answer and top 4 source information
+	final_answer = f"{answer}\n\n{sources_info}"
+	return final_answer
+
+
 def chat_completion(question):
 	"""
 	Generate a response to a given question using the RAG (Retrieval-Augmented Generation) chain.
@@ -90,8 +119,13 @@ def chat_completion(question):
 	Returns:
 		str: The generated answer to the question.
 	"""
+	print(f"Running prompt: {question}")
 	question_answer_chain = create_stuff_documents_chain(llm, prompt)
 	rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 	response = rag_chain.invoke({"input": question})
-	print(f"Running prompt: {question}")
-	return response['answer']
+	
+	# print(response['context'])
+
+	final_answer = get_answer_with_source(response)
+	
+	return final_answer
