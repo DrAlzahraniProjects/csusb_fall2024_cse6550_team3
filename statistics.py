@@ -1,3 +1,7 @@
+from datetime import datetime
+import time
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy import (
 	create_engine, 
 	Column, 
@@ -9,9 +13,6 @@ from sqlalchemy import (
 	ForeignKey, 
 	func
 )
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from datetime import datetime
 
 Base = declarative_base()
 engine = create_engine('sqlite:///team3.db', echo=True)
@@ -43,18 +44,20 @@ def init_db():
 	Base.metadata.create_all(engine)
 
 def init_user_session():
+	print("Intializing user session...")
 	with Session() as session:
 		new_user = User(session_length=0)
 		session.add(new_user)
 		session.commit()
 		return new_user.id
 
-def update_user_session(user_id, session_length=0):
+def update_user_session(user_id):
+	print("Updating user session...")
 	with Session() as session:
 		user = session.query(User).filter_by(id=user_id).first()
-		if user:
-			user.session_length += session_length
-			user.time_logged_in = datetime.utcnow()
+		if user and user.time_logged_in:
+			current_time = time.time()
+			user.session_length = current_time - int(user.time_logged_in.timestamp())
 			session.commit()
 
 def insert_conversation(
@@ -67,6 +70,7 @@ def insert_conversation(
 	correct=True,
 	common_topics=""
 ):
+	print("Inserting new conversation...")
 	with Session() as session:
 		new_conversation = Conversation(
 			question=question,
@@ -112,8 +116,9 @@ def get_statistics(
 
 def toggle_correctness(
 	conversation_id,
-	value
+	value # True or False
 ):
+	print(f"Toggling correctness for chat#{conversation_id}, Value = {value}")
 	with Session() as session:
 		conversation = session.query(Conversation).filter_by(id=conversation_id).first()
 		if conversation:

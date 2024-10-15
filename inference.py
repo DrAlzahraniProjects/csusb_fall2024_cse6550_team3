@@ -114,11 +114,21 @@ def get_answer_with_source(response):
 
 def chat_completion(question):
 	"""
-	Generate a response to a given question using the RAG (Retrieval-Augmented Generation) chain.
+	Generate a response to a given question using a Retrieval-Augmented Generation (RAG) chain.
+
+	This function performs the following steps:
+	1. Retrieves relevant documents using the configured retriever.
+	2. Processes the retrieved documents and the question using a language model.
+	3. Generates an answer based on the retrieved context and the question.
+	4. Formats the answer with source referencyes.
+
 	Args:
-		question (str): The user question to be answered.
+		question (str): The user's question to be answered.
+
 	Returns:
-		str: The generated answer to the question.
+		tuple: A tuple containing two elements:
+			- str: The generated answer to the question, including source references.
+			- str: The name of the model used for generation (MODEL_NAME).
 	"""
 	print(f"Running prompt: {question}")
 	question_answer_chain = create_stuff_documents_chain(llm, prompt)

@@ -17,6 +17,7 @@ from statistics import (
 
 init_db() # Initialize the database
 
+
 def serve_pdf():
 	"""
 	Used to open PDF file when a citation is clicked
@@ -75,29 +76,32 @@ def update_and_display_statistics():
 		""", unsafe_allow_html=True)
 	
 
-
 def main():
-	"""Main Streamlit app logic."""
+	"""
+	Main Streamlit app logic.
+	"""
+	header = st.container()
+	header.title("Textbook Chatbot")
+	header.write("""<div class='fixed-header'/>""", unsafe_allow_html=True)
+
+	# Open PDF
 	if "view" in st.query_params and st.query_params["view"] == "pdf":
 		serve_pdf()
 
+	# Homepage
 	else:
-		header = st.container()
-
 		# Load the CSS file
 		def load_css(file_name):
 			with open(file_name) as f:
 				st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 		load_css("Styles/style.css")
 
-		header.title("Textbook Chatbot")
-		header.write("""<div class='fixed-header'/>""", unsafe_allow_html=True)
-
 		# Initialize user session
 		if "user_id" not in st.session_state:
 			st.session_state.user_id = init_user_session()
 			print(f"Creating user#{st.session_state.user_id}")
-
+		
+		# Create sidebar for statistics
 		st.sidebar.empty()
 		update_and_display_statistics()
 
@@ -124,6 +128,7 @@ def main():
 				response_time = int((end_time - start_time))  # Convert to milliseconds
 
 			st.session_state.messages.append({"role": "assistant", "content": response})
+
 			# Insert conversation into the database
 			conversation_id = insert_conversation(
 				question=prompt,
@@ -146,8 +151,9 @@ def main():
 				</div>
 			""", unsafe_allow_html=True)
 
-			# Update user session length
-			update_user_session(st.session_state.user_id, session_length=int(time.time()))
+			# Update user session
+			update_user_session(st.session_state.user_id)
+
 
 if __name__ == "__main__":
 	if os.environ.get("STREAMLIT_RUNNING") == "1":
