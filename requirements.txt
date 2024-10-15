@@ -11,4 +11,5 @@ python-dotenv
 roman
 streamlit
 sentence-transformers
+sqlalchemy
 tiktoken

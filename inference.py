@@ -36,17 +36,18 @@ retriever = get_hybrid_retriever(
 
 # Get Mistral API Key from the environment variables
 api_key = os.getenv("MISTRAL_API_KEY")
+if not api_key:
+	raise ValueError("MISTRAL_API_KEY not found in .env")
+
+MODEL_NAME = "open-mistral-7b"
 def load_llm_api():
 	"""
 	Load and configure the Mistral AI LLM.
 	Returns:
 			ChatMistralAI: Configured LLM instance.
 	"""
-	if not api_key:
-		raise ValueError("MISTRAL_API_KEY not found in .env")
-
 	return ChatMistralAI(
-		model="open-mistral-7b",
+		model=MODEL_NAME,
 		mistral_api_key=api_key,
 		temperature=0.2,
 		max_tokens=256,
@@ -128,4 +129,4 @@ def chat_completion(question):
 
 	final_answer = get_answer_with_source(response)
 	
-	return final_answer
+	return final_answer, MODEL_NAME
