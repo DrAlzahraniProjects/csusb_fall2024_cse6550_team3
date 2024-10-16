@@ -4,7 +4,6 @@ from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_mistralai import ChatMistralAI
-# from langchain_ollama import ChatOllama
 from document_loading import (
 	load_documents_from_directory, 
 	load_or_create_faiss_vector_store,
@@ -53,7 +52,6 @@ def load_llm_api():
 		max_tokens=256,
 		top_p=0.4,
 	)
-# llm =  ChatOllama(model = 'qwen:0.5b')
 llm = load_llm_api()
 
 
