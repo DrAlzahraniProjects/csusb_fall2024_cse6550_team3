@@ -1,6 +1,9 @@
 # Streamlit cache
 .streamlit/
 
+# Database
+*.db
+
 # Jupyter Notebook
 .ipynb_checkpoints
 
