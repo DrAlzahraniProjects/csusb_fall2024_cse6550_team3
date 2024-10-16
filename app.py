@@ -14,8 +14,6 @@ from interface import (
     toggle_correctness
 )
 
-init_db()  # Initialize the database
-
 
 def serve_pdf():
     TEXTBOOK_PATH = os.path.join(os.path.dirname(__file__), "data", "textbook")
