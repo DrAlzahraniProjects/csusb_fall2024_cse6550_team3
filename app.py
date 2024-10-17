@@ -14,7 +14,7 @@ from statistics import (
     toggle_correctness
 )
 
-init_db() # Initialize the database
+init_db()  # Initialize the database
 
 def serve_pdf():
     """Used to open PDF file when a citation is clicked"""
@@ -57,8 +57,8 @@ def update_and_display_statistics():
         f"Satisfaction rate: {stats['satisfaction_rate']:.2f}%",
         f"Common topics or keywords",
         f"Improvement over time",
-		f"Feedback summary",
-		f"Statistics per day and overall"
+        f"Feedback summary",
+        f"Statistics per day and overall"
     ]
 
     st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
@@ -71,7 +71,7 @@ def update_and_display_statistics():
 
 def handle_feedback(conversation_id):
     """Handle feedback button click"""
-    feedback_value = st.session_state[f"feedback_{conversation_id}"]
+    feedback_value = st.session_state.get(f"feedback_{conversation_id}", None)
     if feedback_value is not None:
         toggle_correctness(conversation_id, feedback_value == 1)
         update_user_session(st.session_state.user_id)
@@ -103,7 +103,7 @@ def main():
         st.sidebar.empty()
         update_and_display_statistics()
 
-        # load user/assitant messages and feedback icons when appropriate
+        # load user/assistant messages and feedback icons when appropriate
         if "messages" not in st.session_state:
             st.session_state.messages = []
         for message in st.session_state.messages:
@@ -139,7 +139,7 @@ def main():
                 citations="",
                 model_name=model_name,
                 response_time=response_time,
-                correct=True,
+                correct=None,  # No feedback by default
                 user_id=st.session_state.user_id,
                 common_topics=""
             )
