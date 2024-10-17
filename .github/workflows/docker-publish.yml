@@ -23,7 +23,7 @@ jobs:
       with:
         registry: docker.io
         username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}  # Ensure you set these secrets in your repo settings
+        password: ${{ secrets.DOCKERHUB_TOKEN }}  
     
     - name: Lowercase the repo name
       run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
@@ -53,9 +53,9 @@ jobs:
         push: true
         platforms: linux/amd64,linux/arm64
         tags: |
-          docker.io/${{ secrets.DOCKERHUB_USERNAME }}/team3-app:latest
+          docker.io/${{ secrets.DOCKERHUB_USERNAME }}/team3-app:latest  # Only tag with latest
       env:
         DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Image digest
-      run: echo "Image Digest: ${{ steps.docker_build.outputs.digest }}"
+      run: echo "Image Digest: ${{ steps.docker_build.outputs.digest }}" 
