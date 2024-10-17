@@ -153,13 +153,6 @@ def main():
                 common_topics=""
             )
 
-            # Display response
-            st.markdown(f"""
-                <div class='assistant-message'>
-                    {response}
-                </div>
-            """, unsafe_allow_html=True)
-
             # Add conversation to streamlit session state
             st.session_state.messages.append({
                 "role": "user", 
