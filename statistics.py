@@ -34,7 +34,7 @@ class Conversation(Base):
     citations = Column(Text)
     model_name = Column(String(255))
     response_time = Column(Integer)
-    correct = Column(Boolean, nullable=True)  # Correct can be None until feedback is provided
+    correct = Column(Boolean, nullable=True)  
     user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
     common_topics = Column(Text)
     date = Column(DateTime(timezone=True), default=datetime.utcnow)
@@ -67,7 +67,7 @@ def insert_conversation(
     model_name,
     response_time, 
     user_id,
-    correct=None,  # Default set to None (no feedback yet)
+    correct=None,  
     common_topics=""
 ):
     print("Inserting new conversation...")
@@ -78,7 +78,7 @@ def insert_conversation(
             citations=citations,
             model_name=model_name,
             response_time=response_time,
-            correct=correct,  # Will remain None until feedback is given
+            correct=correct, 
             user_id=user_id,
             common_topics=common_topics
         )
