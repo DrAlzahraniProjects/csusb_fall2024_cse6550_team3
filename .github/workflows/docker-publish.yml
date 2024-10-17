@@ -66,11 +66,10 @@ jobs:
         platforms: linux/amd64,linux/arm64
         tags: |
           ghcr.io/${{ env.REPO }}/team3-app:latest
-          docker.io/${{ secrets.DOCKERHUB_USERNAME }}/team3-app:latest  # Docker Hub tag
+          docker.io/${{ secrets.DOCKERHUB_USERNAME }}/team3-app:latest  
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
-
