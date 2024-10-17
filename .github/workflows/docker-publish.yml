@@ -1,7 +1,10 @@
+
 name: Docker Image CI
 
 on:
   push:
+    branches: [ "main" ]
+  pull_request:
     branches: [ "main" ]
 
 permissions:
@@ -14,7 +17,7 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-
+    
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
@@ -57,7 +60,6 @@ jobs:
 
     # Build and push Docker images to both GHCR and Docker Hub
     - name: Build and push Docker image
-      id: docker_build  # Assigning an ID to reference the digest later
       uses: docker/build-push-action@v5
       with:
         context: .
@@ -65,9 +67,10 @@ jobs:
         platforms: linux/amd64,linux/arm64
         tags: |
           ghcr.io/${{ env.REPO }}/team3-app:latest
-          docker.io/${{ secrets.DOCKERHUB_USERNAME }}/team3-app:latest
+          docker.io/${{ secrets.DOCKERHUB_USERNAME }}/team3-app:latest  
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
