@@ -2,11 +2,13 @@ name: Docker Image CI
 
 on:
   push:
-    branches: 
-      - "main"
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 permissions:
   contents: read
+  packages: write
 
 jobs:
   build-and-push:
@@ -17,19 +19,29 @@ jobs:
     
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-    
+
+    # Log in to both GitHub Container Registry (GHCR) and Docker Hub
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
       with:
         registry: docker.io
         username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}  # Ensure you set these secrets in your repo settings
-    
-    - name: Lowercase the repo name
-      run: echo "REPO=${GITHUB_REPOSITORY,,}" >> ${{ github.env }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Create .env file
-      run: echo "MISTRAL_API_KEY=${{ secrets.MISTRAL_API_KEY }}" > .env
+    - name: Lowercase the repo name
+      run: echo "REPO=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+
+    - name: Create .env file with API keys
+      run: |
+        echo "MISTRAL_API_KEY=${{ secrets.MISTRAL_API_KEY }}" > .env
+        echo "HF_TOKEN=${{ secrets.HF_TOKEN }}" >> .env  # Add Hugging Face token here
 
     - name: Install Mambaforge
       run: |
@@ -45,17 +57,20 @@ jobs:
         mamba install --yes --file requirements.txt
       shell: bash
 
+    # Build and push Docker images to both GHCR and Docker Hub
     - name: Build and push Docker image
-      id: docker_build  # Assigning an ID for this step to reference its outputs
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
         platforms: linux/amd64,linux/arm64
         tags: |
-          docker.io/${{ secrets.DOCKERHUB_USERNAME }}/team3-app:latest  # Only tag with latest
+          ghcr.io/${{ env.REPO }}/team3-app:latest
+          docker.io/${{ secrets.DOCKERHUB_USERNAME }}/team3-app:latest  # Docker Hub tag
       env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Image digest
-      run: echo "Image Digest: ${{ steps.docker_build.outputs.digest }}"  # Output the image digest
+      run: echo ${{ steps.docker_build.outputs.digest }}
+
