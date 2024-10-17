@@ -22,10 +22,11 @@ load_dotenv(override=True)
 document_path = "data/textbook"
 documents = load_documents_from_directory(document_path)
 faiss_store = load_or_create_faiss_vector_store(documents, "pdf_collection", "faiss_indexes")
+top_k = 15 # number of relevant documents to be returned
 retriever = get_hybrid_retriever(
 	documents = documents,
 	vector_store = faiss_store, 
-	k = 15
+	k = top_k
 )
 
 
@@ -43,7 +44,7 @@ def load_llm_api():
 	"""
 	Load and configure the Mistral AI LLM.
 	Returns:
-			ChatMistralAI: Configured LLM instance.
+		ChatMistralAI: Configured LLM instance.
 	"""
 	return ChatMistralAI(
 		model=MODEL_NAME,
@@ -53,21 +54,6 @@ def load_llm_api():
 		top_p=0.4,
 	)
 llm = load_llm_api()
-
-
-system_prompt = """
-	You are an assistant for question-answering tasks.
-	Use the following pieces of retrieved context to answer the question. 
-	If you don't know the answer, say that you don't know. 
-	Give detailed well formatted concise answers
-	\n\n
-	{context}
-"""
-
-prompt = ChatPromptTemplate.from_messages([
-	("system", system_prompt),
-	("human", "{input}"),
-])
 
 def get_answer_with_source(response):
 	"""
@@ -88,15 +74,13 @@ def get_answer_with_source(response):
 	# Handle multiple contexts in the response (assuming response['context'] is a list)
 	sources = []
 
-	# Iterate over the list of context documents and collect up to 4 sources
-	for doc in response['context'][:4]:  # Limit to the top 4 contexts
-		source = doc.metadata.get('source', 'Unknown source')
-		file_name = os.path.basename(source)
+	# Iterate over the list of context documents and collect up to top 5 sources
+	for doc in response['context'][:5]:
+		file_name = os.path.basename("data/textbook/Roger S. Pressman_ Bruce R. Maxim - Software Engineering_ A Practitioner's Approach-McGraw-Hill Education (2019).pdf")
 		page = doc.metadata.get('page', 'Unknown page')
-
 		adjusted_page = page - 33
 		if adjusted_page >= 1:
-			link = f'<a href="/team3/?view=pdf&file={file_name}&page={page}" target="_blank">[{adjusted_page}]</a>'
+			link = f'<a href="/team3/?view=pdf&file={file_name}&page={page + 1}" target="_blank">[{adjusted_page + 1}]</a>'
 		else:
 			adjusted_page = toRoman(page)
 			link = f'<a href="/team3/?view=pdf&file={file_name}&page={page}" target="_blank">[{adjusted_page}]</a>'
@@ -105,36 +89,58 @@ def get_answer_with_source(response):
 
 	# Join the top 5 sources with newlines
 	sources_info = "\nSources: " + "".join(sources)
-	# Format the final answer with the answer and top 4 source information
 	final_answer = f"{answer}\n\n{sources_info}"
 	return final_answer
 
+# Prompts
+system_prompt = """
+You are a chatbot answering questions about "Software Engineering: A Practitioner's Approach" textbook.
+
+1. Always identify yourself as a chatbot, not the textbook.
+2. Answer based only on provided context.
+3. If unsure, say "I don't have enough information to answer."
+4. For unclear questions, ask for clarification.
+5. Keep responses under 256 tokens.
+6. Don't invent information.
+7. Use context only if relevant.
+8. To questions about your purpose, say: "I'm a chatbot designed to answer questions about the 'Software Engineering: A Practitioner's Approach' textbook."
+
+Be accurate and concise. Answer only what's asked.
+"""
+
+prompt = ChatPromptTemplate.from_messages([
+  ("system", system_prompt),
+  ("human", "Question: {input}\n\nRelevant Context:\n{context}"),
+])
+
 
 def chat_completion(question):
-	"""
-	Generate a response to a given question using a Retrieval-Augmented Generation (RAG) chain.
+  """
+  Generate a response to a given question using the RAG (Retrieval-Augmented Generation) chain,
+  streaming parts of the response as they are generated.
 
-	This function performs the following steps:
-	1. Retrieves relevant documents using the configured retriever.
-	2. Processes the retrieved documents and the question using a language model.
-	3. Generates an answer based on the retrieved context and the question.
-	4. Formats the answer with source referencyes.
+  Args:
+    question (str): The user question to be answered.
 
-	Args:
-		question (str): The user's question to be answered.
+  Yields:
+    str: The generated response in chunks.
+  """
+  print(f"Running prompt: {question}")
+  question_answer_chain = create_stuff_documents_chain(llm, prompt)
+  rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 
-	Returns:
-		tuple: A tuple containing two elements:
-			- str: The generated answer to the question, including source references.
-			- str: The name of the model used for generation (MODEL_NAME).
-	"""
-	print(f"Running prompt: {question}")
-	question_answer_chain = create_stuff_documents_chain(llm, prompt)
-	rag_chain = create_retrieval_chain(retriever, question_answer_chain)
-	response = rag_chain.invoke({"input": question})
-	
-	# print(response['context'])
+  # Stream response from LLM
+  full_response = {"answer": "", "context": []}
+  for chunk in rag_chain.stream({"input": question}):
+    if "answer" in chunk:
+      full_response["answer"] += chunk["answer"]
+      yield (chunk["answer"], MODEL_NAME)
+    if "context" in chunk:
+      full_response["context"].extend(chunk["context"])
 
-	final_answer = get_answer_with_source(response)
-	
-	return final_answer, MODEL_NAME
+  # After streaming is complete, use the full response to extract citations
+  final_answer = get_answer_with_source(full_response)
+  # Yield any remaining part of the answer with citations
+  remaining_answer = final_answer[len(full_response["answer"]):]
+  if remaining_answer:
+    yield (remaining_answer, MODEL_NAME)

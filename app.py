@@ -125,12 +125,16 @@ def main():
         if prompt := st.chat_input("Ask your question?"):
             st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
 
-            # Model inference
+            # Model inference with streaming
+            response_container = st.empty()  # Placeholder for the assistant's response
             with st.spinner("Generating response..."):
                 start_time = time.time()
-                response, model_name = chat_completion(prompt)
+                response = ""  # To accumulate the response in pieces
+                for partial_response, model_name in chat_completion(prompt):  # Streaming from the model
+                    response += partial_response  # Accumulate partial responses
+                    response_container.markdown(f"<div class='assistant-message'>{response}</div>", unsafe_allow_html=True)
                 end_time = time.time()
-                response_time = int((end_time - start_time))
+                response_time = int((end_time - start_time)) # seconds
 
             # Add conversation to DB
             conversation_id = insert_conversation(
@@ -138,7 +142,7 @@ def main():
                 response=response,
                 citations="",
                 model_name=model_name,
-                response_time=response_time,
+                response_time=response_time, # seconds
                 correct=None,  # No feedback by default
                 user_id=st.session_state.user_id,
                 common_topics=""
@@ -163,6 +167,7 @@ def main():
                 "conversation_id": conversation_id
             })
 
+            # # Update user session and rerun streamlit
             update_user_session(st.session_state.user_id)
             st.rerun()
 
