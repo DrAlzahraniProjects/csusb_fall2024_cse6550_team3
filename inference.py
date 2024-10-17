@@ -34,18 +34,20 @@ retriever = get_hybrid_retriever(
 # MODEL INFERENCE #
 ###################
 
-api_key = os.getenv("MISTRAL_API_KEY") # Get Mistral API Key from the environment variables
+# Get Mistral API Key from the environment variables
+api_key = os.getenv("MISTRAL_API_KEY")
+if not api_key:
+	raise ValueError("MISTRAL_API_KEY not found in .env")
+
+MODEL_NAME = "open-mistral-7b"
 def load_llm_api():
 	"""
 	Load and configure the Mistral AI LLM.
 	Returns:
 		ChatMistralAI: Configured LLM instance.
 	"""
-	if not api_key:
-		raise ValueError("MISTRAL_API_KEY not found in .env")
-
 	return ChatMistralAI(
-		model="open-mistral-7b",
+		model=MODEL_NAME,
 		mistral_api_key=api_key,
 		temperature=0.2,
 		max_tokens=256,
@@ -54,41 +56,39 @@ def load_llm_api():
 llm = load_llm_api()
 
 def get_answer_with_source(response):
-	"""
-	Extract the answer and relevant source information from the response.
+  """
+  Extract the answer and relevant source information from the response.
+  This function processes the response from the RAG chain, extracting the answer
+  and up to 3 source references (page numbers) from the context documents.
 
-	This function processes the response from the RAG chain, extracting the answer
-	and up to 3 source references (page numbers) from the context documents.
+  Args:
+    response (dict): The response dictionary from the RAG chain, containing 'answer' and 'context' keys.
+  Returns:
+    str: A formatted string containing the answer followed by source information.
+  """
+  answer = response.get('answer', 'No answer found.') # Extract the answer
+  sources = [] # Handle multiple contexts in the response (assuming response['context'] is a list)
 
-	Args:
-		response (dict): The response dictionary from the RAG chain, containing 'answer' and 'context' keys.
+  # Iterate over the list of context documents and collect up to top 5 sources
+  for doc in response['context'][:5]:
+    file_name = os.path.basename("data/textbook/Roger S. Pressman_ Bruce R. Maxim - Software Engineering_ A Practitioner's Approach-McGraw-Hill Education (2019).pdf")
+    page = doc.metadata.get('page', 'Unknown page')
 
-	Returns:
-		str: A formatted string containing the answer followed by source information.
-	"""
-	# Extract the answer
-	answer = response.get('answer', 'No answer found.')
+    # The documents are zero indexed. So page 1 of the pdf is page 0 in docs
+    # Chapter 1 starts at doc 33 (page 34 of the PDF)
+    adjusted_page = page - 33 
+    if adjusted_page >= 0: # For pages starting from Chapter 1
+      link = f'<a href="/team3/?view=pdf&file={file_name}&page={page + 1}" target="_blank">[{adjusted_page + 1}]</a>'
+    else: # For pages before Chapter 1
+      adjusted_page = "Cover" if page == 0 else toRoman(page)
+      link = f'<a href="/team3/?view=pdf&file={file_name}&page={page + 1}" target="_blank">[{adjusted_page}]</a>'
+    sources.append(link)
 
-	# Handle multiple contexts in the response (assuming response['context'] is a list)
-	sources = []
+  # Join the top 5 sources with newlines
+  sources_info = "\nSources: " + "".join(sources)
+  final_answer = f"{answer}\n\n{sources_info}"
+  return final_answer
 
-	# Iterate over the list of context documents and collect up to top 5 sources
-	for doc in response['context'][:5]:
-		file_name = os.path.basename("data/textbook/Roger S. Pressman_ Bruce R. Maxim - Software Engineering_ A Practitioner's Approach-McGraw-Hill Education (2019).pdf")
-		page = doc.metadata.get('page', 'Unknown page')
-		adjusted_page = page - 33
-		if adjusted_page >= 1:
-			link = f'<a href="/team3/?view=pdf&file={file_name}&page={page + 1}" target="_blank">[{adjusted_page + 1}]</a>'
-		else:
-			adjusted_page = toRoman(page)
-			link = f'<a href="/team3/?view=pdf&file={file_name}&page={page}" target="_blank">[{adjusted_page}]</a>'
-
-		sources.append(link)
-
-	# Join the top 5 sources with newlines
-	sources_info = "\nSources: " + "".join(sources)
-	final_answer = f"{answer}\n\n{sources_info}"
-	return final_answer
 
 # Prompts
 system_prompt = """
@@ -107,33 +107,38 @@ Be accurate and concise. Answer only what's asked.
 """
 
 prompt = ChatPromptTemplate.from_messages([
-	("system", system_prompt),
-	("human", "Question: {input}\n\nRelevant Context:\n{context}"),
+  ("system", system_prompt),
+  ("human", "Question: {input}\n\nRelevant Context:\n{context}"),
 ])
 
 
-def chat_completion_streaming(question):
-    """
-    Generate a response to a given question using the RAG (Retrieval-Augmented Generation) chain,
-    streaming parts of the response as they are generated.
-    
-    Args:
-        question (str): The user question to be answered.
-    
-    Yields:
-        str: The generated response in chunks.
-    """
-    print(f"Running prompt: {question}")
-    question_answer_chain = create_stuff_documents_chain(llm, prompt)
-    rag_chain = create_retrieval_chain(retriever, question_answer_chain)
-    
-    response = rag_chain.invoke({"input": question})  # Get full response from LLM
-    
-    final_answer = get_answer_with_source(response)  # Get final answer with source citations
-    
-    # Simulate streaming by yielding chunks of the response
-    chunk_size = 40  # Number of characters per chunk
-    for i in range(0, len(final_answer), chunk_size):
-        yield final_answer[i:i + chunk_size]  # Yield parts of the response incrementally
+def chat_completion(question):
+  """
+  Generate a response to a given question using the RAG (Retrieval-Augmented Generation) chain,
+  streaming parts of the response as they are generated.
 
-    # If the model supports real streaming, adapt this logic to yield real-time output.
+  Args:
+    question (str): The user question to be answered.
+
+  Yields:
+    str: The generated response in chunks.
+  """
+  print(f"Running prompt: {question}")
+  question_answer_chain = create_stuff_documents_chain(llm, prompt)
+  rag_chain = create_retrieval_chain(retriever, question_answer_chain)
+
+  # Stream response from LLM
+  full_response = {"answer": "", "context": []}
+  for chunk in rag_chain.stream({"input": question}):
+    if "answer" in chunk:
+      full_response["answer"] += chunk["answer"]
+      yield (chunk["answer"], MODEL_NAME)
+    if "context" in chunk:
+      full_response["context"].extend(chunk["context"])
+
+  # After streaming is complete, use the full response to extract citations
+  final_answer = get_answer_with_source(full_response)
+  # Yield any remaining part of the answer with citations
+  remaining_answer = final_answer[len(full_response["answer"]):]
+  if remaining_answer:
+    yield (remaining_answer, MODEL_NAME)
