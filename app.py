@@ -5,7 +5,7 @@ import subprocess
 import streamlit as st
 from roman import toRoman
 from streamlit_pdf_viewer import pdf_viewer
-from inference import chat_completion
+from inference import chat_completion_streaming	
 
 TEXTBOOK_PATH = os.path.join(os.path.dirname(__file__), "data", "textbook")
 def serve_pdf():
@@ -88,22 +88,26 @@ def main():
 			st.session_state.messages.append({"role": "user", "content": prompt})
 			st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
 
+			# Streaming the response
+			response_container = st.empty()  # Placeholder for the assistant's response
+
+			response_text = ""  # To accumulate the response in pieces
+
 			# Show spinner while generating response
 			with st.spinner("Generating response..."):
-				time.sleep(2)  # Increase this value to extend the spinner display time
-				response = chat_completion(prompt) # Get response using chat_completion
+				for partial_response in chat_completion_streaming(prompt):  # Streaming from the model
+					response_text += partial_response  # Accumulate partial responses
+					feedback_buttons = """
+						<div class='feedback-buttons'>
+							<span class='feedback-icon'>👍</span>
+							<span class='feedback-icon'>👎</span>
+						</div>
+					"""
+					response_container.markdown(f"<div class='assistant-message'>{response_text}{feedback_buttons}</div>", unsafe_allow_html=True)
+					time.sleep(0.1)  # Simulate streaming by slowing down updates
 
-			st.session_state.messages.append({"role": "assistant", "content": response})
-
-			st.markdown(f"""
-				<div class='assistant-message'>
-					{response}
-					<div class='feedback-buttons'>
-						<span class='feedback-icon'>👍</span>
-						<span class='feedback-icon'>👎</span>
-					</div>
-				</div>
-			""", unsafe_allow_html=True)
+			# Append the final message
+			st.session_state.messages.append({"role": "assistant", "content": response_text})
 
 if __name__ == "__main__":
 	if os.environ.get("STREAMLIT_RUNNING") == "1":

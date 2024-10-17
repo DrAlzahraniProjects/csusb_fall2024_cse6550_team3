@@ -112,18 +112,28 @@ prompt = ChatPromptTemplate.from_messages([
 ])
 
 
-def chat_completion(question):
-	"""
-	Generate a response to a given question using the RAG (Retrieval-Augmented Generation) chain.
-	Args:
-		question (str): The user question to be answered.
-	Returns:
-		str: The generated answer to the question.
-	"""
-	print(f"Running prompt: {question}")
-	question_answer_chain = create_stuff_documents_chain(llm, prompt)
-	rag_chain = create_retrieval_chain(retriever, question_answer_chain) # Find relevant docs
-	response = rag_chain.invoke({"input": question}) # get response from LLM
-	final_answer = get_answer_with_source(response) # add citations to the end of the response
-	
-	return final_answer
+def chat_completion_streaming(question):
+    """
+    Generate a response to a given question using the RAG (Retrieval-Augmented Generation) chain,
+    streaming parts of the response as they are generated.
+    
+    Args:
+        question (str): The user question to be answered.
+    
+    Yields:
+        str: The generated response in chunks.
+    """
+    print(f"Running prompt: {question}")
+    question_answer_chain = create_stuff_documents_chain(llm, prompt)
+    rag_chain = create_retrieval_chain(retriever, question_answer_chain)
+    
+    response = rag_chain.invoke({"input": question})  # Get full response from LLM
+    
+    final_answer = get_answer_with_source(response)  # Get final answer with source citations
+    
+    # Simulate streaming by yielding chunks of the response
+    chunk_size = 40  # Number of characters per chunk
+    for i in range(0, len(final_answer), chunk_size):
+        yield final_answer[i:i + chunk_size]  # Yield parts of the response incrementally
+
+    # If the model supports real streaming, adapt this logic to yield real-time output.
