@@ -23,10 +23,10 @@ jobs:
       with:
         registry: docker.io
         username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}  
+        password: ${{ secrets.DOCKERHUB_TOKEN }}  # Ensure you set these secrets in your repo settings
     
     - name: Lowercase the repo name
-      run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+      run: echo "REPO=${GITHUB_REPOSITORY,,}" >> ${{ github.env }}
 
     - name: Create .env file
       run: echo "MISTRAL_API_KEY=${{ secrets.MISTRAL_API_KEY }}" > .env
@@ -58,4 +58,4 @@ jobs:
         DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Image digest
-      run: echo "Image Digest: ${{ steps.docker_build.outputs.digest }}" 
+      run: echo "Image Digest: ${{ steps.docker_build.outputs.digest }}"  # Output the image digest
