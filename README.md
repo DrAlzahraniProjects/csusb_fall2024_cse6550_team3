@@ -23,7 +23,7 @@ docker pull pavankunchala/team3-app:latest
      Execute the Docker container downloaded from pavankunchala/team3-app
 
 ```bash
-docker run -d -p 5003:5003 pavankunchala/team3-app
+docker run -p 5003:5003 pavankunchala/team3-app
 ```
 The application will be available at:  http://localhost:5003/team3
 
