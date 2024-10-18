@@ -20,6 +20,24 @@ docker run -p 5003:5003 ghcr.io/dralzahraniprojects/csusb_fall2024_cse6550_team3
 
 The application will be available at:  http://localhost:5003/team3
 
+## Running from Dockerhub
+1. Pull the repository from DockerHub
+   
+     Download the repository from DockerHub latest
+  
+``` bash
+docker pull pavankunchala/team3-app:latest
+```
+
+2. Run the Docker container
+
+     Execute the Docker container downloaded from pavankunchala/team3-app
+
+```bash
+docker run -d -p 5003:5003 pavankunchala/team3-app
+```
+The application will be available at:  http://localhost:5003/team3
+
 ## Developer Setup
 
 To get started, first clone the repository to your local machine:
