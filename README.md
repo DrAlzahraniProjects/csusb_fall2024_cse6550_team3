@@ -8,9 +8,10 @@ Before you begin, make sure you have the following installed on your machine:
 - **Docker**
 
 ## Setup
-1. Running from Dockerhub
+
+Running from Dockerhub
    
-   Pull the repository from DockerHub
+1. Pull the repository from DockerHub:
    
    Download the repository from    DockerHub latest
   
@@ -18,13 +19,15 @@ Before you begin, make sure you have the following installed on your machine:
 docker pull pavankunchala/team3-app:latest
 ```
 
-2. Run the Docker container
+2. Run the Docker container:
 
      Execute the Docker container downloaded from pavankunchala/team3-app
-
+   
 ```bash
-docker run -d -p 5003:5003 pavankunchala/team3-app
+docker run -p 5003:5003 pavankunchala/team3-app
 ```
+Wait for the terminal to display the following confirmation message before accessing the app: "You can now view your Streamlit app in your browser."
+
 The application will be available at:  http://localhost:5003/team3
 
 ## Developer Setup
