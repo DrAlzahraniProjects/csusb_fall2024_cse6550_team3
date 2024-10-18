@@ -38,26 +38,26 @@ def load_or_create_faiss_vector_store(
 	collection_name, 
 	persist_directory
 ):
-	"""
-	Load an existing FAISS vector store or create a new one if it doesn't exist.
-	Args:
-		documents: List of documents to be indexed.
-		collection_name (str): Name of the collection.
-		persist_directory (str): Directory to save/load the FAISS index.
-	Returns:
-		FAISS vector store object.
-	"""
-	index_path = os.path.join(persist_directory, f'{collection_name}_faiss_index')
-	if os.path.exists(index_path):
-		# Load existing FAISS index
-		print(f"Loading existing FAISS vector store from {index_path}...\n")
-		faiss_store = FAISS.load_local(index_path, embeddings=EMBEDDING_FUNCTION, allow_dangerous_deserialization=True)
-	else:
-		# Create new FAISS index
-		print(f"Creating new FAISS vector store in {index_path}...\n")
-		faiss_store = FAISS.from_documents(documents, embedding=EMBEDDING_FUNCTION)
-		faiss_store.save_local(index_path)
-	return faiss_store
+    """
+    Load an existing FAISS vector store or create a new one if it doesn't exist.
+    Args:
+        documents: List of documents to be indexed.
+        collection_name (str): Name of the collection.
+        persist_directory (str): Directory to save/load the FAISS index.
+    Returns:
+        FAISS vector store object.
+    """
+    index_path = os.path.join(persist_directory, f'{collection_name}_faiss_index')
+    if os.path.exists(index_path):
+        # Load existing FAISS index
+        print(f"Loading existing FAISS vector store from {index_path}...\n")
+        faiss_store = FAISS.load_local(index_path, embeddings=EMBEDDING_FUNCTION, allow_dangerous_deserialization=True)
+    else:
+        # Create new FAISS index
+        print(f"Creating new FAISS vector store in {index_path}...\n")
+        faiss_store = FAISS.from_documents(documents, embedding=EMBEDDING_FUNCTION)
+        faiss_store.save_local(index_path)
+    return faiss_store
 
 
 def get_hybrid_retriever(documents, vector_store, k):

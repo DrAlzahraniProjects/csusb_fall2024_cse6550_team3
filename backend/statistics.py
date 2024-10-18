@@ -1,5 +1,5 @@
-from datetime import datetime
 import time
+from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import (
@@ -15,7 +15,7 @@ from sqlalchemy import (
 )
 
 Base = declarative_base()
-engine = create_engine('sqlite:///team3.db', echo=True)
+engine = create_engine('sqlite:///team3.db', echo=False) # Set echo=True for debuggin
 Session = sessionmaker(bind=engine)
 
 class User(Base):

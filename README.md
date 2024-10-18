@@ -60,17 +60,27 @@ The application will be available at:  http://localhost:5003/team3
 ## Project Structure
 
 - `.github/workflows/docker-publish.yml`: Defines a GitHub Action workflow to automate Docker publishing
-- `Styles`: Contains CSS styling for Streamlit
-- `data/textbook`: The textbook PDF
-- `faiss_indexes`: Contains pre-built embeddings and metadata for the textbook
+- `app.py`: Main entry point for the application
+- `data`
+	- `default`: Contains textbook PDF and FAISS indexes
+		- `textbook` PDF
+		- `faiss_indexes`: Contains pre-built embeddings and metadata for the textbook
+- `backend`
+	- `document_loading.py`: Document loading, embedding creation and search logic
+	- `inference.py`: LLM inference and RAG logic
+	- `prompts.py`: Contains the prompt
+	- `citations.py`: Logic for getting sources for a response
+	- `statistics.py`: Database schema and querying
+- `frontend`
+	- `styles/`: Contains CSS styling for Streamlit
+	- `streamlit.py`: Main streamlit file
+	- `pdf.py`: PDF viewer
+- `jupyter`
+	- `Hello_world.ipynb`: Main Jupyter notebook file
 - `.env.template`: Template for what a .env file should look like
 - `.gitignore`: Specifies which files and directories should be ignored by Git
 - `Dockerfile`: Contains instructions to build the Docker image for the project
-- `Hello_world.ipynb`: Main Jupyter notebook file
 - `README.md`: Project documentation containing setup instructions and information about the project
-- `app.py`: Main entry point for the application
-- `document_loading.py`: Document loading, embedding creation and search logic
-- `inference.py`: LLM inference and RAG logic
 - `requirements.txt`: Lists Python package dependencies required for the project
 
 ---
