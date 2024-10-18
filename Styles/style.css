@@ -1,15 +1,31 @@
-div[data-testid="stVerticalBlock"] div:has(div.fixed-header) {
+/* Fix for sticky header */
+.fixed-header {
+    position: fixed; /* Ensure the header stays fixed at the top */
+    top: 0;
+    width: 100%; /* Span the entire width */
+    z-index: 1000; /* Keep it above other content */
+    background-color: #fff; /* Add background color to cover content behind */
+    padding: 1rem 0; /* Optional: add padding for better appearance */
+}
+
+/* Add padding to the top of the main content to accommodate the fixed header */
+.chat-container {
+    padding-top: 6rem; /* Adjust to match the height of the fixed header and title */
+    position: relative;
+}
+
+/* Title styling adjustments */
+.title-stat {
+    color: gray;
+    font-weight: bold;
+    font-size: 2rem !important;
     text-align: center;
-    position: sticky;
-    top: 2.875rem;
-    z-index: 999;
+    position: relative;
+    margin-top: 2rem; /* Add top margin to create space between the title and header */
+    z-index: 1000; /* Keep above other content */
 }
 
-a {
-    text-decoration: none !important;
-    color: inherit;
-}
-
+/* Style adjustments for user and assistant messages */
 .user-message {
     text-align: right;
     background-color: #f1f1f1;
@@ -20,6 +36,7 @@ a {
     max-width: 70%;
     display: inline-block;
     float: right;
+    clear: both; /* Clear floats to prevent overlap */
 }
 
 .assistant-message {
@@ -29,37 +46,27 @@ a {
     margin-bottom: 10px;
     width: 70%;
     float: left;
-    clear: both;
+    clear: both; /* Clear floats to prevent overlap */
 }
 
+/* Feedback button adjustments */
 .feedback-buttons {
     text-align: left;
-    margin: 5px 0;
-    padding: 0;
+    margin-top: 15px; /* Increase margin to avoid overlap */
     display: flex;
     gap: 8px;
-}
-
-.feedback-icon {
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 2px;
-    display: inline-block;
     position: relative;
+    z-index: 998; /* Ensure it's not on top of the header */
 }
 
-.title-stat{
-    color: gray;
-    font-weight: bold;
-    font-size: 2rem !important;
-    text-align: center;
-}
-
-.btn-stat-container{
+/* Button container adjustments */
+.btn-stat-container {
     display: flex;
     justify-content: center;
+    margin-top: 20px; /* Add margin for better spacing */
 }
 
+/* Styling for statistics button */
 .btn-stat {
     text-decoration: none;
     background-color: #0D1118;
@@ -79,4 +86,27 @@ a {
 .btn-stat:hover {
     background-color: #555555;
     color: white;
+}
+
+/* Additional clearfix to clear floats */
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+/* Ensure chat container has a clearfix */
+.chat-container.clearfix {
+    position: relative;
+    overflow: hidden; /* Prevent any overflow issues */
+}
+
+/* Prevent body from having horizontal overflow */
+body {
+    overflow-x: hidden;
+}
+
+/* Prevent content below the title from overlapping */
+.content-container {
+    margin-top: 3rem; /* Ensure there's enough space below the title */
 }
