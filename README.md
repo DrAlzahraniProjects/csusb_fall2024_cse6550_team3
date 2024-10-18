@@ -7,10 +7,12 @@ Before you begin, make sure you have the following installed on your machine:
 - **Git**
 - **Docker**
 
-## Running from Dockerhub
-1. Pull the repository from DockerHub
+## Setup
+1. Running from Dockerhub
    
-     Download the repository from DockerHub latest
+   Pull the repository from DockerHub
+   
+   Download the repository from    DockerHub latest
   
 ``` bash
 docker pull pavankunchala/team3-app:latest
