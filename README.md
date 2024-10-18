@@ -36,6 +36,7 @@ docker pull pavankunchala/team3-app:latest
 ```bash
 docker run -d -p 5003:5003 pavankunchala/team3-app
 ```
+The application will be available at:  http://localhost:5003/team3
 
 ## Developer Setup
 
