@@ -1,3 +1,45 @@
+/* Style for Daily/Overall Toggle Buttons */
+.radio-group {
+    display: flex;
+    justify-content: center;
+    background-color: #f0f0f5;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.radio-group label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+.radio-group input[type="radio"] {
+    display: none;
+}
+
+.radio-group input[type="radio"] + label:before {
+    content: ' ';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #007bff;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.radio-group input[type="radio"]:checked + label:before {
+    background-color: #007bff;
+}
+
+/* Hover effect for labels */
+.radio-group label:hover {
+    color: #007bff;
+}
+
+/* Existing CSS styles */
 div[data-testid="stVerticalBlock"] div:has(div.fixed-header) {
     text-align: center;
     position: sticky;
@@ -48,14 +90,14 @@ a {
     position: relative;
 }
 
-.title-stat{
+.title-stat {
     color: gray;
     font-weight: bold;
     font-size: 2rem !important;
     text-align: center;
 }
 
-.btn-stat-container{
+.btn-stat-container {
     display: flex;
     justify-content: center;
 }
