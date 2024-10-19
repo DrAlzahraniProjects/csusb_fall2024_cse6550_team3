@@ -18,9 +18,9 @@ def load_css():
     with open(css_file) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-def update_and_display_statistics():
-    """Updates statistics report in the left sidebar"""
-    stats = get_statistics()
+def update_and_display_statistics(stat_period):
+    """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
+    stats = get_statistics(stat_period)  # Use stat_period to fetch daily or overall stats
     st.session_state.statistics = stats
 
     statistics = [
@@ -74,7 +74,17 @@ def main():
         
         # Create sidebar
         st.sidebar.empty()
-        update_and_display_statistics()
+
+        # Add Daily/Overall toggle buttons
+        stat_period = st.radio(
+            "Select Statistics Period",
+            ('Daily', 'Overall'),
+            key="stats_period",
+            horizontal=True  # Ensures the buttons are in a horizontal layout
+        )
+
+        # Update and display statistics based on the selected period
+        update_and_display_statistics(stat_period)
 
         # load user/assistant messages and feedback icons when appropriate
         if "messages" not in st.session_state:
@@ -107,7 +117,7 @@ def main():
                     response += partial_response  # Accumulate partial responses
                     response_container.markdown(f"<div class='assistant-message'>{response}</div>", unsafe_allow_html=True)
                 end_time = time.time()
-                response_time = int((end_time - start_time)) # seconds
+                response_time = int((end_time - start_time))  # seconds
 
             # Add conversation to DB
             conversation_id = insert_conversation(
@@ -115,7 +125,7 @@ def main():
                 response=response,
                 citations="",
                 model_name=model_name,
-                response_time=response_time, # seconds
+                response_time=response_time,  # seconds
                 correct=None,  # No feedback by default
                 user_id=st.session_state.user_id,
                 common_topics=""
@@ -133,6 +143,9 @@ def main():
                 "conversation_id": conversation_id
             })
 
-            # # Update user session and rerun streamlit
+            # Update user session and rerun streamlit
             update_user_session(st.session_state.user_id)
             st.rerun()
+
+if __name__ == "__main__":
+    main()
