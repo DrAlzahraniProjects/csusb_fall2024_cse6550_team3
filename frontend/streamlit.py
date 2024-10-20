@@ -1,8 +1,6 @@
 import os
 import time
 import streamlit as st
-from .pdf import serve_pdf
-from backend.inference import chat_completion
 from backend.statistics import (
     init_user_session, 
     update_user_session, 
@@ -10,7 +8,9 @@ from backend.statistics import (
     get_statistics,
     toggle_correctness
 )
+from backend.inference import chat_completion
 from app import corpus_source
+from .pdf import serve_pdf
 
 def load_css():
     """Load CSS styles"""
@@ -21,9 +21,18 @@ def load_css():
 def update_and_display_statistics():
     """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
 
-    st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
-    
-    # Daily/Overall toggle buttons
+    # Add custom CSS to center the radio buttons
+    st.markdown("""
+        <style>
+        .radio-group {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # Daily/Overall toggle buttons with centered alignment
     stat_period = st.sidebar.radio(
         "",
         ('Daily', 'Overall'),
@@ -33,6 +42,7 @@ def update_and_display_statistics():
 
     stats = get_statistics(stat_period)
     st.session_state.statistics = stats
+
     statistics = [
         f"Number of questions: {stats['num_questions']}",
         f"Number of correct answers: {stats['num_correct']}",
@@ -41,18 +51,18 @@ def update_and_display_statistics():
         f"Response time analysis: {stats['avg_response_time']:.2f} seconds",
         f"Accuracy rate: {stats['accuracy_rate']:.2f}%",
         f"Satisfaction rate: {stats['satisfaction_rate']:.2f}%",
-        f"Common topics or keywords",
-        f"Improvement over time",
-        f"Feedback summary"
+        "Common topics or keywords",
+        "Improvement over time",
+        "Feedback summary"
     ]
 
+    st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
     for stat in statistics:
         st.sidebar.markdown(f"""
             <div class='btn-stat-container'>
                 <a href="#" class="btn-stat">{stat}</a>
             </div>
         """, unsafe_allow_html=True)
-
 
 def handle_feedback(conversation_id):
     """Handle feedback button click"""
@@ -85,7 +95,7 @@ def main():
         st.sidebar.empty()
         update_and_display_statistics()
 
-        # load user/assistant messages and feedback icons when appropriate
+        # Load user/assistant messages and feedback icons when appropriate
         if "messages" not in st.session_state:
             st.session_state.messages = []
         for message in st.session_state.messages:
