@@ -18,11 +18,21 @@ def load_css():
     with open(css_file) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-def update_and_display_statistics(stat_period):
+def update_and_display_statistics():
     """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
-    stats = get_statistics(stat_period)  # Use stat_period to fetch daily or overall stats
-    st.session_state.statistics = stats
 
+    st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
+    
+    # Daily/Overall toggle buttons
+    stat_period = st.sidebar.radio(
+        "",
+        ('Daily', 'Overall'),
+        key="stats_period",
+        horizontal=True
+    )
+
+    stats = get_statistics(stat_period)
+    st.session_state.statistics = stats
     statistics = [
         f"Number of questions: {stats['num_questions']}",
         f"Number of correct answers: {stats['num_correct']}",
@@ -33,17 +43,16 @@ def update_and_display_statistics(stat_period):
         f"Satisfaction rate: {stats['satisfaction_rate']:.2f}%",
         f"Common topics or keywords",
         f"Improvement over time",
-        f"Feedback summary",
-        f"Statistics per day and overall"
+        f"Feedback summary"
     ]
 
-    st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
     for stat in statistics:
         st.sidebar.markdown(f"""
             <div class='btn-stat-container'>
                 <a href="#" class="btn-stat">{stat}</a>
             </div>
         """, unsafe_allow_html=True)
+
 
 def handle_feedback(conversation_id):
     """Handle feedback button click"""
@@ -74,17 +83,7 @@ def main():
         
         # Create sidebar
         st.sidebar.empty()
-
-        # Add Daily/Overall toggle buttons
-        stat_period = st.radio(
-            "Select Statistics Period",
-            ('Daily', 'Overall'),
-            key="stats_period",
-            horizontal=True  # Ensures the buttons are in a horizontal layout
-        )
-
-        # Update and display statistics based on the selected period
-        update_and_display_statistics(stat_period)
+        update_and_display_statistics()
 
         # load user/assistant messages and feedback icons when appropriate
         if "messages" not in st.session_state:
@@ -146,6 +145,3 @@ def main():
             # Update user session and rerun streamlit
             update_user_session(st.session_state.user_id)
             st.rerun()
-
-if __name__ == "__main__":
-    main()
