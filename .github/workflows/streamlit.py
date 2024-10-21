@@ -36,7 +36,7 @@ def update_and_display_statistics():
     stats = get_statistics(stat_period)
     st.session_state.statistics = stats
 
-    # Define statistics fields as text (non-interactive)
+    # Define statistics fields as plain text (non-interactive)
     statistics = [
         f"Number of questions: {stats['num_questions']}",
         f"Number of correct answers: {stats['num_correct']}",
@@ -45,12 +45,12 @@ def update_and_display_statistics():
         f"Response time analysis: {stats['avg_response_time']:.2f} seconds",
         f"Accuracy rate: {stats['accuracy_rate']:.2f}%",
         f"Satisfaction rate: {stats['satisfaction_rate']:.2f}%",
-        "Common topics or keywords",
-        "Improvement over time",
-        "Feedback summary"
+        "Common topics or keywords",   # Placeholder for future stats
+        "Improvement over time",       # Placeholder for future stats
+        "Feedback summary"             # Placeholder for future stats
     ]
 
-    # Display statistics in sidebar as simple text
+    # Display each statistic as plain text
     for stat in statistics:
         st.sidebar.markdown(f"<div class='stat-display'>{stat}</div>", unsafe_allow_html=True)
 
@@ -145,3 +145,4 @@ def main():
             # Update user session and rerun streamlit
             update_user_session(st.session_state.user_id)
             st.rerun()
+
