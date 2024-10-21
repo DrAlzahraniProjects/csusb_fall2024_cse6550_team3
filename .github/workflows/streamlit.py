@@ -19,24 +19,17 @@ def load_css():
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 def update_and_display_statistics():
-    """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
-
-    st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
-
-    # Daily/Overall toggle for statistics period
-    stat_period = st.sidebar.radio(
-        "Statistics period (Daily or Overall)",
-        ('Daily', 'Overall'),
-        key="stats_period",
-        label_visibility="hidden",
-        horizontal=True
-    )
-
-    # Fetch statistics for the selected period (Daily or Overall)
+    """Updates statistics report and displays state toggle below the statistics."""
+    
+    # Title for the statistics section
+    st.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
+    
+    # Retrieve statistics based on default period (Daily)
+    stat_period = st.session_state.get('stats_period', 'Daily')
     stats = get_statistics(stat_period)
     st.session_state.statistics = stats
-
-    # Define statistics fields as plain text (non-interactive)
+    
+    # Display statistics in non-interactive boxes
     statistics = [
         f"Number of questions: {stats['num_questions']}",
         f"Number of correct answers: {stats['num_correct']}",
@@ -45,14 +38,32 @@ def update_and_display_statistics():
         f"Response time analysis: {stats['avg_response_time']:.2f} seconds",
         f"Accuracy rate: {stats['accuracy_rate']:.2f}%",
         f"Satisfaction rate: {stats['satisfaction_rate']:.2f}%",
-        "Common topics or keywords",   # Placeholder for future stats
-        "Improvement over time",       # Placeholder for future stats
-        "Feedback summary"             # Placeholder for future stats
+        "Common topics or keywords",
+        "Improvement over time",
+        "Feedback summary"
     ]
-
-    # Display each statistic as plain text
+    
+    # Display each statistic
     for stat in statistics:
-        st.sidebar.markdown(f"<div class='stat-display'>{stat}</div>", unsafe_allow_html=True)
+        st.markdown(f"""
+            <div class='btn-stat-container'>
+                <span class="btn-stat">{stat}</span>
+            </div>
+        """, unsafe_allow_html=True)
+
+    # State toggle buttons for switching between Daily and Overall, placed below the statistics
+    stat_period = st.radio(
+        "Statistics period (Daily or Overall)",
+        ('Daily', 'Overall'),
+        key="stats_period",
+        label_visibility="hidden",
+        horizontal=True
+    )
+    
+    # Re-fetch and update statistics when toggled
+    if stat_period:
+        stats = get_statistics(stat_period)
+        st.session_state.statistics = stats
 
 def handle_feedback(conversation_id):
     """Handle feedback button click"""
@@ -80,8 +91,8 @@ def main():
         if "user_id" not in st.session_state:
             st.session_state.user_id = init_user_session()
             print(f"Creating user#{st.session_state.user_id}")
-
-        # Create sidebar with statistics
+        
+        # Create sidebar
         st.sidebar.empty()
         update_and_display_statistics()
 
@@ -145,4 +156,3 @@ def main():
             # Update user session and rerun streamlit
             update_user_session(st.session_state.user_id)
             st.rerun()
-
