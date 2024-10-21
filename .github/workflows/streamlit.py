@@ -20,10 +20,10 @@ def load_css():
 
 def update_and_display_statistics():
     """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
-    
+
     st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
-    
-    # Daily/Overall toggle buttons with centered alignment
+
+    # Daily/Overall toggle for statistics period
     stat_period = st.sidebar.radio(
         "Statistics period (Daily or Overall)",
         ('Daily', 'Overall'),
@@ -31,12 +31,12 @@ def update_and_display_statistics():
         label_visibility="hidden",
         horizontal=True
     )
-    
-    # Retrieve statistics based on selected period
+
+    # Fetch statistics for the selected period (Daily or Overall)
     stats = get_statistics(stat_period)
     st.session_state.statistics = stats
-    
-    # List of statistics to display
+
+    # Define statistics fields as text (non-interactive)
     statistics = [
         f"Number of questions: {stats['num_questions']}",
         f"Number of correct answers: {stats['num_correct']}",
@@ -49,8 +49,8 @@ def update_and_display_statistics():
         "Improvement over time",
         "Feedback summary"
     ]
-    
-    # Display each stat as simple text in the sidebar
+
+    # Display statistics in sidebar as simple text
     for stat in statistics:
         st.sidebar.markdown(f"<div class='stat-display'>{stat}</div>", unsafe_allow_html=True)
 
@@ -80,7 +80,7 @@ def main():
         if "user_id" not in st.session_state:
             st.session_state.user_id = init_user_session()
             print(f"Creating user#{st.session_state.user_id}")
-        
+
         # Create sidebar with statistics
         st.sidebar.empty()
         update_and_display_statistics()
