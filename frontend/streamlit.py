@@ -1,17 +1,24 @@
 import os
 import time
 import streamlit as st
+from .pdf import serve_pdf
+from backend.inference import chat_completion
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, Boolean, ForeignKey, func
 from backend.statistics import (
     init_user_session, 
     update_user_session, 
     insert_conversation, 
     get_statistics,
-    toggle_correctness
+    toggle_correctness,
+    extract_common_topics,
+    extract_keywords_yake  # Ensure this is imported
 )
-from backend.inference import chat_completion
 from app import corpus_source
-from .pdf import serve_pdf
-
+Base = declarative_base()
+engine = create_engine('sqlite:///team3.db', echo=False)
+Session = sessionmaker(bind=engine)
 def load_css():
     """Load CSS styles"""
     css_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "styles", "style.css")
@@ -19,19 +26,10 @@ def load_css():
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 def update_and_display_statistics():
-    """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
-    
-    st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
-    # Daily/Overall toggle buttons with centered alignment
-    stat_period = st.sidebar.radio(
-        "Statistics period (Daily or Overall)",
-        ('Daily', 'Overall'),
-        key="stats_period",
-        label_visibility="hidden",
-        horizontal=True
-    )
-    stats = get_statistics(stat_period)
+    """Updates statistics report in the left sidebar"""
+    stats = get_statistics()
     st.session_state.statistics = stats
+
     statistics = [
         f"Number of questions: {stats['num_questions']}",
         f"Number of correct answers: {stats['num_correct']}",
@@ -40,14 +38,17 @@ def update_and_display_statistics():
         f"Response time analysis: {stats['avg_response_time']:.2f} seconds",
         f"Accuracy rate: {stats['accuracy_rate']:.2f}%",
         f"Satisfaction rate: {stats['satisfaction_rate']:.2f}%",
-        "Common topics or keywords",
-        "Improvement over time",
-        "Feedback summary"
+        f"Common topics or keywords: {stats['common_topics']}",  # Updated line
+        f"Improvement over time",
+        f"Feedback summary",
+        f"Statistics per day and overall"
     ]
+
+    st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
     for stat in statistics:
         st.sidebar.markdown(f"""
             <div class='btn-stat-container'>
-                <span class="btn-stat">{stat}</span>
+                <a href="#" class="btn-stat">{stat}</a>
             </div>
         """, unsafe_allow_html=True)
 
@@ -115,7 +116,12 @@ def main():
                 end_time = time.time()
                 response_time = int((end_time - start_time))  # seconds
 
-            # Add conversation to DB
+            with Session() as session:
+                conversation_texts = [prompt + " " + response]  # Combine prompt and response
+                keywords = extract_keywords_yake(conversation_texts)  # Correct usage
+                print(f"Extracted Keywords: {keywords}")  # Debugging line
+
+
             conversation_id = insert_conversation(
                 question=prompt,
                 response=response,
@@ -124,7 +130,7 @@ def main():
                 response_time=response_time,  # seconds
                 correct=None,  # No feedback by default
                 user_id=st.session_state.user_id,
-                common_topics=""
+                common_topics=keywords  # Ensure keywords are added
             )
 
             # Add conversation to streamlit session state
@@ -141,4 +147,9 @@ def main():
 
             # Update user session and rerun streamlit
             update_user_session(st.session_state.user_id)
+            update_and_display_statistics()  # Call to refresh sidebar
             st.rerun()
+
+# Run the app
+if __name__ == "__main__":
+    main()
