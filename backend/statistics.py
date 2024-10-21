@@ -1,16 +1,28 @@
 import time
-import yake
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, Boolean, ForeignKey, func
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sqlalchemy import (
+    create_engine, 
+    Column, 
+    Integer, 
+    String, 
+    Text, 
+    DateTime, 
+    Boolean, 
+    ForeignKey, 
+    func,
+    and_
+)
 from collections import Counter
 
 Base = declarative_base()
 engine = create_engine('sqlite:///team3.db', echo=False)
 Session = sessionmaker(bind=engine)
 
+###################
+# DATABASE SCHEMA #
+###################
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
@@ -29,6 +41,10 @@ class Conversation(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
     common_topics = Column(Text)
     date = Column(DateTime(timezone=True), default=datetime.utcnow)
+
+##################################
+# DATABASE INIT, INSERT, UPDATE #
+##################################
 
 def init_db():
     """Initialize the database and create all tables."""
@@ -72,59 +88,6 @@ def insert_conversation(question, response, citations, model_name, response_time
         session.commit()
         return new_conversation.id
 
-def get_statistics():
-    """Retrieve various statistics from the database."""
-    with Session() as session:
-        stats = {}
-        stats['num_questions'] = session.query(Conversation).count()
-        stats['num_correct'] = session.query(Conversation).filter(Conversation.correct == True).count()
-        stats['num_incorrect'] = session.query(Conversation).filter(Conversation.correct == False).count()
-        stats['user_engagement'] = session.query(func.avg(User.session_length)).scalar() or 0
-        stats['avg_response_time'] = session.query(func.avg(Conversation.response_time)).scalar() or 0
-        
-        total_feedback = stats['num_correct'] + stats['num_incorrect']
-        stats['accuracy_rate'] = (stats['num_correct'] / total_feedback * 100) if total_feedback > 0 else 0
-        stats['satisfaction_rate'] = (stats['num_correct'] / total_feedback * 100) if total_feedback > 0 else 0
-        conversation_texts = [conv.question + " " + conv.response for conv in session.query(Conversation).all()]
-
-        # Combine common topics and keywords extraction
-        stats['common_topics'] = extract_keywords_yake(conversation_texts)
-        #stats['extracted_keywords'] = extract_keywords_tfidf(session)  # Pass session for context
-
-        print(f"Statistics: {stats}")
-        return stats
-
-def extract_keywords_yake(texts, max_keywords=5):
-    """Extract top N keywords using YAKE."""
-    # Create a YAKE extractor
-    extractor = yake.KeywordExtractor(lan="en", n=1, top=max_keywords, features=None)
-    
-    # Extract keywords for each text
-    keywords = set()  # Use a set to avoid duplicates
-    for text in texts:
-        keywords.update(dict(extractor.extract_keywords(text)).keys())
-    
-    return ", ".join(list(keywords))  # Return the top N keywords as a string
-
-
-def extract_common_topics(session=None):
-    """Extract common topics from the conversation data in the database."""
-    all_topics = []
-    
-    if session is None:
-        session = Session()  # Create a new session if none is passed
-
-    for conv in session.query(Conversation).all():
-        if conv.common_topics:
-            all_topics.extend(conv.common_topics.split(", "))  # Assuming comma-separated topics
-
-    if all_topics:
-        common_topic_counts = Counter(all_topics)
-        most_common_topics = common_topic_counts.most_common(5)  # Get top 5 common topics
-        return ", ".join([topic for topic, _ in most_common_topics])
-    else:
-        return "No common topics found."
-
 def toggle_correctness(conversation_id, value):
     """Toggle the correctness status of a conversation."""
     print(f"Toggling correctness for chat#{conversation_id}, Value = {value}")
@@ -133,3 +96,60 @@ def toggle_correctness(conversation_id, value):
         if conversation:
             conversation.correct = value
             session.commit()
+
+####################
+# DATABASE QUERIES #
+####################
+
+def query_common_topics(session, top_k, date_filter):
+    """Query common topics from the database."""
+    query = session.query(Conversation).filter(date_filter)
+
+    all_topics = []
+    for conv in query.all():
+        if conv.common_topics:
+            all_topics.extend(conv.common_topics.split(", "))  # Assuming comma-separated topics
+
+    if not all_topics:
+        return "No common topics found."
+    
+    common_topic_counts = Counter(all_topics)
+    most_common_topics = common_topic_counts.most_common(top_k)
+    return ", ".join([topic for topic, _ in most_common_topics])
+        
+def get_statistics(period="Daily"):
+    """Retrieve various statistics from the database."""
+    with Session() as session:
+        stats = {}
+        date_filter = True # if period == "overall"
+        if period == "Daily":
+            today = datetime.utcnow().date() # This is in UTC time not PST
+            start_of_day = datetime(today.year, today.month, today.day)
+            end_of_day = start_of_day + timedelta(days=1)
+            date_filter = and_(Conversation.date >= start_of_day, Conversation.date < end_of_day)
+
+        # Retrieve base metrics
+        base_query = session.query(Conversation).filter(date_filter)
+        stats = {
+            'num_questions': base_query.count(),
+            'num_correct': base_query.filter(Conversation.correct == True).count(),
+            'num_incorrect': base_query.filter(Conversation.correct == False).count(),
+            'avg_response_time': (base_query.with_entities(
+                func.avg(Conversation.response_time)).scalar() or 0)
+        }
+
+        # Calculate user engagement
+        user_query = session.query(func.avg(User.session_length))
+        if period == 'Daily':
+            user_query = user_query.filter(User.time_logged_in >= start_of_day)
+        stats['user_engagement'] = user_query.scalar() or 0
+
+        # Calculate Remaining metrics
+        total_feedback = stats['num_correct'] + stats['num_incorrect']
+        feedback_rate = (stats['num_correct'] / total_feedback * 100) if total_feedback > 0 else 0
+        stats.update({
+            'accuracy_rate': feedback_rate,
+            'satisfaction_rate': feedback_rate,
+            'common_topics': query_common_topics(session, 5, date_filter)
+        })
+        return stats

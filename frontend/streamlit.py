@@ -1,24 +1,17 @@
 import os
 import time
 import streamlit as st
-from .pdf import serve_pdf
-from backend.inference import chat_completion
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, Boolean, ForeignKey, func
+import yake
 from backend.statistics import (
     init_user_session, 
     update_user_session, 
     insert_conversation, 
     get_statistics,
-    toggle_correctness,
-    extract_common_topics,
-    extract_keywords_yake  # Ensure this is imported
+    toggle_correctness
 )
-from app import corpus_source
-Base = declarative_base()
-engine = create_engine('sqlite:///team3.db', echo=False)
-Session = sessionmaker(bind=engine)
+from backend.inference import chat_completion
+from .pdf import serve_pdf
+
 def load_css():
     """Load CSS styles"""
     css_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "styles", "style.css")
@@ -26,10 +19,19 @@ def load_css():
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 def update_and_display_statistics():
-    """Updates statistics report in the left sidebar"""
-    stats = get_statistics()
+    """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
+    
+    st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
+    # Daily/Overall toggle buttons with centered alignment
+    stat_period = st.sidebar.radio(
+        "Statistics period (Daily or Overall)",
+        ('Daily', 'Overall'),
+        key="stats_period",
+        label_visibility="hidden",
+        horizontal=True
+    )
+    stats = get_statistics(stat_period)
     st.session_state.statistics = stats
-
     statistics = [
         f"Number of questions: {stats['num_questions']}",
         f"Number of correct answers: {stats['num_correct']}",
@@ -38,17 +40,14 @@ def update_and_display_statistics():
         f"Response time analysis: {stats['avg_response_time']:.2f} seconds",
         f"Accuracy rate: {stats['accuracy_rate']:.2f}%",
         f"Satisfaction rate: {stats['satisfaction_rate']:.2f}%",
-        f"Common topics or keywords: {stats['common_topics']}",  # Updated line
+        f"Common topics or keywords: {stats['common_topics']}",
         f"Improvement over time",
-        f"Feedback summary",
-        f"Statistics per day and overall"
+        f"Feedback summary"
     ]
-
-    st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
     for stat in statistics:
         st.sidebar.markdown(f"""
             <div class='btn-stat-container'>
-                <a href="#" class="btn-stat">{stat}</a>
+                <span class="btn-stat">{stat}</span>
             </div>
         """, unsafe_allow_html=True)
 
@@ -59,8 +58,26 @@ def handle_feedback(conversation_id):
         toggle_correctness(conversation_id, feedback_value == 1)
         update_user_session(st.session_state.user_id)
 
+def extract_keywords(texts):
+    """Extract top N keywords from text using YAKE"""
+    # Create a YAKE extractor
+    extractor = yake.KeywordExtractor(lan="en", n=1, features=None)
+    ignore_words = {
+        'pdf', 'education', 'engineering', 'software', 'practitioner', 'bruce', 'file', 'maxim', 'roger', 'view',
+        'details', 'level', 'target', 'blank', 'page', 'href', 'pressman', 'detail', 'system', 'systems'
+    }
+    # Extract keywords for each text
+    keywords = set()  # Use a set to avoid duplicates
+    for text in texts:
+        extracted = dict(extractor.extract_keywords(text)).keys()
+        # Convert extracted keywords to lowercase before filtering
+        filtered_keywords = {word.lower() for word in extracted if word.lower() not in ignore_words}
+        keywords.update(filtered_keywords)
+    return ", ".join(list(keywords))
+
+
 def main():
-    """Main Streamlit app logic."""
+    """Main Streamlit app logic"""
     # Create the title
     header = st.container()
     header.title("Textbook Chatbot")
@@ -116,18 +133,18 @@ def main():
                 end_time = time.time()
                 response_time = int((end_time - start_time))  # seconds
 
-            with Session() as session:
+                # Extract keywords from the prompt and response
                 conversation_texts = [prompt + " " + response]  # Combine prompt and response
-                keywords = extract_keywords_yake(conversation_texts)  # Correct usage
-                print(f"Extracted Keywords: {keywords}")  # Debugging line
+                keywords = extract_keywords(conversation_texts)
+                print(f"Extracted Keywords: {keywords}")
 
-
+            # Insert conversation to database
             conversation_id = insert_conversation(
                 question=prompt,
                 response=response,
                 citations="",
                 model_name=model_name,
-                response_time=response_time,  # seconds
+                response_time=response_time, # seconds
                 correct=None,  # No feedback by default
                 user_id=st.session_state.user_id,
                 common_topics=keywords  # Ensure keywords are added
@@ -147,9 +164,4 @@ def main():
 
             # Update user session and rerun streamlit
             update_user_session(st.session_state.user_id)
-            update_and_display_statistics()  # Call to refresh sidebar
             st.rerun()
-
-# Run the app
-if __name__ == "__main__":
-    main()
