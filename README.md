@@ -24,7 +24,7 @@ docker pull pavankunchala/team3-app:latest
      Execute the Docker container downloaded from pavankunchala/team3-app
    
 ```bash
-docker run -p 5003:5003 pavankunchala/team3-app
+docker run -d -p 5003:5003 pavankunchala/team3-app
 ```
 Wait for the terminal to display the following confirmation message before accessing the app: "You can now view your Streamlit app in your browser."
 
