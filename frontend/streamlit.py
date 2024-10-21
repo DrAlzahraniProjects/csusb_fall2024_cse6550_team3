@@ -20,29 +20,18 @@ def load_css():
 
 def update_and_display_statistics():
     """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
-
-    # Add custom CSS to center the radio buttons
-    st.markdown("""
-        <style>
-        .radio-group {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
+    
+    st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
     # Daily/Overall toggle buttons with centered alignment
     stat_period = st.sidebar.radio(
-        "",
+        "Statistics period (Daily or Overall)",
         ('Daily', 'Overall'),
         key="stats_period",
+        label_visibility="hidden",
         horizontal=True
     )
-
     stats = get_statistics(stat_period)
     st.session_state.statistics = stats
-
     statistics = [
         f"Number of questions: {stats['num_questions']}",
         f"Number of correct answers: {stats['num_correct']}",
@@ -55,12 +44,10 @@ def update_and_display_statistics():
         "Improvement over time",
         "Feedback summary"
     ]
-
-    st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
     for stat in statistics:
         st.sidebar.markdown(f"""
             <div class='btn-stat-container'>
-                <a href="#" class="btn-stat">{stat}</a>
+                <span class="btn-stat">{stat}</span>
             </div>
         """, unsafe_allow_html=True)
 
