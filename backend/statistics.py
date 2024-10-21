@@ -1,5 +1,5 @@
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import (
@@ -11,7 +11,8 @@ from sqlalchemy import (
     DateTime, 
     Boolean, 
     ForeignKey, 
-    func
+    func,
+    and_
 )
 
 Base = declarative_base()
@@ -86,19 +87,29 @@ def insert_conversation(
         session.commit()
         return new_conversation.id
 
-def get_statistics():
+def get_statistics(period="Daily"):
     with Session() as session:
         stats = {}
-        stats['num_questions'] = session.query(Conversation).count()
-        stats['num_correct'] = session.query(Conversation).filter(Conversation.correct == True).count()
-        stats['num_incorrect'] = session.query(Conversation).filter(Conversation.correct == False).count()
-        stats['user_engagement'] = session.query(func.avg(User.session_length)).scalar() or 0
-        stats['avg_response_time'] = session.query(func.avg(Conversation.response_time)).scalar() or 0
+        date_filter = True # if period == "overall"
+        if period == "Daily":
+            today = datetime.utcnow().date() # This is in UTC time not PST
+            start_of_day = datetime(today.year, today.month, today.day)
+            end_of_day = start_of_day + timedelta(days=1)
+            date_filter = and_(Conversation.date >= start_of_day, Conversation.date < end_of_day)
+
+        stats['num_questions'] = session.query(Conversation).filter(date_filter).count()
+        stats['num_correct'] = session.query(Conversation).filter(and_(Conversation.correct == True, date_filter)).count()
+        stats['num_incorrect'] = session.query(Conversation).filter(and_(Conversation.correct == False, date_filter)).count()
+
+        if period == 'Daily':
+            stats['user_engagement'] = session.query(func.avg(User.session_length)).filter(User.time_logged_in >= start_of_day).scalar() or 0
+        else:
+            stats['user_engagement'] = session.query(func.avg(User.session_length)).scalar() or 0
         
+        stats['avg_response_time'] = session.query(func.avg(Conversation.response_time)).filter(date_filter).scalar() or 0
         total_feedback = stats['num_correct'] + stats['num_incorrect']
         stats['accuracy_rate'] = (stats['num_correct'] / total_feedback * 100) if total_feedback > 0 else 0
         stats['satisfaction_rate'] = (stats['num_correct'] / total_feedback * 100) if total_feedback > 0 else 0
-
         return stats
 
 def toggle_correctness(conversation_id, value):

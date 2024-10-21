@@ -1,8 +1,6 @@
 import os
 import time
 import streamlit as st
-from .pdf import serve_pdf
-from backend.inference import chat_completion
 from backend.statistics import (
     init_user_session, 
     update_user_session, 
@@ -10,7 +8,9 @@ from backend.statistics import (
     get_statistics,
     toggle_correctness
 )
+from backend.inference import chat_completion
 from app import corpus_source
+from .pdf import serve_pdf
 
 def load_css():
     """Load CSS styles"""
@@ -19,10 +19,19 @@ def load_css():
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 def update_and_display_statistics():
-    """Updates statistics report in the left sidebar"""
-    stats = get_statistics()
+    """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
+    
+    st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
+    # Daily/Overall toggle buttons with centered alignment
+    stat_period = st.sidebar.radio(
+        "Statistics period (Daily or Overall)",
+        ('Daily', 'Overall'),
+        key="stats_period",
+        label_visibility="hidden",
+        horizontal=True
+    )
+    stats = get_statistics(stat_period)
     st.session_state.statistics = stats
-
     statistics = [
         f"Number of questions: {stats['num_questions']}",
         f"Number of correct answers: {stats['num_correct']}",
@@ -31,17 +40,14 @@ def update_and_display_statistics():
         f"Response time analysis: {stats['avg_response_time']:.2f} seconds",
         f"Accuracy rate: {stats['accuracy_rate']:.2f}%",
         f"Satisfaction rate: {stats['satisfaction_rate']:.2f}%",
-        f"Common topics or keywords",
-        f"Improvement over time",
-        f"Feedback summary",
-        f"Statistics per day and overall"
+        "Common topics or keywords",
+        "Improvement over time",
+        "Feedback summary"
     ]
-
-    st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
     for stat in statistics:
         st.sidebar.markdown(f"""
             <div class='btn-stat-container'>
-                <a href="#" class="btn-stat">{stat}</a>
+                <span class="btn-stat">{stat}</span>
             </div>
         """, unsafe_allow_html=True)
 
@@ -76,7 +82,7 @@ def main():
         st.sidebar.empty()
         update_and_display_statistics()
 
-        # load user/assistant messages and feedback icons when appropriate
+        # Load user/assistant messages and feedback icons when appropriate
         if "messages" not in st.session_state:
             st.session_state.messages = []
         for message in st.session_state.messages:
@@ -107,7 +113,7 @@ def main():
                     response += partial_response  # Accumulate partial responses
                     response_container.markdown(f"<div class='assistant-message'>{response}</div>", unsafe_allow_html=True)
                 end_time = time.time()
-                response_time = int((end_time - start_time)) # seconds
+                response_time = int((end_time - start_time))  # seconds
 
             # Add conversation to DB
             conversation_id = insert_conversation(
@@ -115,7 +121,7 @@ def main():
                 response=response,
                 citations="",
                 model_name=model_name,
-                response_time=response_time, # seconds
+                response_time=response_time,  # seconds
                 correct=None,  # No feedback by default
                 user_id=st.session_state.user_id,
                 common_topics=""
@@ -133,6 +139,6 @@ def main():
                 "conversation_id": conversation_id
             })
 
-            # # Update user session and rerun streamlit
+            # Update user session and rerun streamlit
             update_user_session(st.session_state.user_id)
             st.rerun()
