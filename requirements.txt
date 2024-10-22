@@ -13,4 +13,3 @@ streamlit
 sentence-transformers
 sqlalchemy
 tiktoken
-yake

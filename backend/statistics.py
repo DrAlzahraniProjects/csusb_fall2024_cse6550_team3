@@ -14,10 +14,11 @@ from sqlalchemy import (
     func,
     and_
 )
+
 from collections import Counter
 
 Base = declarative_base()
-engine = create_engine('sqlite:///team3.db', echo=False)
+engine = create_engine('sqlite:///team3.db', echo=False) # Set echo=True for debuggin
 Session = sessionmaker(bind=engine)
 
 ###################
@@ -25,19 +26,21 @@ Session = sessionmaker(bind=engine)
 ###################
 class User(Base):
     __tablename__ = 'users'
+
     id = Column(Integer, primary_key=True)
     time_logged_in = Column(DateTime(timezone=True), default=datetime.utcnow)
     session_length = Column(Integer)
 
 class Conversation(Base):
     __tablename__ = 'conversations'
+
     id = Column(Integer, primary_key=True)
     question = Column(Text)
     response = Column(Text)
     citations = Column(Text)
     model_name = Column(String(255))
     response_time = Column(Integer)
-    correct = Column(Boolean, nullable=True)
+    correct = Column(Boolean, nullable=True)  
     user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
     common_topics = Column(Text)
     date = Column(DateTime(timezone=True), default=datetime.utcnow)
@@ -47,12 +50,10 @@ class Conversation(Base):
 ##################################
 
 def init_db():
-    """Initialize the database and create all tables."""
     print("Initializing database...")
     Base.metadata.create_all(engine)
 
 def init_user_session():
-    """Initialize a new user session and return the user ID."""
     print("Initializing user session...")
     with Session() as session:
         new_user = User(session_length=0)
@@ -61,7 +62,6 @@ def init_user_session():
         return new_user.id
 
 def update_user_session(user_id):
-    """Update the session length for a user."""
     print("Updating user session...")
     with Session() as session:
         user = session.query(User).filter_by(id=user_id).first()
@@ -70,8 +70,16 @@ def update_user_session(user_id):
             user.session_length = current_time - int(user.time_logged_in.timestamp())
             session.commit()
 
-def insert_conversation(question, response, citations, model_name, response_time, user_id, correct=None, common_topics=""):
-    """Insert a new conversation record into the database."""
+def insert_conversation(
+    question, 
+    response, 
+    citations,
+    model_name,
+    response_time, 
+    user_id,
+    correct=None,  
+    common_topics=""
+):
     print("Inserting new conversation...")
     with Session() as session:
         new_conversation = Conversation(
@@ -80,7 +88,7 @@ def insert_conversation(question, response, citations, model_name, response_time
             citations=citations,
             model_name=model_name,
             response_time=response_time,
-            correct=correct,
+            correct=correct, 
             user_id=user_id,
             common_topics=common_topics
         )
