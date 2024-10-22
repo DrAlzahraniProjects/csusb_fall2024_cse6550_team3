@@ -1,4 +1,4 @@
-/* Sticky header with center alignment */
+/* General layout adjustments */
 div[data-testid="stVerticalBlock"] div:has(div.fixed-header) {
     text-align: center;
     position: sticky;
@@ -6,93 +6,98 @@ div[data-testid="stVerticalBlock"] div:has(div.fixed-header) {
     z-index: 999;
 }
 
-/* Link styles */
 a {
     text-decoration: none !important;
-    color: inherit; /* Ensure links match parent color */
+    color: inherit;
 }
 
-/* User message styles */
+p {
+    margin: 0px;
+}
+
+/* User message styling (right-aligned) */
 .user-message {
-    text-align: right; /* Align user messages to the right */
-    background-color: #f1f1f1; /* Light gray background for user messages */
-    color: black; /* Black text color */
-    padding: 10px; /* Padding around the message */
-    border-radius: 10px; /* Rounded corners */
-    margin-bottom: 10px; /* Space below the message */
-    max-width: 70%; /* Limit the message width */
-    display: inline-block; /* Allow the message to fit its content */
-    float: right; /* Float to the right side */
+    text-align: right;
+    background-color: #f1f1f1;
+    color: black;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    max-width: 70%;
+    display: inline-block;
+    float: right;
 }
 
-/* Assistant message styles */
+/* Assistant message styling (left-aligned) */
 .assistant-message {
-    text-align: left; /* Align assistant messages to the left */
-    padding: 10px; /* Padding around the message */
-    border-radius: 10px; /* Rounded corners */
-    margin-bottom: 10px; /* Space below the message */
-    width: 70%; /* Limit the message width */
-    float: left; /* Float to the left side */
-    clear: both; /* Clear floats to avoid overlap */
+    text-align: left;
+    background-color: #e0f7fa;
+    color: black;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    max-width: 70%;
+    display: inline-block;
+    float: left;
+    clear: both;
 }
 
-/* Feedback button styles */
+/* Keep assistant messages clean */
+.assistant-message p {
+    margin: 0px;
+}
+
+/* Feedback buttons */
 .feedback-buttons {
-    text-align: left; /* Align feedback buttons to the left */
-    margin: 5px 0; /* Space around the feedback buttons */
-    padding: 0; /* No padding */
-    display: flex; /* Use flexbox for layout */
-    gap: 8px; /* Space between feedback buttons */
+    text-align: left;
+    margin: 5px 0;
+    padding: 0;
+    display: flex;
+    gap: 8px;
 }
 
-/* Feedback icon styles */
 .feedback-icon {
-    cursor: pointer; /* Pointer cursor on hover */
-    font-size: 1rem; /* Font size for the icons */
-    padding: 2px; /* Space around the icon */
-    display: inline-block; /* Block for proper alignment */
-    position: relative; /* Positioning context for feedback icons */
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 2px;
+    display: inline-block;
+    position: relative;
 }
 
-/* Statistics title styles */
+/* Statistics title styling */
 .title-stat {
-    color: gray; /* Gray color for the title */
-    font-weight: bold; /* Bold text */
-    font-size: 2rem !important; /* Large font size */
-    text-align: center; /* Centered title */
+    color: gray;
+    font-weight: bold;
+    font-size: 2rem !important;
+    text-align: center;
 }
 
-/* Button container styles for statistics */
-.btn-stat-container {
-    display: flex; /* Use flexbox for layout */
-    justify-content: center; /* Center the buttons */
+/* Remove button container, now plain text for statistics */
+.stat-item {
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 0;
+    color: #333;
+    text-align: left;
 }
 
-/* Button styles for statistics */
-.btn-stat {
-    text-decoration: none; /* No underline */
-    background-color: #0D1118; /* Dark background for buttons */
-    color: white !important; /* White text color */
-    border: none; /* No border */
-    padding: 10px 20px; /* Padding around buttons */
-    text-align: left; /* Align text to the left */
-    display: inline-block; /* Block for proper layout */
-    font-size: 16px; /* Font size for button text */
-    margin: 4px 2px; /* Space between buttons */
-    cursor: pointer; /* Pointer cursor on hover */
-    border-radius: 8px; /* Rounded corners */
-    width: 260px; /* Fixed width for buttons */
-    align-self: center !important; /* Center within the container */
-}
-
-/* Button hover effect */
-.btn-stat:hover {
-    background-color: #555555; /* Change background on hover */
-    color: white; /* Ensure text remains white */
-}
-
-/* Centering radio button group */
+/* Retain toggle radio button styling */
 .stRadio > div[role="radiogroup"] {
-    display: flex; /* Use flexbox for layout */
-    justify-content: center; /* Center the radio buttons */
+    display: flex;
+    justify-content: center;
+}
+
+/* Remove button styles, unnecessary */
+.btn-stat-container {
+    display: none;
+}
+
+.btn-stat {
+    display: none;
+}
+
+/* Hover state removed for buttons */
+.btn-stat:hover {
+    background-color: inherit;
+    color: inherit;
 }

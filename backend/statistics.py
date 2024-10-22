@@ -15,10 +15,15 @@ from sqlalchemy import (
     and_
 )
 
+from collections import Counter
+
 Base = declarative_base()
 engine = create_engine('sqlite:///team3.db', echo=False) # Set echo=True for debuggin
 Session = sessionmaker(bind=engine)
 
+###################
+# DATABASE SCHEMA #
+###################
 class User(Base):
     __tablename__ = 'users'
 
@@ -39,6 +44,10 @@ class Conversation(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
     common_topics = Column(Text)
     date = Column(DateTime(timezone=True), default=datetime.utcnow)
+
+##################################
+# DATABASE INIT, INSERT, UPDATE #
+##################################
 
 def init_db():
     print("Initializing database...")
@@ -87,7 +96,37 @@ def insert_conversation(
         session.commit()
         return new_conversation.id
 
+def toggle_correctness(conversation_id, value):
+    """Toggle the correctness status of a conversation."""
+    print(f"Toggling correctness for chat#{conversation_id}, Value = {value}")
+    with Session() as session:
+        conversation = session.query(Conversation).filter_by(id=conversation_id).first()
+        if conversation:
+            conversation.correct = value
+            session.commit()
+
+####################
+# DATABASE QUERIES #
+####################
+
+def query_common_topics(session, top_k, date_filter):
+    """Query common topics from the database."""
+    query = session.query(Conversation).filter(date_filter)
+
+    all_topics = []
+    for conv in query.all():
+        if conv.common_topics:
+            all_topics.extend(conv.common_topics.split(", "))  # Assuming comma-separated topics
+
+    if not all_topics:
+        return "No common topics found."
+    
+    common_topic_counts = Counter(all_topics)
+    most_common_topics = common_topic_counts.most_common(top_k)
+    return ", ".join([topic for topic, _ in most_common_topics])
+        
 def get_statistics(period="Daily"):
+    """Retrieve various statistics from the database."""
     with Session() as session:
         stats = {}
         date_filter = True # if period == "overall"
@@ -97,25 +136,28 @@ def get_statistics(period="Daily"):
             end_of_day = start_of_day + timedelta(days=1)
             date_filter = and_(Conversation.date >= start_of_day, Conversation.date < end_of_day)
 
-        stats['num_questions'] = session.query(Conversation).filter(date_filter).count()
-        stats['num_correct'] = session.query(Conversation).filter(and_(Conversation.correct == True, date_filter)).count()
-        stats['num_incorrect'] = session.query(Conversation).filter(and_(Conversation.correct == False, date_filter)).count()
+        # Retrieve base metrics
+        base_query = session.query(Conversation).filter(date_filter)
+        stats = {
+            'num_questions': base_query.count(),
+            'num_correct': base_query.filter(Conversation.correct == True).count(),
+            'num_incorrect': base_query.filter(Conversation.correct == False).count(),
+            'avg_response_time': (base_query.with_entities(
+                func.avg(Conversation.response_time)).scalar() or 0)
+        }
 
+        # Calculate user engagement
+        user_query = session.query(func.avg(User.session_length))
         if period == 'Daily':
-            stats['user_engagement'] = session.query(func.avg(User.session_length)).filter(User.time_logged_in >= start_of_day).scalar() or 0
-        else:
-            stats['user_engagement'] = session.query(func.avg(User.session_length)).scalar() or 0
-        
-        stats['avg_response_time'] = session.query(func.avg(Conversation.response_time)).filter(date_filter).scalar() or 0
-        total_feedback = stats['num_correct'] + stats['num_incorrect']
-        stats['accuracy_rate'] = (stats['num_correct'] / total_feedback * 100) if total_feedback > 0 else 0
-        stats['satisfaction_rate'] = (stats['num_correct'] / total_feedback * 100) if total_feedback > 0 else 0
-        return stats
+            user_query = user_query.filter(User.time_logged_in >= start_of_day)
+        stats['user_engagement'] = user_query.scalar() or 0
 
-def toggle_correctness(conversation_id, value):
-    print(f"Toggling correctness for chat#{conversation_id}, Value = {value}")
-    with Session() as session:
-        conversation = session.query(Conversation).filter_by(id=conversation_id).first()
-        if conversation:
-            conversation.correct = value
-            session.commit()
+        # Calculate Remaining metrics
+        total_feedback = stats['num_correct'] + stats['num_incorrect']
+        feedback_rate = (stats['num_correct'] / total_feedback * 100) if total_feedback > 0 else 0
+        stats.update({
+            'accuracy_rate': feedback_rate,
+            'satisfaction_rate': feedback_rate,
+            'common_topics': query_common_topics(session, 5, date_filter)
+        })
+        return stats
