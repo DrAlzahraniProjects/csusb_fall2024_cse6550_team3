@@ -166,4 +166,3 @@ def main():
             # Update user session and rerun streamlit
             update_user_session(st.session_state.user_id)
             st.rerun()
-
