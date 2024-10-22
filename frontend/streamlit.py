@@ -22,7 +22,7 @@ def update_and_display_statistics():
     """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
     
     st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
-    # Daily/Overall toggle buttons with centered alignment
+    # Daily/Overall toggle buttons
     stat_period = st.sidebar.radio(
         "Statistics period (Daily or Overall)",
         ('Daily', 'Overall'),
@@ -30,8 +30,12 @@ def update_and_display_statistics():
         label_visibility="hidden",
         horizontal=True
     )
+
+    # Get statistics based on the selected period
     stats = get_statistics(stat_period)
     st.session_state.statistics = stats
+
+    # List of statistics to display as plain text
     statistics = [
         f"Number of questions: {stats['num_questions']}",
         f"Number of correct answers: {stats['num_correct']}",
@@ -44,12 +48,10 @@ def update_and_display_statistics():
         f"Improvement over time",
         f"Feedback summary"
     ]
+    
+    # Display each statistic as plain text
     for stat in statistics:
-        st.sidebar.markdown(f"""
-            <div class='btn-stat-container'>
-                <span class="btn-stat">{stat}</span>
-            </div>
-        """, unsafe_allow_html=True)
+        st.sidebar.markdown(f"<div class='stat-item'>{stat}</div>", unsafe_allow_html=True)
 
 def handle_feedback(conversation_id):
     """Handle feedback button click"""
@@ -74,7 +76,6 @@ def extract_keywords(texts):
         filtered_keywords = {word.lower() for word in extracted if word.lower() not in ignore_words}
         keywords.update(filtered_keywords)
     return ", ".join(list(keywords))
-
 
 def main():
     """Main Streamlit app logic"""
@@ -165,3 +166,4 @@ def main():
             # Update user session and rerun streamlit
             update_user_session(st.session_state.user_id)
             st.rerun()
+
