@@ -10,6 +10,10 @@ a {
     color: inherit;
 }
 
+p {
+    margin: 0px;
+}
+
 .user-message {
     text-align: right;
     background-color: #f1f1f1;
@@ -24,12 +28,16 @@ a {
 
 .assistant-message {
     text-align: left;
-    padding: 10px;
+    padding: 0px;
     border-radius: 10px;
     margin-bottom: 10px;
     width: 70%;
     float: left;
     clear: both;
+}
+
+.assistant-message p {
+    margin: 0px;
 }
 
 .feedback-buttons {
@@ -70,7 +78,6 @@ a {
     display: inline-block;
     font-size: 16px;
     margin: 4px 2px;
-    cursor: pointer;
     border-radius: 8px;
     width: 260px;
     align-self: center !important;
