@@ -147,7 +147,7 @@ def main():
                 response_time=response_time, # seconds
                 correct=None,  # No feedback by default
                 user_id=st.session_state.user_id,
-                common_topics=""
+                common_topics=keywords
             )
 
             # Add conversation to streamlit session state
