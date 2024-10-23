@@ -1,13 +1,15 @@
 import os
 from roman import toRoman
+
+main_document_path = "data/default/textbook//Roger S. Pressman_ Bruce R. Maxim - Software Engineering_ A Practitioner's Approach-McGraw-Hill Education (2019).pdf"
 if os.getenv("CORPUS_SOURCE") == "swebook":
-  document_path = "data/swebook/swebok-v4.pdf"
+  main_document_path = "data/swebook/swebok-v4.pdf"
 if os.getenv("CORPUS_SOURCE") == "":
-  document_path = "data/default/textbook//Roger S. Pressman_ Bruce R. Maxim - Software Engineering_ A Practitioner's Approach-McGraw-Hill Education (2019).pdf"
+  main_document_path = "data/default/textbook//Roger S. Pressman_ Bruce R. Maxim - Software Engineering_ A Practitioner's Approach-McGraw-Hill Education (2019).pdf"
 
 def get_answer_with_source(
 	response, 
-	document_path= document_path
+	
 ):
   """
   Extract the answer and relevant source information from the response.
@@ -19,6 +21,7 @@ def get_answer_with_source(
   Returns:
     str: A formatted string containing the answer followed by source information.
   """
+  document_path= main_document_path
   answer = response.get('answer', 'No answer found.') # Extract the answer
   sources = [] # Handle multiple contexts in the response (assuming response['context'] is a list)
 

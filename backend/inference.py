@@ -2,6 +2,9 @@ import os
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_mistralai import ChatMistralAI
+# from langchain_ollama import ChatOllama
+
+
 from .document_loading import (
 	load_documents_from_directory, 
 	load_or_create_faiss_vector_store,
@@ -61,8 +64,9 @@ def load_llm_api(model_name):
 		top_p=0.4,
 	)
 MODEL_NAME = "open-mistral-7b"
-llm = load_llm_api(MODEL_NAME)
 
+llm = load_llm_api(MODEL_NAME)
+# llm = ChatOllama(model = "mistral")
 
 def chat_completion(question):
   """

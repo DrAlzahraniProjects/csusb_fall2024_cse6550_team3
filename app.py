@@ -1,4 +1,4 @@
-corpus_source = "textbook2" # If empty, app will default to using the textbook PDF
+corpus_source = "swebook" # If empty, app will default to using the textbook PDF
 
 import os
 os.environ['CORPUS_SOURCE'] = corpus_source
