@@ -58,7 +58,7 @@ docker build -t team3-app .
 
 Now, run the Docker container:
 ```
-docker run --env-file .env -p 5003:5003 -v $(pwd):/app team3-app
+docker run --env-file .env -p 5003:5003 -p 6003:6003 -v $(pwd):/app team3-app
 ```
 
 The application will be available at:  http://localhost:5003/team3
