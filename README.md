@@ -15,53 +15,59 @@ Running from Dockerhub
    
    Download the repository from    DockerHub latest
   
-``` bash
-docker pull pavankunchala/team3-app:latest
-```
+   ``` bash
+   docker pull pavankunchala/team3-app:latest
+   ```
 
 2. Run the Docker container:
 
      Execute the Docker container downloaded from pavankunchala/team3-app
    
-```bash
-docker run -d -p 5003:5003 pavankunchala/team3-app
-```
+   ```bash
+   docker run -d -p 5003:5003 pavankunchala/team3-app
+   ```
 
 After a few minutes, the application will be available at:  http://localhost:5003/team3
 
 ## Developer Setup
 
-To get started, first clone the repository to your local machine:
-```
-git clone https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3.git
-```
+1. To get started, first clone the repository to your local machine:
+   ```
+   git clone https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3.git
+   ```
 
-After cloning the repository, navigate to the project directory:
-```
-cd csusb_fall2024_cse6550_team3
-```
+2. After cloning the repository, navigate to the project directory:
+   ```
+   cd csusb_fall2024_cse6550_team3
+   ```
 
-Update Local Repository
-```
-git pull origin main
-```
+3. Update Local Repository
+   ```
+   git pull origin main
+   ```
 
-Create a [Mistral AI token](https://console.mistral.ai/api-keys/). Then create a .env file and add the following (Do not commit this file to git)
-```
-MISTRAL_API_KEY= = <Mistral AI key>
-```
+4. Create a [Mistral AI token](https://console.mistral.ai/api-keys/). 
 
-Build the Docker image:
-```
-docker build -t team3-app .
-```
+   Then create a `.env` file  (Do not commit this file to git) and add the following:
+   ```
+   MISTRAL_API_KEY=<Mistral AI key>
+   ```
 
-Now, run the Docker container:
-```
-docker run --env-file .env -p 5003:5003 -v $(pwd):/app team3-app
-```
+5. Build the Docker image:
+   ```
+   docker build -t team3-app .
+   ```
 
-The application will be available at:  http://localhost:5003/team3
+6. Now, run the Docker container:
+   ```
+   docker run --env-file .env -p 5003:5003 -v $(pwd):/app team3-app
+   ```
+   If there are issues with the above command use:
+   ```
+   docker run --env-file .env -p 5003:5003 team3-app
+   ```
+
+7. The application will be available at:  http://localhost:5003/team3
 
 <!-- Accessing Jupyter Notebook http://localhost:6003/ -->
 
