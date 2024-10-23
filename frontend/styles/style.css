@@ -72,13 +72,24 @@ p {
     text-align: center;
 }
 
-/* Remove button container, now plain text for statistics */
+/* Non-interactive statistics with framed background */
 .stat-item {
     font-size: 16px;
     font-weight: bold;
-    padding: 10px 0;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;  /* Light background frame */
+    border: 2px solid #ccc;      /* Border to frame the text */
+    border-radius: 8px;
     color: #333;
     text-align: left;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); /* Light shadow for emphasis */
+}
+
+/* Remove hover interaction */
+.stat-item:hover {
+    background-color: #f9f9f9; /* Ensure no hover effect */
+    cursor: default;
 }
 
 /* Retain toggle radio button styling */
@@ -87,7 +98,7 @@ p {
     justify-content: center;
 }
 
-/* Remove button styles, unnecessary */
+/* Hide button elements (since we're not using them anymore) */
 .btn-stat-container {
     display: none;
 }
@@ -96,7 +107,7 @@ p {
     display: none;
 }
 
-/* Hover state removed for buttons */
+/* No hover effects for removed buttons */
 .btn-stat:hover {
     background-color: inherit;
     color: inherit;
