@@ -22,10 +22,19 @@ load_dotenv(override=True)
 if os.getenv("CORPUS_SOURCE") == "":
     document_path = "data/default/textbook"
     persist_directory = "data/default/faiss_indexes"
+    collection_name = "pdf_collection"
+
+if os.getenv("CORPUS_SOURCE") == "swebook":
+    document_path = "data/swebook"
+    persist_directory = "data/swebook/faiss_indexes_new_textbook"
+    collection_name = "textbook2"
+
+
+
 
 top_k = 15 # number of relevant documents to be returned
 documents = load_documents_from_directory(document_path)
-faiss_store = load_or_create_faiss_vector_store(documents, "pdf_collection", persist_directory)
+faiss_store = load_or_create_faiss_vector_store(documents, collection_name, persist_directory)
 retriever = get_hybrid_retriever(documents = documents, vector_store = faiss_store, k = top_k)
 
 

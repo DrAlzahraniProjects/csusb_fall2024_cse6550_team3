@@ -1,9 +1,13 @@
 import os
 from roman import toRoman
+if os.getenv("CORPUS_SOURCE") == "swebook":
+  document_path = "data/swebook/swebok-v4.pdf"
+if os.getenv("CORPUS_SOURCE") == "":
+  document_path = "data/default/textbook//Roger S. Pressman_ Bruce R. Maxim - Software Engineering_ A Practitioner's Approach-McGraw-Hill Education (2019).pdf"
 
 def get_answer_with_source(
 	response, 
-	document_path="data/default/textbook//Roger S. Pressman_ Bruce R. Maxim - Software Engineering_ A Practitioner's Approach-McGraw-Hill Education (2019).pdf"
+	document_path= document_path
 ):
   """
   Extract the answer and relevant source information from the response.
@@ -37,3 +41,4 @@ def get_answer_with_source(
   sources_info = "\nSources: " + "".join(sources)
   final_answer = f"{answer}\n\n{sources_info}"
   return final_answer
+
