@@ -47,17 +47,18 @@ COPY requirements.txt /app/requirements.txt
 
 # Install Python packages from requirements.txt
 RUN mamba install --yes --file requirements.txt && mamba clean --all -f -y
-RUN pip install rank_bm25 streamlit-pdf-viewer
+RUN pip install rank_bm25 streamlit-pdf-viewer jupyter
 
 # Copy the current directory contents into the container at /app
 COPY . /app
 
-# Streamlit port
+# Expose Streamlit port
 EXPOSE 5003
+
+
+EXPOSE 6003
 
 # Add the conda environment's bin directory to PATH
 ENV PATH=/opt/miniforge/envs/team3_env/bin:$PATH
 
-# Entry point for the container
-ENTRYPOINT ["python"]
-CMD ["app.py"]
+CMD ["bash", "-c", "streamlit run app.py & jupyter notebook --no-browser --ip=0.0.0.0 --port=6003 --allow-root"]
