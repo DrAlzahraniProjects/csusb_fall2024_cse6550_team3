@@ -55,10 +55,11 @@ COPY . /app
 # Expose Streamlit port
 EXPOSE 5003
 
-
+# Expose Jupyter port
 EXPOSE 6003
 
 # Add the conda environment's bin directory to PATH
 ENV PATH=/opt/miniforge/envs/team3_env/bin:$PATH
 
+# Start both Streamlit and Jupyter
 CMD ["bash", "-c", "streamlit run app.py & jupyter notebook --no-browser --ip=0.0.0.0 --port=6003 --allow-root"]
