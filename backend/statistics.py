@@ -39,6 +39,7 @@ class Conversation(Base):
     response = Column(Text)
     citations = Column(Text)
     model_name = Column(String(255))
+    source = Column(String(255))
     response_time = Column(Integer)
     correct = Column(Boolean, nullable=True)  
     user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
@@ -75,6 +76,7 @@ def insert_conversation(
     response, 
     citations,
     model_name,
+    source,
     response_time, 
     user_id,
     correct=None,  
@@ -87,6 +89,7 @@ def insert_conversation(
             response=response,
             citations=citations,
             model_name=model_name,
+            source=source,
             response_time=response_time,
             correct=correct, 
             user_id=user_id,

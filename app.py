@@ -1,10 +1,18 @@
-corpus_source = "" # If empty, app will default to using the textbook PDF
+corpus_source = "swebok" # Guide to the Software Engineering Body of Knowledge
+# corpus_source = "default" # "Software Engineering: A PRACTITIONER’S APPROACH"
 
 import os
+
+# Add corpus source to enviroment variables
+if corpus_source != "swebok" and corpus_source != "default":
+    corpus_source = "swebok"
+CORPUS_SOURCE = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"data/{corpus_source}")
+os.environ["CORPUS_SOURCE"] = CORPUS_SOURCE
+print(f"\nCorpus source: ", CORPUS_SOURCE)
+
 import subprocess
 from frontend import streamlit
 from backend.statistics import init_db
-os.environ['CORPUS_SOURCE'] = corpus_source
 
 # Application entrypoint
 if __name__ == "__main__":

@@ -2,6 +2,8 @@ import os
 import time
 import streamlit as st
 import yake
+from .pdf import serve_pdf
+from backend.inference import chat_completion
 from backend.statistics import (
     init_user_session, 
     update_user_session, 
@@ -9,8 +11,6 @@ from backend.statistics import (
     get_statistics,
     toggle_correctness
 )
-from backend.inference import chat_completion
-from .pdf import serve_pdf
 
 def load_css():
     """Load CSS styles"""
@@ -63,7 +63,7 @@ def extract_keywords(texts):
     # Create a YAKE extractor
     extractor = yake.KeywordExtractor(lan="en", n=1, features=None)
     ignore_words = {
-        'pdf', 'education', 'engineering', 'software', 'practitioner', 'bruce', 'file', 'maxim', 'roger', 'view',
+        'pdf', 'education', 'engineering', 'software', 'practitioner','file', 'textbook.pdf', 'swebok', 'app', 'view',
         'details', 'level', 'target', 'blank', 'page', 'href', 'pressman', 'detail', 'system', 'systems'
     }
     # Extract keywords for each text
@@ -144,6 +144,7 @@ def main():
                 response=response,
                 citations="",
                 model_name=model_name,
+                source=os.getenv("CORPUS_SOURCE").split("/")[-1],
                 response_time=response_time, # seconds
                 correct=None,  # No feedback by default
                 user_id=st.session_state.user_id,
