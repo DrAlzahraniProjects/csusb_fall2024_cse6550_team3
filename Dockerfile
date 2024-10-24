@@ -52,12 +52,15 @@ RUN pip install rank_bm25 streamlit-pdf-viewer
 # Copy the current directory contents into the container at /app
 COPY . /app
 
-# Streamlit port
+# Expose Streamlit port
 EXPOSE 5003
+
+# Expose Jupyter port
+EXPOSE 6003
 
 # Add the conda environment's bin directory to PATH
 ENV PATH=/opt/miniforge/envs/team3_env/bin:$PATH
 
-# Entry point for the container
+# Set entry point and default command
 ENTRYPOINT ["python"]
 CMD ["app.py"]

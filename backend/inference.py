@@ -22,6 +22,7 @@ load_dotenv(override=True)
 # Load documents and the embeddings from the FAISS vector store
 document_path = os.getenv("CORPUS_SOURCE")
 persist_directory = os.path.join(document_path, "faiss_indexes")
+
 top_k = 15 # number of relevant documents to be returned
 documents = load_documents_from_directory(document_path)
 faiss_store = load_or_create_faiss_vector_store(documents, persist_directory)
