@@ -1,4 +1,4 @@
-corpus_source = "default" # Guide to the Software Engineering Body of Knowledge
+corpus_source = "swebok" # Guide to the Software Engineering Body of Knowledge
 # corpus_source = "default" # "Software Engineering: A PRACTITIONER’S APPROACH"
 
 import os
