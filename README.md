@@ -63,6 +63,7 @@ Running from Dockerhub
 
 6. Now, run the Docker container:
    ```
+
    docker run --env-file .env -p 5003:5003 -p 6003:6003 -v $(pwd):/app team3-app
    ```
    If there are issues with the above command use:

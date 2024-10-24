@@ -26,7 +26,8 @@ def serve_pdf():
                     width=700,
                     height=1000,
                     pages_to_render=[page],
-                    scroll_to_page=page
+                    scroll_to_page=page,
+                    render_text=True
                 )
         else:
             st.error(f"PDF file not found at {pdf_path}")
