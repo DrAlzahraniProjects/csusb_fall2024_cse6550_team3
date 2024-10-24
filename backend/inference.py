@@ -22,6 +22,8 @@ load_dotenv(override=True)
 if os.getenv("CORPUS_SOURCE") == "":
     document_path = "data/default/textbook"
     persist_directory = "data/default/faiss_indexes"
+document_path = "data/default/textbook"
+persist_directory = "data/default/faiss_indexes"
 
 top_k = 15 # number of relevant documents to be returned
 documents = load_documents_from_directory(document_path)
