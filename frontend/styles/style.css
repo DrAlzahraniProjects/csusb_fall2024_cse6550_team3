@@ -1,3 +1,4 @@
+/* General layout adjustments */
 div[data-testid="stVerticalBlock"] div:has(div.fixed-header) {
     text-align: center;
     position: sticky;
@@ -14,6 +15,7 @@ p {
     margin: 0px;
 }
 
+/* User message styling (right-aligned) */
 .user-message {
     text-align: right;
     background-color: #f1f1f1;
@@ -26,20 +28,26 @@ p {
     float: right;
 }
 
+/* Assistant message styling (left-aligned) */
 .assistant-message {
     text-align: left;
-    padding: 0px;
+    background-color: #e0f7fa;
+    color: black;
+    padding: 10px;
     border-radius: 10px;
     margin-bottom: 10px;
-    width: 70%;
+    max-width: 70%;
+    display: inline-block;
     float: left;
     clear: both;
 }
 
+/* Keep assistant messages clean */
 .assistant-message p {
     margin: 0px;
 }
 
+/* Feedback buttons */
 .feedback-buttons {
     text-align: left;
     margin: 5px 0;
@@ -56,39 +64,51 @@ p {
     position: relative;
 }
 
-.title-stat{
+/* Statistics title styling */
+.title-stat {
     color: gray;
     font-weight: bold;
     font-size: 2rem !important;
     text-align: center;
 }
 
-.btn-stat-container{
-    display: flex;
-    justify-content: center;
-}
-
-.btn-stat {
-    text-decoration: none;
-    background-color: #0D1118;
-    color: white !important;
-    border: none;
-    padding: 10px 20px;
-    text-align: left;
-    display: inline-block;
+/* Non-interactive statistics with framed background */
+.stat-item {
     font-size: 16px;
-    margin: 4px 2px;
+    font-weight: bold;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;  /* Light background frame */
+    border: 2px solid #ccc;      /* Border to frame the text */
     border-radius: 8px;
-    width: 260px;
-    align-self: center !important;
+    color: #333;
+    text-align: left;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); /* Light shadow for emphasis */
 }
 
-.btn-stat:hover {
-    background-color: #555555;
-    color: white;
+/* Remove hover interaction */
+.stat-item:hover {
+    background-color: #f9f9f9; /* Ensure no hover effect */
+    cursor: default;
 }
 
+/* Retain toggle radio button styling */
 .stRadio > div[role="radiogroup"] {
     display: flex;
     justify-content: center;
+}
+
+/* Hide button elements (since we're not using them anymore) */
+.btn-stat-container {
+    display: none;
+}
+
+.btn-stat {
+    display: none;
+}
+
+/* No hover effects for removed buttons */
+.btn-stat:hover {
+    background-color: inherit;
+    color: inherit;
 }
