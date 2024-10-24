@@ -24,7 +24,7 @@ def load_documents_from_directory(
 	Returns:
 		List of document chunks.
 	"""
-	print(f"Loading documents from {document_path}...\n")
+	print(f"Loading documents from {document_path}...")
 	# Load PDF documents from the specified directory
 	documents = PyPDFDirectoryLoader(document_path).load_and_split()
 	# Create a text splitter using tiktoken encoder
@@ -34,9 +34,9 @@ def load_documents_from_directory(
 
 
 def load_or_create_faiss_vector_store(
-	documents, 
-	collection_name, 
-	persist_directory
+	documents,
+	persist_directory,
+	collection_name="collection"
 ):
     """
     Load an existing FAISS vector store or create a new one if it doesn't exist.
@@ -47,7 +47,7 @@ def load_or_create_faiss_vector_store(
     Returns:
         FAISS vector store object.
     """
-    index_path = os.path.join(persist_directory, f'{collection_name}_faiss_index')
+    index_path = os.path.join(persist_directory, f'{collection_name}')
     if os.path.exists(index_path):
         # Load existing FAISS index
         print(f"Loading existing FAISS vector store from {index_path}...\n")

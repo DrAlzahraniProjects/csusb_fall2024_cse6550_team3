@@ -3,8 +3,6 @@ from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_mistralai import ChatMistralAI
 # from langchain_ollama import ChatOllama
-
-
 from .document_loading import (
 	load_documents_from_directory, 
 	load_or_create_faiss_vector_store,
@@ -22,23 +20,12 @@ load_dotenv(override=True)
 ###################
 
 # Load documents and the embeddings from the FAISS vector store
-if os.getenv("CORPUS_SOURCE") == "":
-    document_path = "data/default/textbook"
-    persist_directory = "data/default/faiss_indexes"
-    collection_name = "pdf_collection"
-
-if os.getenv("CORPUS_SOURCE") == "swebook":
-    document_path = "data/swebook"
-    persist_directory = "data/swebook/faiss_indexes_new_textbook"
-    collection_name = "textbook2"
-
-
-
-
+document_path = os.getenv("CORPUS_SOURCE")
+persist_directory = os.path.join(document_path, "faiss_indexes")
 top_k = 15 # number of relevant documents to be returned
 documents = load_documents_from_directory(document_path)
-faiss_store = load_or_create_faiss_vector_store(documents, collection_name, persist_directory)
-retriever = get_hybrid_retriever(documents = documents, vector_store = faiss_store, k = top_k)
+faiss_store = load_or_create_faiss_vector_store(documents, persist_directory)
+retriever = get_hybrid_retriever(documents, faiss_store, top_k)
 
 
 ###################
@@ -64,7 +51,6 @@ def load_llm_api(model_name):
 		top_p=0.4,
 	)
 MODEL_NAME = "open-mistral-7b"
-
 llm = load_llm_api(MODEL_NAME)
 # llm = ChatOllama(model = "mistral")
 
