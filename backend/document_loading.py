@@ -77,6 +77,6 @@ def get_hybrid_retriever(documents, vector_store, k):
 	# Combine retrievers with specified weights
 	fusion_retriever = EnsembleRetriever(
 		retrievers=[bm25_retriever, vector_retriever],
-		weights=[0.6, 0.4]
+		weights=[0.7, 0.3]
 	)
 	return fusion_retriever
