@@ -42,9 +42,31 @@ p {
     clear: both;
 }
 
-/* Keep assistant messages clean */
-.assistant-message p {
-    margin: 0px;
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    /* User message in dark mode */
+    .user-message {
+        background-color: #333; /* Darker background */
+        color: white; /* Light text */
+    }
+
+    /* Assistant message in dark mode */
+    .assistant-message {
+        background-color: #444; /* Slightly darker blue */
+        color: white; /* Light text */
+    }
+
+    /* Non-interactive statistics in dark mode */
+    .stat-item {
+        background-color: #555; /* Darker background */
+        border: 2px solid #777; /* Darker border */
+        color: white; /* Light text */
+    }
+
+    /* Statistics title in dark mode */
+    .title-stat {
+        color: lightgray; /* Light text color */
+    }
 }
 
 /* Feedback buttons */
