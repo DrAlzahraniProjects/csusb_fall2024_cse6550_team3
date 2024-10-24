@@ -82,9 +82,6 @@ def extract_keywords(texts):
 
 def main():
     """Main Streamlit app logic"""
-    # Set the theme for dark mode
-    st.set_page_config(page_title="Textbook Chatbot", layout="centered", initial_sidebar_state="expanded")
-    
     # Create the title
     header = st.container()
     header.title("Textbook Chatbot")
@@ -152,23 +149,11 @@ def main():
                 citations="",
                 model_name=model_name,
                 response_time=response_time, # seconds
-                correct=None,  # No feedback by default
+                correct=None,  # Placeholder for feedback
                 user_id=st.session_state.user_id,
-                common_topics=keywords
+                keywords=keywords,
             )
+            st.session_state.messages.append({"role": "assistant", "content": response, "conversation_id": conversation_id})
 
-            # Add conversation to streamlit session state
-            st.session_state.messages.append({
-                "role": "user", 
-                "content": prompt,
-                "conversation_id": conversation_id,
-            })
-            st.session_state.messages.append({
-                "role": "assistant", 
-                "content": response,
-                "conversation_id": conversation_id
-            })
-
-            # Update user session and rerun streamlit
-            update_user_session(st.session_state.user_id)
-            st.rerun()
+if __name__ == "__main__":
+    main()
