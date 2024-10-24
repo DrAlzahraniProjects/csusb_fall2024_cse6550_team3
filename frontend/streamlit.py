@@ -63,7 +63,7 @@ def extract_keywords(texts):
     # Create a YAKE extractor
     extractor = yake.KeywordExtractor(lan="en", n=1, features=None)
     ignore_words = {
-        'pdf', 'education', 'engineering', 'software', 'practitioner','file', 'textbook.pdf', 'app', 'view',
+        'pdf', 'education', 'engineering', 'software', 'practitioner','file', 'textbook.pdf', 'swebok', 'app', 'view',
         'details', 'level', 'target', 'blank', 'page', 'href', 'pressman', 'detail', 'system', 'systems'
     }
     # Extract keywords for each text
@@ -144,6 +144,7 @@ def main():
                 response=response,
                 citations="",
                 model_name=model_name,
+                source=os.getenv("CORPUS_SOURCE").split("/")[-1],
                 response_time=response_time, # seconds
                 correct=None,  # No feedback by default
                 user_id=st.session_state.user_id,
