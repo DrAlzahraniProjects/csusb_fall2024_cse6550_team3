@@ -22,6 +22,7 @@ def update_and_display_statistics():
     """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
     
     st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
+    
     # Daily/Overall toggle buttons
     stat_period = st.sidebar.radio(
         "Statistics period (Daily or Overall)",
@@ -35,7 +36,7 @@ def update_and_display_statistics():
     stats = get_statistics(stat_period)
     st.session_state.statistics = stats
 
-    # List of statistics to display as plain text
+    # List of statistics to display as plain text with framed background
     statistics = [
         f"Number of questions: {stats['num_questions']}",
         f"Number of correct answers: {stats['num_correct']}",
@@ -49,9 +50,11 @@ def update_and_display_statistics():
         f"Feedback summary"
     ]
     
-    # Display each statistic as plain text
+    # Display each statistic as framed text (non-interactive)
     for stat in statistics:
-        st.sidebar.markdown(f"<div class='stat-item'>{stat}</div>", unsafe_allow_html=True)
+        st.sidebar.markdown(f"""
+            <div class='stat-item'>{stat}</div>
+        """, unsafe_allow_html=True)
 
 def handle_feedback(conversation_id):
     """Handle feedback button click"""
@@ -146,23 +149,11 @@ def main():
                 citations="",
                 model_name=model_name,
                 response_time=response_time, # seconds
-                correct=None,  # No feedback by default
+                correct=None,  # Placeholder for feedback
                 user_id=st.session_state.user_id,
-                common_topics=keywords
+                keywords=keywords,
             )
+            st.session_state.messages.append({"role": "assistant", "content": response, "conversation_id": conversation_id})
 
-            # Add conversation to streamlit session state
-            st.session_state.messages.append({
-                "role": "user", 
-                "content": prompt,
-                "conversation_id": conversation_id,
-            })
-            st.session_state.messages.append({
-                "role": "assistant", 
-                "content": response,
-                "conversation_id": conversation_id
-            })
-
-            # Update user session and rerun streamlit
-            update_user_session(st.session_state.user_id)
-            st.rerun()
+if __name__ == "__main__":
+    main()
