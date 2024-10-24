@@ -14,7 +14,7 @@ from .pdf import serve_pdf
 
 def load_css():
     """Load CSS styles"""
-    css_file = os.path.join(os.path.dirname(os.path.abspath(_file_)), "styles", "style.css")
+    css_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "styles", "style.css")
     with open(css_file) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
@@ -82,6 +82,9 @@ def extract_keywords(texts):
 
 def main():
     """Main Streamlit app logic"""
+    # Set the theme for dark mode
+    st.set_page_config(page_title="Textbook Chatbot", layout="centered", initial_sidebar_state="expanded")
+    
     # Create the title
     header = st.container()
     header.title("Textbook Chatbot")
