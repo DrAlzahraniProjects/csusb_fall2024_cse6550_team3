@@ -1,3 +1,4 @@
+
 # Textbook Chatbot 
 
 The Textbook Chatbot project for CSE 6550 is designed to assist with queries related to the textbook."Software Engineering: A Practitioner's Approach." The chatbot serves as an educational tool, helping users by providing information, answering questions, and possibly retrieving content from the textbook.
@@ -12,8 +13,6 @@ Before you begin, make sure you have the following installed on your machine:
 Running from Dockerhub
    
 1. Pull the repository from DockerHub:
-   
-   Download the repository from    DockerHub latest
   
    ``` bash
    docker pull pavankunchala/team3-app:latest
@@ -21,13 +20,17 @@ Running from Dockerhub
 
 2. Run the Docker container:
 
-     Execute the Docker container downloaded from pavankunchala/team3-app
+    Execute the Docker container downloaded from pavankunchala/team3-app
    
-   ```bash
-   docker run -d -p 5003:5003 pavankunchala/team3-app
-   ```
+    ```bash
+    docker run -d -p 5003:5003 -p 6003:6003 pavankunchala/team3-app
+    ```
 
-After a few minutes, the application will be available at:  http://localhost:5003/team3
+3. After a few minutes, the application will be available at:
+  
+    Website: http://localhost:5003/team3
+
+    Jupyter: http://localhost:6003/team3/jupyter
 
 ## Developer Setup
 
@@ -60,14 +63,20 @@ After a few minutes, the application will be available at:  http://localhost:500
 
 6. Now, run the Docker container:
    ```
-   docker run --env-file .env -p 5003:5003 -v $(pwd):/app team3-app
+
+   docker run --env-file .env -p 5003:5003 -p 6003:6003 -v $(pwd):/app team3-app
    ```
    If there are issues with the above command use:
    ```
-   docker run --env-file .env -p 5003:5003 team3-app
+   docker run --env-file .env -p 5003:5003 -p 6003:6003 team3-app
    ```
 
-7. The application will be available at:  http://localhost:5003/team3
+7. After a few minutes, the application will be available at:
+  
+    Website: http://localhost:5003/team3
+
+    Jupyter: http://localhost:6003/team3/jupyter
+
 
 <!-- Accessing Jupyter Notebook http://localhost:6003/ -->
 
