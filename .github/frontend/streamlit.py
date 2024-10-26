@@ -13,10 +13,14 @@ from backend.inference import chat_completion
 from .pdf import serve_pdf
 
 def load_css():
-    """Load CSS styles"""
+    """Load CSS styles and set theme attribute based on dark mode"""
     css_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "styles", "style.css")
     with open(css_file) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+    
+    # Detect theme and set data-theme attribute
+    theme = "dark" if st.get_option("theme.base") == "dark" else "light"
+    st.markdown(f'<html data-theme="{theme}"></html>', unsafe_allow_html=True)
 
 def update_and_display_statistics():
     """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
@@ -149,11 +153,23 @@ def main():
                 citations="",
                 model_name=model_name,
                 response_time=response_time, # seconds
-                correct=None,  # Placeholder for feedback
+                correct=None,  # No feedback by default
                 user_id=st.session_state.user_id,
-                keywords=keywords,
+                common_topics=keywords
             )
-            st.session_state.messages.append({"role": "assistant", "content": response, "conversation_id": conversation_id})
 
-if __name__ == "__main__":
-    main()
+            # Add conversation to streamlit session state
+            st.session_state.messages.append({
+                "role": "user", 
+                "content": prompt,
+                "conversation_id": conversation_id,
+            })
+            st.session_state.messages.append({
+                "role": "assistant", 
+                "content": response,
+                "conversation_id": conversation_id
+            })
+
+            # Update user session and rerun streamlit
+            update_user_session(st.session_state.user_id)
+            st.rerun()
