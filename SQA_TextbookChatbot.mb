@@ -1,0 +1,29 @@
+# Software Quality Assurance for the textbook chatbot
+
+# Answerable Questions
+
+1. Does the chatbot respond correctly to the chapter titles provided in the syllabus?
+2. Is the chatbot able to understand and answer questions related to key textbook concepts accurately?
+3. Can the chatbot handle multiple user queries simultaneously without delays?
+4. Is the chatbot’s response time within 2-3 seconds for common queries?
+5. Does the chatbot offer relevant suggestions when a query isn’t directly answerable?
+6. Is the PDF viewer functional and searchable (CTRL + F) on standard devices?
+7. Does the chatbot give accurate answers based on the user-selected chapter or topic?
+8. Does the chatbot provide feedback if a chapter title is unrecognized?
+9. Is there a way to view previous chatbot interactions for reference?
+10. Can the chatbot learn from previous interactions to improve accuracy over time?
+11. Is the chatbot compatible across different devices (desktop, mobile, tablet)?
+
+# Unanswerable Questions
+
+1. How well will the chatbot understand evolving language trends or terminology?
+2. Will the chatbot identify and respond to ambiguous chapter titles or synonyms?
+3. How will the chatbot handle unstructured user inputs (e.g., non-text symbols or emoji)?
+4. What happens if the textbook content changes significantly in the next edition?
+5. How will the chatbot’s performance be impacted if user volume exceeds predictions?
+6. Will the PDF viewer perform smoothly across all devices, including future ones?
+7. Can the chatbot intuit user intent without exact keyword matching in queries?
+8. How will the chatbot respond if the database is temporarily unavailable?
+9. Will the chatbot’s recommendations always remain relevant if the curriculum changes?
+10. Can the chatbot adapt to unexpected user queries not covered in training?
+11. What will happen to stored session data if there is a server failure?
