@@ -18,7 +18,7 @@ p {
 /* User message styling (right-aligned) */
 .user-message {
     text-align: right;
-    background-color: #f1f1f1; /* Light background for user messages */
+    background-color: #f1f1f1;
     color: black;
     padding: 10px;
     border-radius: 10px;
@@ -31,7 +31,7 @@ p {
 /* Assistant message styling (left-aligned) */
 .assistant-message {
     text-align: left;
-    background-color: #e0f7fa; /* Light background for assistant messages */
+    background-color: #e0f7fa;
     color: black;
     padding: 10px;
     border-radius: 10px;
@@ -42,9 +42,15 @@ p {
     clear: both;
 }
 
-/* Keep assistant messages clean */
-.assistant-message p {
-    margin: 0px;
+/* Dark mode message styling */
+html[data-theme="dark"] .user-message {
+    background-color: #333;
+    color: #f1f1f1;
+}
+
+html[data-theme="dark"] .assistant-message {
+    background-color: #444;
+    color: #e0f7fa;
 }
 
 /* Feedback buttons */
@@ -66,49 +72,41 @@ p {
 
 /* Statistics title styling */
 .title-stat {
-    color: #b0bec5; /* Lighter color for title in dark mode */
-    font-weight: bold;
-    font-size: 2rem !important;
+    color: #00a8b5;
+    font-size: 20px;
+    margin-top: 0px;
+    margin-bottom: 1rem;
     text-align: center;
 }
 
-/* Non-interactive statistics with framed background */
+/* Statistics items styling */
 .stat-item {
+    color: #0a0a0a;
     font-size: 16px;
-    font-weight: bold;
-    padding: 15px;
-    margin-bottom: 10px;
-    background-color: #424242;  /* Darker background for dark mode */
-    border: 2px solid #555;      /* Darker border for better definition */
-    border-radius: 8px;
-    color: #ffffff; /* Light text color for readability */
-    text-align: left;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); /* Light shadow for emphasis */
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #f5f5f5;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
 }
 
-/* Ensure no hover effect */
-.stat-item:hover {
-    background-color: #424242; /* Maintain the same background on hover */
-    cursor: default;
+/* Dark mode statistics styling */
+html[data-theme="dark"] .stat-item {
+    background-color: #333;
+    color: #f5f5f5;
+    border-color: #444;
 }
 
-/* Retain toggle radio button styling */
-.stRadio > div[role="radiogroup"] {
-    display: flex;
-    justify-content: center;
+/* General adjustments for dark mode elements */
+html[data-theme="dark"] body {
+    background-color: #121212;
+    color: #e0e0e0;
 }
 
-/* Hide button elements (since we're not using them anymore) */
-.btn-stat-container {
-    display: none;
+html[data-theme="dark"] a {
+    color: #4fc3f7;
 }
 
-.btn-stat {
-    display: none;
-}
-
-/* No hover effects for removed buttons */
-.btn-stat:hover {
-    background-color: inherit;
-    color: inherit;
+html[data-theme="dark"] p {
+    color: #e0e0e0;
 }
