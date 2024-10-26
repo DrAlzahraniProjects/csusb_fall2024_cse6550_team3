@@ -5,9 +5,9 @@ import yake
 from .pdf import serve_pdf
 from backend.inference import chat_completion
 from backend.statistics import (
-    init_user_session, 
-    update_user_session, 
-    insert_conversation, 
+    init_user_session,
+    update_user_session,
+    insert_conversation,
     get_statistics,
     toggle_correctness
 )
@@ -20,9 +20,7 @@ def load_css():
 
 def update_and_display_statistics():
     """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
-    
     st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
-    # Daily/Overall toggle buttons with centered alignment
     stat_period = st.sidebar.radio(
         "Statistics period (Daily or Overall)",
         ('Daily', 'Overall'),
@@ -60,49 +58,42 @@ def handle_feedback(conversation_id):
 
 def extract_keywords(texts):
     """Extract top N keywords from text using YAKE"""
-    # Create a YAKE extractor
     extractor = yake.KeywordExtractor(lan="en", n=1, features=None)
     ignore_words = {
-        'pdf', 'education', 'engineering', 'software', 'practitioner','file', 'textbook.pdf', 'swebok', 'app', 'view',
+        'pdf', 'education', 'engineering', 'software', 'practitioner', 'file', 'textbook.pdf', 'swebok', 'app', 'view',
         'details', 'level', 'target', 'blank', 'page', 'href', 'pressman', 'detail', 'system', 'systems'
     }
-    # Extract keywords for each text
-    keywords = set()  # Use a set to avoid duplicates
+    keywords = set()
     for text in texts:
         extracted = dict(extractor.extract_keywords(text)).keys()
-        # Convert extracted keywords to lowercase before filtering
         filtered_keywords = {word.lower() for word in extracted if word.lower() not in ignore_words}
         keywords.update(filtered_keywords)
     return ", ".join(list(keywords))
 
-
 def main():
     """Main Streamlit app logic"""
-    # Create the title
-    header = st.container()
-    header.title("Textbook Chatbot")
-    header.write("""<div class='fixed-header'/>""", unsafe_allow_html=True)
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # Show the title only if there are no messages
+    if not st.session_state.messages:
+        st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
 
     # Load PDF
     if "view" in st.query_params and st.query_params["view"] == "pdf":
         serve_pdf()
-    # Load Homepage
     else:
-        # Load the CSS file
         load_css()
 
         # Create user session
         if "user_id" not in st.session_state:
             st.session_state.user_id = init_user_session()
             print(f"Creating user#{st.session_state.user_id}")
-        
-        # Create sidebar
+
         st.sidebar.empty()
         update_and_display_statistics()
 
-        # Load user/assistant messages and feedback icons when appropriate
-        if "messages" not in st.session_state:
-            st.session_state.messages = []
+        # Display messages
         for message in st.session_state.messages:
             if message["role"] == "assistant":
                 st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
@@ -118,51 +109,49 @@ def main():
             else:
                 st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
 
-        # Handle user prompts
+        # Handle user input
         if prompt := st.chat_input("Ask your question?"):
             st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
 
-            # Model inference with streaming
-            response_container = st.empty()  # Placeholder for the assistant's response
+            response_container = st.empty()
             with st.spinner("Generating response..."):
                 start_time = time.time()
-                response = ""  # To accumulate the response in pieces
-                for partial_response, model_name in chat_completion(prompt):  # Streaming from the model
-                    response += partial_response  # Accumulate partial responses
+                response = ""
+                for partial_response, model_name in chat_completion(prompt):
+                    response += partial_response
                     response_container.markdown(f"<div class='assistant-message'>{response}</div>", unsafe_allow_html=True)
                 end_time = time.time()
-                response_time = int((end_time - start_time))  # seconds
+                response_time = int((end_time - start_time))
 
-                # Extract keywords from the prompt and response
-                conversation_texts = [prompt + " " + response]  # Combine prompt and response
+                conversation_texts = [prompt + " " + response]
                 keywords = extract_keywords(conversation_texts)
                 print(f"Extracted Keywords: {keywords}")
 
-            # Insert conversation to database
             conversation_id = insert_conversation(
                 question=prompt,
                 response=response,
                 citations="",
                 model_name=model_name,
                 source=os.getenv("CORPUS_SOURCE").split("/")[-1],
-                response_time=response_time, # seconds
-                correct=None,  # No feedback by default
+                response_time=response_time,
+                correct=None,
                 user_id=st.session_state.user_id,
                 common_topics=keywords
             )
 
-            # Add conversation to streamlit session state
             st.session_state.messages.append({
-                "role": "user", 
+                "role": "user",
                 "content": prompt,
                 "conversation_id": conversation_id,
             })
             st.session_state.messages.append({
-                "role": "assistant", 
+                "role": "assistant",
                 "content": response,
                 "conversation_id": conversation_id
             })
 
-            # Update user session and rerun streamlit
             update_user_session(st.session_state.user_id)
             st.rerun()
+
+if __name__ == "__main__":
+    main()
