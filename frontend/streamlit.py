@@ -13,15 +13,20 @@ from backend.inference import chat_completion
 from .pdf import serve_pdf
 
 def load_css():
-    """Load CSS styles"""
+    """Load CSS styles and set theme attribute based on dark mode"""
     css_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "styles", "style.css")
     with open(css_file) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+    
+    # Detect theme and set data-theme attribute
+    theme = "dark" if st.get_option("theme.base") == "dark" else "light"
+    st.markdown(f'<html data-theme="{theme}"></html>', unsafe_allow_html=True)
 
 def update_and_display_statistics():
     """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
     
     st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
+    
     # Daily/Overall toggle buttons
     stat_period = st.sidebar.radio(
         "Statistics period (Daily or Overall)",
@@ -35,7 +40,7 @@ def update_and_display_statistics():
     stats = get_statistics(stat_period)
     st.session_state.statistics = stats
 
-    # List of statistics to display as plain text
+    # List of statistics to display as plain text with framed background
     statistics = [
         f"Number of questions: {stats['num_questions']}",
         f"Number of correct answers: {stats['num_correct']}",
@@ -49,9 +54,11 @@ def update_and_display_statistics():
         f"Feedback summary"
     ]
     
-    # Display each statistic as plain text
+    # Display each statistic as framed text (non-interactive)
     for stat in statistics:
-        st.sidebar.markdown(f"<div class='stat-item'>{stat}</div>", unsafe_allow_html=True)
+        st.sidebar.markdown(f"""
+            <div class='stat-item'>{stat}</div>
+        """, unsafe_allow_html=True)
 
 def handle_feedback(conversation_id):
     """Handle feedback button click"""
