@@ -1,0 +1,41 @@
+<rail>
+    <input>
+        <parameter name="question" type="string" />
+        <parameter name="context" type="string" />
+    </input>
+
+    <output>
+        <parameter name="answer" type="string" />
+    </output>
+
+    <rules>
+        <rule>
+            <when>contains_prohibited_words(answer)</when>
+            <then>substitute('Response cannot contain inappropriate language.')</then>
+        </rule>
+        <rule>
+            <when>length(answer) > 500</when>
+            <then>truncate(answer, 500)</then>
+        </rule>
+        <rule>
+            <when>not has_citations(context)</when>
+            <then>substitute('Answer could not be verified from reliable sources.')</then>
+        </rule>
+    </rules>
+
+    <functions>
+        <function name="contains_prohibited_words">
+            <description>Checks if response contains prohibited or inappropriate words.</description>
+            <expression>
+                answer.lower().contains_any(["badword1", "badword2", "other_unwanted_terms"])
+            </expression>
+        </function>
+
+        <function name="has_citations">
+            <description>Checks if the response includes citations from retrieved documents.</description>
+            <expression>
+                len(context) > 0
+            </expression>
+        </function>
+    </functions>
+</rail>

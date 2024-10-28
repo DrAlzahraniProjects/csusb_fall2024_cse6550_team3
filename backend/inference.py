@@ -2,16 +2,16 @@ import os
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_mistralai import ChatMistralAI
-# from langchain_ollama import ChatOllama
+from guardrails import Guard
 from .document_loading import (
-	load_documents_from_directory, 
-	load_or_create_faiss_vector_store,
-	get_hybrid_retriever
+    load_documents_from_directory, 
+    load_or_create_faiss_vector_store,
+    get_hybrid_retriever
 )
 from .prompts import prompt
 from .citations import get_answer_with_source
 
-# Import and load environment variables
+# Load environment variables
 from dotenv import load_dotenv
 load_dotenv(override=True)
 
@@ -19,41 +19,39 @@ load_dotenv(override=True)
 # LOAD EMBEDDINGS #
 ###################
 
-# Load documents and the embeddings from the FAISS vector store
-document_path = os.getenv("CORPUS_SOURCE")
-persist_directory = os.path.join(document_path, "faiss_indexes")
+# Load documents and FAISS vector store
+document_path = os.getenv("CORPUS_SOURCE", "data/default/textbook")
+persist_directory = "data/default/faiss_indexes"
+top_k = 15
 
-top_k = 15 # number of relevant documents to be returned
 documents = load_documents_from_directory(document_path)
-faiss_store = load_or_create_faiss_vector_store(documents, persist_directory)
-retriever = get_hybrid_retriever(documents, faiss_store, top_k)
-
+faiss_store = load_or_create_faiss_vector_store(documents, "pdf_collection", persist_directory)
+retriever = get_hybrid_retriever(documents=documents, vector_store=faiss_store, k=top_k)
 
 ###################
 # MODEL INFERENCE #
 ###################
 
-# Get Mistral API Key from the environment variables
 api_key = os.getenv("MISTRAL_API_KEY")
 if not api_key:
-	raise ValueError("MISTRAL_API_KEY not found in .env")
+    raise ValueError("MISTRAL_API_KEY not found in .env")
 
 def load_llm_api(model_name):
-	"""
-	Load and configure the Mistral AI LLM.
-	Returns:
-		ChatMistralAI: Configured LLM instance.
-	"""
-	return ChatMistralAI(
-		model=model_name,
-		mistral_api_key=api_key,
-		temperature=0.2,
-		max_tokens=256,
-		top_p=0.4,
-	)
+    """Load and configure Mistral AI LLM."""
+    return ChatMistralAI(
+        model=model_name,
+        mistral_api_key=api_key,
+        temperature=0.2,
+        max_tokens=256,
+        top_p=0.4,
+    )
+
 MODEL_NAME = "open-mistral-7b"
 llm = load_llm_api(MODEL_NAME)
-# llm = ChatOllama(model = "mistral")
+
+# Load guardrails configuration
+GUARDRAILS_CONFIG_PATH = "guardrails_config.xml"
+guard = Guard.from_rail(GUARDRAILS_CONFIG_PATH)
 
 def chat_completion(question):
   """
