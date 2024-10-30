@@ -31,8 +31,8 @@ p {
 /* Assistant message styling (left-aligned) */
 .assistant-message {
     text-align: left;
-    background-color: #d3d3d3; /* Light gray for light mode */
-    color: black;
+    background-color: #2e2e2e; /* Dark gray background for light mode */
+    color: black; /* Black text for light mode */
     padding: 10px;
     border-radius: 10px;
     margin-bottom: 10px;
@@ -43,19 +43,20 @@ p {
 }
 
 /* Dark mode chat bubble styling */
+html[data-theme="dark"] .assistant-message {
+    background-color: #ffffff; /* White background for dark mode */
+    color: black; /* Black text for dark mode */
+}
+
 html[data-theme="dark"] .user-message {
     background-color: #333333; /* Darker background for user messages */
     color: #e0e0e0; /* Lighter text for contrast */
 }
 
-html[data-theme="dark"] .assistant-message {
-    background-color: #2e2e2e; /* Dark gray for dark mode */
-    color: #d0d0d0; /* Lighter text for contrast */
-}
-
 /* Centered Daily/Overall radio buttons */
-.stat-period-radio {
-    text-align: center;
+.stat-period-radio-container {
+    display: flex;
+    justify-content: center;
     margin-bottom: 15px;
 }
 
