@@ -28,8 +28,8 @@ def update_and_display_statistics():
     # Add the title with dynamic color handling in CSS
     st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
     
-    # Centered Daily/Overall toggle buttons within a container div
-    st.sidebar.markdown("<div class='stat-period-radio-container'>", unsafe_allow_html=True)
+    # Center the Daily/Overall toggle buttons with an additional CSS class for centering
+    st.sidebar.markdown("<div class='stat-period-radio'>", unsafe_allow_html=True)
     stat_period = st.radio(
         "Statistics period (Daily or Overall)",
         ('Daily', 'Overall'),
