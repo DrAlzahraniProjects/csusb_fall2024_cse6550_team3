@@ -31,7 +31,7 @@ p {
 /* Assistant message styling (left-aligned) */
 .assistant-message {
     text-align: left;
-    background-color: #e0f7fa;
+    background-color: #d3d3d3; /* Light gray for light mode */
     color: black;
     padding: 10px;
     border-radius: 10px;
@@ -42,15 +42,21 @@ p {
     clear: both;
 }
 
-/* Dark mode message styling */
+/* Dark mode chat bubble styling */
 html[data-theme="dark"] .user-message {
-    background-color: #1a1a1a; /* Darker background for user messages */
-    color: #e0e0e0; /* Lighter text for better contrast */
+    background-color: #333333; /* Darker background for user messages */
+    color: #e0e0e0; /* Lighter text for contrast */
 }
 
 html[data-theme="dark"] .assistant-message {
-    background-color: #2a2a2a; /* Darker background for assistant messages */
-    color: #d0d0d0; /* Lighter text for better contrast */
+    background-color: #2e2e2e; /* Dark gray for dark mode */
+    color: #d0d0d0; /* Lighter text for contrast */
+}
+
+/* Centered Daily/Overall radio buttons */
+.stat-period-radio {
+    text-align: center;
+    margin-bottom: 15px;
 }
 
 /* Feedback buttons */
@@ -72,14 +78,18 @@ html[data-theme="dark"] .assistant-message {
 
 /* Statistics title styling */
 .title-stat {
-    color: #000000; /* Black color for light mode */
     font-size: 20px;
     margin-top: 0px;
     margin-bottom: 1rem;
     text-align: center;
 }
 
-/* Dark mode title styling */
+/* Light mode title color */
+html[data-theme="light"] .title-stat {
+    color: #000000; /* Black color for light mode */
+}
+
+/* Dark mode title color */
 html[data-theme="dark"] .title-stat {
     color: #ffffff; /* White color for dark mode */
 }
