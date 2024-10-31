@@ -41,8 +41,9 @@ class Conversation(Base):
     model_name = Column(String(255))
     source = Column(String(255))
     response_time = Column(Integer)
-    correct = Column(Boolean, nullable=True)  
+    correct = Column(Boolean, nullable=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
+    answerable = Column(Boolean, nullable=True)
     common_topics = Column(Text)
     date = Column(DateTime(timezone=True), default=datetime.utcnow)
 
@@ -77,8 +78,9 @@ def insert_conversation(
     citations,
     model_name,
     source,
-    response_time, 
+    response_time,
     user_id,
+    answerable=None, 
     correct=None,  
     common_topics=""
 ):
@@ -91,8 +93,9 @@ def insert_conversation(
             model_name=model_name,
             source=source,
             response_time=response_time,
-            correct=correct, 
+            correct=correct,
             user_id=user_id,
+            answerable=answerable,
             common_topics=common_topics
         )
         session.add(new_conversation)
