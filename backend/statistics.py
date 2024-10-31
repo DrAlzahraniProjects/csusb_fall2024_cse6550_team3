@@ -111,6 +111,14 @@ def toggle_correctness(conversation_id, value):
             conversation.correct = value
             session.commit()
 
+def reset_confusion_matrix():
+    """Reset the correctness and answerability fields in the conversations table"""
+    with Session() as session:
+        session.query(Conversation).update({
+            Conversation.answerable: None
+        })
+        session.commit()
+
 ####################
 # DATABASE QUERIES #
 ####################

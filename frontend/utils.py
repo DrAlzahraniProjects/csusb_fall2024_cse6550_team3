@@ -7,6 +7,7 @@ import plotly.express as px
 from backend.statistics import (
     update_user_session,
     toggle_correctness,
+    reset_confusion_matrix,
     get_statistics,
     get_confusion_matrix
 )
@@ -129,7 +130,7 @@ def display_confusion_matrix():
     # Performance Metrics
     valid_metrics = {k: v for k, v in metrics.items() if v is not None}
     if valid_metrics:
-        st.sidebar.markdown("### Performance Metrics")
+        st.sidebar.markdown("#### Performance Metrics")
         for metric, value in valid_metrics.items():
             # Display metric using the existing btn-stat style
             st.sidebar.markdown(f"""
@@ -137,6 +138,11 @@ def display_confusion_matrix():
                     <span class="btn-stat">{metric}: {value:.2f}</span>
                 </div>
             """, unsafe_allow_html=True)
+
+    # Reset button
+    if st.sidebar.button("Reset"):
+        reset_confusion_matrix()
+        st.rerun()
 
 def handle_feedback(conversation_id):
     """Handle feedback button click"""
