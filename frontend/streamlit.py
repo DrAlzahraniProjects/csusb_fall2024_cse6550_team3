@@ -39,7 +39,7 @@ def main():
 
         st.sidebar.empty()
         display_confusion_matrix()
-        update_and_display_statistics()
+        # update_and_display_statistics()
 
         # Display messages
         for message in st.session_state.messages:

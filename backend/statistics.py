@@ -167,3 +167,43 @@ def get_statistics(period="Daily"):
             'common_topics': query_common_topics(session, 5, date_filter)
         })
         return stats
+
+def get_confusion_matrix():
+    """Calculate confusion matrix and evaluation metrics"""
+    with Session() as session:
+        conversations = session.query(Conversation).filter(
+            Conversation.correct.isnot(None),
+            Conversation.answerable.isnot(None)
+        ).all()
+        
+        # True Positives (TP): The chatbot correctly answers an answerable question.
+        tp = sum(1 for c in conversations if c.correct and c.answerable)
+        # False Positives (FP): The chatbot provides an answer for an unanswerable question.
+        fp = sum(1 for c in conversations if not c.correct and not c.answerable)
+        # False Negatives (FN): The chatbot fails to provide a correct answer for an answerable question.
+        fn = sum(1 for c in conversations if not c.correct and c.answerable)
+        # True Negatives (TN): The chatbot correctly identifies an unanswerable question.
+        tn = sum(1 for c in conversations if c.correct and not c.answerable)
+        
+        total = tp + tn + fp + fn
+        # Accuracy: Measures the proportion of correctly classified questions (both answerable and unanswerable).
+        accuracy = (tp + tn) / total if total > 0 else None
+        # Precision (or Positive Predictive Value): Measures the proportion of questions classified as answerable that were actually answerable.
+        precision = tp / (tp + fp) if (tp + fp) > 0 else None
+        # Recall (Sensitivity): Measures the proportion of answerable questions that were correctly answered.
+        recall = tp / (tp + fn) if (tp + fn) > 0 else None
+        # Specificity: Measures the proportion of unanswerable questions that were correctly identified as unanswerable.
+        specificity = tn / (tn + fp) if (tn + fp) > 0 else None
+        # F1 Score: The harmonic mean of precision and recall, providing a balance between the two, especially when the dataset is imbalanced.
+        f1 = 2 * (precision * recall) / (precision + recall) if (precision and recall and (precision + recall) > 0) else None
+        
+        return {
+            'matrix': {'tp': tp, 'tn': tn, 'fp': fp, 'fn': fn},
+            'metrics': {
+                'Accuracy': accuracy,
+                'Precision': precision,
+                'Recall': recall,
+                'Specificity': specificity,
+                'F1': f1
+            }
+        }

@@ -1,10 +1,14 @@
 import os
 import yake
 import streamlit as st
+import pandas as pd
+import plotly.graph_objects as go
+import plotly.express as px
 from backend.statistics import (
     update_user_session,
+    toggle_correctness,
     get_statistics,
-    toggle_correctness
+    get_confusion_matrix
 )
 
 baseline_questions = {
@@ -78,7 +82,61 @@ def update_and_display_statistics():
 
 def display_confusion_matrix():
     """Display confusion matrix and evaluation metrics"""
-    st.sidebar.markdown("<h1 class='title-stat'>Confusion Matrix</h1>", unsafe_allow_html=True)
+    st.sidebar.markdown("<h1 class='title-stat'>Evaluation Report</h1>", unsafe_allow_html=True)
+
+    # Get confusion matrix and metrics
+    results = get_confusion_matrix()
+    matrix = results['matrix']
+    metrics = results['metrics']
+    
+    # If no data
+    if all(v == 0 for v in matrix.values()):
+        st.sidebar.markdown(
+            "<div style='text-align: center; padding: 10px;'>"
+            "No evaluation data available yet."
+            "</div>", 
+            unsafe_allow_html=True
+        )
+        return
+    
+    # Confusion Matrix
+    z = [
+        [matrix['tp'], matrix['fn']], 
+        [matrix['fp'], matrix['tn']]
+    ]
+    annotations = [
+        [str(matrix['tp']), str(matrix['fn'])],
+        [str(matrix['fp']), str(matrix['tn'])]
+    ]
+    fig_matrix = go.Figure(data=go.Heatmap(
+        z=z,
+        x=['Predicted Answerable', 'Predicted Unanswerable'],
+        y=['Actual Answerable', 'Actual Unanswerable'],
+        text=annotations,
+        texttemplate="%{text}",
+        textfont={"size": 16},
+        hoverongaps=False,
+        colorscale='Blues'
+    ))
+    fig_matrix.update_layout(
+        title='Confusion Matrix',
+        width=300,
+        height=300,
+        margin=dict(l=10, r=10, t=60, b=20)
+    )
+    st.sidebar.plotly_chart(fig_matrix, use_container_width=True)
+    
+    # Performance Metrics
+    valid_metrics = {k: v for k, v in metrics.items() if v is not None}
+    if valid_metrics:
+        st.sidebar.markdown("### Performance Metrics")
+        for metric, value in valid_metrics.items():
+            # Display metric using the existing btn-stat style
+            st.sidebar.markdown(f"""
+                <div class='btn-stat-container'>
+                    <span class="btn-stat">{metric}: {value:.2f}</span>
+                </div>
+            """, unsafe_allow_html=True)
 
 def handle_feedback(conversation_id):
     """Handle feedback button click"""
