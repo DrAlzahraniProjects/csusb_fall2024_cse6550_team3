@@ -1,6 +1,4 @@
 import os
-import numpy as np
-from langchain.docstore.document import Document
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.retrievers import BM25Retriever
@@ -40,62 +38,52 @@ def load_or_create_faiss_vector_store(
 	persist_directory,
 	collection_name="collection"
 ):
-    """
-    Load an existing FAISS vector store or create a new one if it doesn't exist.
-    Args:
-        documents: List of documents to be indexed.
-        collection_name (str): Name of the collection.
-        persist_directory (str): Directory to save/load the FAISS index.
-    Returns:
-        FAISS vector store object.
-    """
-    index_path = os.path.join(persist_directory, f'{collection_name}')
-    if os.path.exists(index_path):
-        # Load existing FAISS index
-        print(f"Loading existing FAISS vector store from {index_path}...\n")
-        faiss_store = FAISS.load_local(index_path, embeddings=EMBEDDING_FUNCTION, allow_dangerous_deserialization=True)
-    else:
-        # Create new FAISS index
-        print(f"Creating new FAISS vector store in {index_path}...\n")
-        faiss_store = FAISS.from_documents(documents, embedding=EMBEDDING_FUNCTION)
-        faiss_store.save_local(index_path)
-    return faiss_store
+	"""
+	Load an existing FAISS vector store or create a new one if it doesn't exist.
+	Args:
+			documents: List of documents to be indexed.
+			collection_name (str): Name of the collection.
+			persist_directory (str): Directory to save/load the FAISS index.
+	Returns:
+			FAISS vector store object.
+	"""
+	index_path = os.path.join(persist_directory, f'{collection_name}')
+	if os.path.exists(index_path):
+		# Load existing FAISS index
+		print(f"Loading existing FAISS vector store from {index_path}...\n")
+		faiss_store = FAISS.load_local(
+			index_path, 
+			embeddings=EMBEDDING_FUNCTION, 
+			allow_dangerous_deserialization=True
+		)
+	else:
+		# Create new FAISS index
+		print(f"Creating new FAISS vector store in {index_path}...\n")
+		faiss_store = FAISS.from_documents(
+			documents, 
+			embedding=EMBEDDING_FUNCTION
+		)
+		faiss_store.save_local(index_path)
+	return faiss_store
 
-def filter_docs(
-    relevant_docs,
-    question,
-		vector_store,
-    similarity_threshold=0.75
+def similarity_search(
+	question,
+	vector_store,
+	k,
+	distance_threshold = 420.0
 ):
 	"""
-	Filter documents by calculating cosine similarity using batched HuggingFace embeddings.
-	
+	Get top k most similar documents using FAISS vector store.
 	Args:
-		relevant_docs (set[Document]): Set of initially retrieved documents
-		question (str): The question text
-		similarity_threshold (float): Minimum cosine similarity threshold
-	
+		question: The user question
+		vector_store: FAISS vector store
+		k: Number of documents to return
+		distance_threshold: Maximum distance score to include document
 	Returns:
-		set[Document]: Filtered documents above similarity threshold
+		list[Document]: Top k most similar documents
 	"""
-
-	print(f"Initial docs: {len(relevant_docs)}")
-
-	# Convert relevant_docs to a list if it's not already
-	relevant_contents = [doc.page_content for doc in relevant_docs]
-	print(relevant_contents)
-	# Use FAISS to get similarities for these specific contents
-	docs_with_scores = vector_store.similarity_search_with_score(
-		question,
-		k=len(vector_store.docstore._dict),
-		filter=lambda doc: doc["page_content"] in relevant_docs
-	)
-
-	# Filter based on similarity threshold
-	print(docs_with_scores)
-	filtered_docs = [doc for doc, score in docs_with_scores if score >= similarity_threshold]
-
-	print(f"Filtered docs: {len(filtered_docs)}")
+	retrieved_docs = vector_store.similarity_search_with_score(question, k=k)
+	filtered_docs = [doc for doc, score in retrieved_docs if score <= distance_threshold]
 	return filtered_docs
 
 def get_hybrid_retriever(documents, vector_store, k):
