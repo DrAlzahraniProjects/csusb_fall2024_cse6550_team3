@@ -30,7 +30,7 @@ def get_answer_with_source(response):
   sources = [] # Handle multiple contexts in the response (assuming response['context'] is a list)
 
   # Iterate over context documents and get top 5 sources
-  for doc in response['context'][:5]:
+  for doc in response["context"]:
     page = doc.metadata.get('page', 'Unknown page')
     # PDF's are zero indexed but the sources will start from 1
     link = f'<a href="/team3/?view=pdf&file={pdf_path}&page={page + 1}" target="_blank">[{page + 1}]</a>'
