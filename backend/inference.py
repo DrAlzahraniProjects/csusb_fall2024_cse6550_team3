@@ -6,7 +6,8 @@ from langchain_mistralai import ChatMistralAI
 from .document_loading import (
 	load_documents_from_directory, 
 	load_or_create_faiss_vector_store,
-	get_hybrid_retriever
+  filter_docs,
+	get_hybrid_retriever,
 )
 from .prompts import prompt
 from .citations import get_answer_with_source
@@ -55,29 +56,68 @@ MODEL_NAME = "open-mistral-7b"
 llm = load_llm_api(MODEL_NAME)
 # llm = ChatOllama(model = "mistral")
 
+# def chat_completion(question):
+#   """
+#   Generate a response to a given question using the RAG (Retrieval-Augmented Generation) chain,
+#   streaming parts of the response as they are generated.
+
+#   Args:
+#     question (str): The user question to be answered.
+
+#   Yields:
+#     str: The generated response in chunks.
+#   """
+#   print(f"Running prompt: {question}")
+#   question_answer_chain = create_stuff_documents_chain(llm, prompt)
+#   rag_chain = create_retrieval_chain(retriever, question_answer_chain)
+
+#   # Stream response from LLM
+#   full_response = {"answer": "", "context": []}
+#   for chunk in rag_chain.stream({"input": question}):
+#     if "answer" in chunk:
+#       full_response["answer"] += chunk["answer"]
+#       yield (chunk["answer"], MODEL_NAME)
+#     if "context" in chunk:
+#       full_response["context"].extend(chunk["context"])
+
+#   # After streaming is complete, use the full response to extract citations
+#   final_answer = get_answer_with_source(full_response)
+#   # Yield any remaining part of the answer with citations
+#   remaining_answer = final_answer[len(full_response["answer"]):]
+#   if remaining_answer:
+#     yield (remaining_answer, MODEL_NAME)
+
+
 def chat_completion(question):
   """
-  Generate a response to a given question using the RAG (Retrieval-Augmented Generation) chain,
+  Generate a response to a given question using simple RAG approach,
   streaming parts of the response as they are generated.
 
   Args:
     question (str): The user question to be answered.
 
   Yields:
-    str: The generated response in chunks.
+    tuple[str, str]: The generated response chunk and model name.
   """
   print(f"Running prompt: {question}")
-  question_answer_chain = create_stuff_documents_chain(llm, prompt)
-  rag_chain = create_retrieval_chain(retriever, question_answer_chain)
-
-  # Stream response from LLM
-  full_response = {"answer": "", "context": []}
-  for chunk in rag_chain.stream({"input": question}):
-    if "answer" in chunk:
-      full_response["answer"] += chunk["answer"]
-      yield (chunk["answer"], MODEL_NAME)
-    if "context" in chunk:
-      full_response["context"].extend(chunk["context"])
+  
+  # 1. Get relevant documents from hybrid retriever
+  relevant_docs = retriever.invoke(question)
+  filtered_docs = filter_docs(relevant_docs, question, faiss_store)
+  # 2. Format context from retrieved documents
+  context = "\n\n".join([doc.page_content for doc in filtered_docs])
+  
+  # 3. Format messages with prompt template
+  messages = prompt.format_messages(
+    input=question,
+    context=context
+  )
+  
+  # 4. Stream response from LLM
+  full_response = {"answer": "", "context": relevant_docs}
+  for chunk in llm.stream(messages):
+    full_response["answer"] += chunk.content
+    yield (chunk.content, MODEL_NAME)
 
   # After streaming is complete, use the full response to extract citations
   final_answer = get_answer_with_source(full_response)
@@ -85,3 +125,16 @@ def chat_completion(question):
   remaining_answer = final_answer[len(full_response["answer"]):]
   if remaining_answer:
     yield (remaining_answer, MODEL_NAME)
+
+  # # Stream the main answer
+  # for chunk in llm.stream(messages):
+  #   full_response["answer"] += chunk.content
+  #   yield (chunk.content, MODEL_NAME)
+  
+  # # After streaming complete, add sources
+  # final_answer = get_answer_with_source(full_response)
+  
+  # # Only yield the sources part that wasn't part of the streamed answer
+  # sources_part = final_answer[len(full_response["answer"]):]
+  # if sources_part:
+  #   yield (sources_part, MODEL_NAME)

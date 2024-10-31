@@ -1,4 +1,6 @@
 import os
+import numpy as np
+from langchain.docstore.document import Document
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.retrievers import BM25Retriever
@@ -59,6 +61,42 @@ def load_or_create_faiss_vector_store(
         faiss_store.save_local(index_path)
     return faiss_store
 
+def filter_docs(
+    relevant_docs,
+    question,
+		vector_store,
+    similarity_threshold=0.75
+):
+	"""
+	Filter documents by calculating cosine similarity using batched HuggingFace embeddings.
+	
+	Args:
+		relevant_docs (set[Document]): Set of initially retrieved documents
+		question (str): The question text
+		similarity_threshold (float): Minimum cosine similarity threshold
+	
+	Returns:
+		set[Document]: Filtered documents above similarity threshold
+	"""
+
+	print(f"Initial docs: {len(relevant_docs)}")
+
+	# Convert relevant_docs to a list if it's not already
+	relevant_contents = [doc.page_content for doc in relevant_docs]
+	print(relevant_contents)
+	# Use FAISS to get similarities for these specific contents
+	docs_with_scores = vector_store.similarity_search_with_score(
+		question,
+		k=len(vector_store.docstore._dict),
+		filter=lambda doc: doc["page_content"] in relevant_docs
+	)
+
+	# Filter based on similarity threshold
+	print(docs_with_scores)
+	filtered_docs = [doc for doc, score in docs_with_scores if score >= similarity_threshold]
+
+	print(f"Filtered docs: {len(filtered_docs)}")
+	return filtered_docs
 
 def get_hybrid_retriever(documents, vector_store, k):
 	"""
@@ -71,12 +109,20 @@ def get_hybrid_retriever(documents, vector_store, k):
 		EnsembleRetriever object combining BM25 and vector search.
 	"""
 	# Create BM25 retriever
-	bm25_retriever = BM25Retriever.from_documents(documents, search_kwargs={'k': k})
+	bm25_retriever = BM25Retriever.from_documents(
+		documents, 
+		k = 0
+	)
 	# Create vector retriever
-	vector_retriever = vector_store.as_retriever(search_kwargs={'k': k})
+	vector_retriever = vector_store.as_retriever(
+		search_type="similarity",
+		search_kwargs={
+			'k': k,
+		}
+	)
 	# Combine retrievers with specified weights
 	fusion_retriever = EnsembleRetriever(
 		retrievers=[bm25_retriever, vector_retriever],
-		weights=[0.7, 0.3]
+		weights=[0.2, 0.8]
 	)
 	return fusion_retriever
