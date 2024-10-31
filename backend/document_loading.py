@@ -1,5 +1,6 @@
 import os
 from langchain_community.vectorstores import FAISS
+from langchain_community.vectorstores.faiss import DistanceStrategy
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.retrievers import BM25Retriever
 from langchain.retrievers import EnsembleRetriever
@@ -51,11 +52,11 @@ def load_or_create_faiss_vector_store(
     if os.path.exists(index_path):
         # Load existing FAISS index
         print(f"Loading existing FAISS vector store from {index_path}...\n")
-        faiss_store = FAISS.load_local(index_path, embeddings=EMBEDDING_FUNCTION, allow_dangerous_deserialization=True)
+        faiss_store = FAISS.load_local(index_path, embeddings=EMBEDDING_FUNCTION, allow_dangerous_deserialization=True,distance_strategy=DistanceStrategy.EUCLIDEAN_DISTANCE)
     else:
         # Create new FAISS index
         print(f"Creating new FAISS vector store in {index_path}...\n")
-        faiss_store = FAISS.from_documents(documents, embedding=EMBEDDING_FUNCTION)
+        faiss_store = FAISS.from_documents(documents, embedding=EMBEDDING_FUNCTION,distance_strategy=DistanceStrategy.EUCLIDEAN_DISTANCE)
         faiss_store.save_local(index_path)
     return faiss_store
 
