@@ -1,126 +1,89 @@
 import os
 import time
 import streamlit as st
-import yake
-from backend.statistics import (
-    init_user_session, 
-    update_user_session, 
-    insert_conversation, 
-    get_statistics,
-    toggle_correctness
-)
-from backend.inference import chat_completion
 from .pdf import serve_pdf
+from backend.inference import chat_completion
+from backend.statistics import (
+    init_user_session,
+    update_user_session,
+    insert_conversation,
+)
+from .utils import (
+    baseline_questions,
+    load_css,
+    update_and_display_statistics,
+    display_confusion_matrix,
+    handle_feedback,
+    extract_keywords
+)
 
-def load_css():
-    """Load CSS styles and set theme attribute based on dark mode"""
-    css_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "styles", "style.css")
-    with open(css_file) as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+def load_css(file_name):
+    """Load and apply CSS styles."""
+    with open(file_name) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+def display_statistics(stat_view):
+    """Displays non-interactive statistics in the sidebar based on the selected view (Daily or Overall)."""
+    st.sidebar.markdown("<h2>Statistics</h2>", unsafe_allow_html=True)
     
-    # Detect theme and set data-theme attribute
-    theme = "dark" if st.get_option("theme.base") == "dark" else "light"
-    st.markdown(f'<html data-theme="{theme}"></html>', unsafe_allow_html=True)
-
-def update_and_display_statistics():
-    """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
-
-    # Add the title with dynamic color handling in CSS
-    st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
-    
-    # Center the Daily/Overall toggle buttons with an additional CSS class for centering
-    st.sidebar.markdown("<div class='stat-period-radio'>", unsafe_allow_html=True)
-    stat_period = st.radio(
-        "Statistics period (Daily or Overall)",
-        ('Daily', 'Overall'),
-        key="stats_period",
-        label_visibility="collapsed",
-        horizontal=True
-    )
-    st.sidebar.markdown("</div>", unsafe_allow_html=True)
-
-    # Get statistics based on the selected period
-    stats = get_statistics(stat_period)
-    st.session_state.statistics = stats
-
-    # List of statistics to display as plain text with framed background
-    statistics = [
-        f"Number of questions: {stats['num_questions']}",
-        f"Number of correct answers: {stats['num_correct']}",
-        f"Number of incorrect answers: {stats['num_incorrect']}",
-        f"User engagement metrics: {stats['user_engagement']:.2f} seconds",
-        f"Response time analysis: {stats['avg_response_time']:.2f} seconds",
-        f"Accuracy rate: {stats['accuracy_rate']:.2f}%",
-        f"Satisfaction rate: {stats['satisfaction_rate']:.2f}%",
-        f"Common topics or keywords: {stats['common_topics']}",
-        f"Improvement over time",
-        f"Feedback summary"
-    ]
-    
-    # Display each statistic as framed text (non-interactive)
-    for stat in statistics:
-        st.sidebar.markdown(f"""
-            <div class='stat-item'>{stat}</div>
-        """, unsafe_allow_html=True)
-
-def handle_feedback(conversation_id):
-    """Handle feedback button click"""
-    feedback_value = st.session_state.get(f"feedback_{conversation_id}", None)
-    if feedback_value is not None:
-        toggle_correctness(conversation_id, feedback_value == 1)
-        update_user_session(st.session_state.user_id)
-
-def extract_keywords(texts):
-    """Extract top N keywords from text using YAKE"""
-    # Create a YAKE extractor
-    extractor = yake.KeywordExtractor(lan="en", n=1, features=None)
-    ignore_words = {
-        'pdf', 'education', 'engineering', 'software', 'practitioner', 'bruce', 'file', 'maxim', 'roger', 'view',
-        'details', 'level', 'target', 'blank', 'page', 'href', 'pressman', 'detail', 'system', 'systems'
+    # Example statistics data; replace with actual data retrieval if available
+    stats = {
+        "Number of questions": "100",
+        "Number of correct answers": "85",
+        "Number of incorrect answers": "15",
+        "User engagement metrics": "High",
+        "Response time analysis": "Average 1.2s",
+        "Accuracy rate": "85%",
+        "Common topics or keywords": "Physics, Chemistry, Mathematics",
+        "User satisfaction ratings": "4.5/5",
+        "Improvement over time": "Consistent",
+        "Feedback summary": "Positive"
     }
-    # Extract keywords for each text
-    keywords = set()  # Use a set to avoid duplicates
-    for text in texts:
-        extracted = dict(extractor.extract_keywords(text)).keys()
-        # Convert extracted keywords to lowercase before filtering
-        filtered_keywords = {word.lower() for word in extracted if word.lower() not in ignore_words}
-        keywords.update(filtered_keywords)
-    return ", ".join(list(keywords))
+    
+    for label, value in stats.items():
+        st.sidebar.markdown(
+            f"<div class='stat-label'>{label}</div>"
+            f"<div class='stat-value'>{value}</div>",
+            unsafe_allow_html=True
+        )
+    
+    st.sidebar.markdown(f"<h3>{stat_view} Statistics</h3>", unsafe_allow_html=True)
 
 def main():
-    """Main Streamlit app logic"""
-    # Create the title
-    header = st.container()
-    header.title("Textbook Chatbot")
-    header.write("""<div class='fixed-header'/>""", unsafe_allow_html=True)
+    """Main Streamlit app logic."""
+    # Load custom CSS for styling
+    load_css("style.css")
 
-    # Load PDF
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # Show the title only if there are no messages
+    if not st.session_state.messages:
+        st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
+
+    # Load PDF view if specified
     if "view" in st.query_params and st.query_params["view"] == "pdf":
         serve_pdf()
-    # Load Homepage
     else:
-        # Load the CSS file
-        load_css()
-
-        # Create user session
+        # Create a user session if it doesn't already exist
         if "user_id" not in st.session_state:
             st.session_state.user_id = init_user_session()
             print(f"Creating user#{st.session_state.user_id}")
-        
-        # Create sidebar
-        st.sidebar.empty()
-        update_and_display_statistics()
 
-        # Load user/assistant messages and feedback icons when appropriate
-        if "messages" not in st.session_state:
-            st.session_state.messages = []
+        # Sidebar with toggle for statistics view
+        stat_view = st.sidebar.radio("View Statistics", options=["Daily", "Overall"], index=0, key="stat_view")
+        display_statistics(stat_view)  # Display non-interactive statistics based on selected view
+
+        display_confusion_matrix()
+
+        # Display chat messages
         for message in st.session_state.messages:
             if message["role"] == "assistant":
                 st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
                 conversation_id = message.get("conversation_id", None)
                 if conversation_id:
                     st.caption("Was this response helpful?")
-                    feedback = st.feedback(
+                    st.feedback(
                         "thumbs",
                         key=f"feedback_{conversation_id}",
                         on_change=handle_feedback,
@@ -129,50 +92,54 @@ def main():
             else:
                 st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
 
-        # Handle user prompts
+        # Handle user input and generate a response
         if prompt := st.chat_input("Ask your question?"):
             st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
-
-            # Model inference with streaming
-            response_container = st.empty()  # Placeholder for the assistant's response
+            
+            response_container = st.empty()
             with st.spinner("Generating response..."):
                 start_time = time.time()
-                response = ""  # To accumulate the response in pieces
-                for partial_response, model_name in chat_completion(prompt):  # Streaming from the model
-                    response += partial_response  # Accumulate partial responses
+                response = ""
+                for partial_response, model_name in chat_completion(prompt):
+                    response += partial_response
                     response_container.markdown(f"<div class='assistant-message'>{response}</div>", unsafe_allow_html=True)
                 end_time = time.time()
-                response_time = int((end_time - start_time))  # seconds
+                response_time = int((end_time - start_time))
 
-                # Extract keywords from the prompt and response
-                conversation_texts = [prompt + " " + response]  # Combine prompt and response
+                # Extract keywords from the conversation for analysis
+                conversation_texts = [prompt + " " + response]
                 keywords = extract_keywords(conversation_texts)
                 print(f"Extracted Keywords: {keywords}")
 
-            # Insert conversation to database
+            # Insert conversation data into the database
             conversation_id = insert_conversation(
                 question=prompt,
                 response=response,
                 citations="",
                 model_name=model_name,
-                response_time=response_time, # seconds
-                correct=None,  # No feedback by default
+                source=os.getenv("CORPUS_SOURCE").split("/")[-1],
+                response_time=response_time,
+                correct=None,
                 user_id=st.session_state.user_id,
+                answerable=baseline_questions.get(prompt, None),
                 common_topics=keywords
             )
 
-            # Add conversation to streamlit session state
+            # Append messages to session state
             st.session_state.messages.append({
-                "role": "user", 
+                "role": "user",
                 "content": prompt,
                 "conversation_id": conversation_id,
             })
             st.session_state.messages.append({
-                "role": "assistant", 
+                "role": "assistant",
                 "content": response,
                 "conversation_id": conversation_id
             })
 
-            # Update user session and rerun streamlit
+            # Update user session and rerun the app to display new messages
             update_user_session(st.session_state.user_id)
             st.rerun()
+
+if __name__ == "__main__":
+    main()
