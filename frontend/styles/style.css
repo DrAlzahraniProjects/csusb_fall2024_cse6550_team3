@@ -1,4 +1,4 @@
-/* General layout adjustments */
+/* Sticky header styling */
 div[data-testid="stVerticalBlock"] div:has(div.fixed-header) {
     text-align: center;
     position: sticky;
@@ -6,16 +6,18 @@ div[data-testid="stVerticalBlock"] div:has(div.fixed-header) {
     z-index: 999;
 }
 
+/* Link styling */
 a {
     text-decoration: none !important;
     color: inherit;
 }
 
+/* Paragraph styling */
 p {
     margin: 0px;
 }
 
-/* User message styling (right-aligned) */
+/* Styling for user messages */
 .user-message {
     text-align: right;
     background-color: #f1f1f1;
@@ -28,11 +30,11 @@ p {
     float: right;
 }
 
-/* Assistant message styling (light gray background for light mode) */
+/* Styling for assistant messages */
 .assistant-message {
     text-align: left;
-    background-color: #d3d3d3; /* Light gray background for light mode */
-    color: black; /* Black text for light mode */
+    background-color: #d9d9d9;
+    color: black;
     padding: 10px;
     border-radius: 10px;
     margin-bottom: 10px;
@@ -42,20 +44,11 @@ p {
     clear: both;
 }
 
-/* Dark mode assistant message styling */
-html[data-theme="dark"] .assistant-message {
-    background-color: #1a1a1a; /* Darker background for dark mode */
-    color: #f5f5f5; /* Light text for dark mode */
+.assistant-message p {
+    margin: 0px;
 }
 
-/* Centered Daily/Overall radio buttons */
-.stat-period-radio {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 15px;
-}
-
-/* Feedback buttons */
+/* Feedback button container styling */
 .feedback-buttons {
     text-align: left;
     margin: 5px 0;
@@ -72,52 +65,78 @@ html[data-theme="dark"] .assistant-message {
     position: relative;
 }
 
-/* Statistics title styling */
+/* Title styling for statistics */
 .title-stat {
-    font-size: 20px;
-    margin-top: 0px;
-    margin-bottom: 1rem;
+    color: gray;
+    font-weight: bold;
+    font-size: 2rem !important;
     text-align: center;
 }
 
-/* Light mode title color */
-html[data-theme="light"] .title-stat {
-    color: #000000; /* Black color for light mode */
+/* Container for centered buttons */
+.btn-stat-container {
+    display: flex;
+    justify-content: center;
 }
 
-/* Dark mode title color */
-html[data-theme="dark"] .title-stat {
-    color: #ffffff; /* White color for dark mode */
-}
-
-/* Statistics items styling */
-.stat-item {
-    color: #0a0a0a;
-    font-size: 16px;
+/* Styling for statistics box - now non-interactive with a bordered frame */
+.stat-label {
+    background-color: white;
+    color: black;
     padding: 10px;
-    margin: 5px 0;
-    background-color: #f5f5f5;
-    border-radius: 6px;
-    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-align: left;
+    cursor: default; /* Ensure it's non-interactive */
+    display: block;
+    border: 1px solid #ccc; /* Frame for the label */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
 }
 
-/* Dark mode statistics styling */
-html[data-theme="dark"] .stat-item {
-    background-color: #333;
-    color: #f5f5f5;
-    border-color: #444;
+.stat-value {
+    background-color: #f9f9f9;
+    color: #333;
+    padding: 8px 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    text-align: left;
+    display: block;
+    border: 1px solid #ddd; /* Frame for the value */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
 }
 
-/* General adjustments for dark mode elements */
-html[data-theme="dark"] body {
-    background-color: #121212;
-    color: #e0e0e0;
+/* Styling for Daily and Overall toggle buttons */
+.stRadio > div[role="radiogroup"] {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }
 
-html[data-theme="dark"] a {
-    color: #4fc3f7;
+.stRadio > div[role="radiogroup"] label {
+    background-color: #0D1118;
+    color: white;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border: 1px solid #333;
 }
 
-html[data-theme="dark"] p {
-    color: #e0e0e0;
+.stRadio > div[role="radiogroup"] label:hover {
+    background-color: #555555;
+}
+
+/* Centering the main title */
+h1 {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Additional body styling */
+body {
+    background-color: #f9f9f9;
+    font-family: Arial, sans-serif;
 }
