@@ -3,7 +3,6 @@ import yake
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-import plotly.express as px
 from backend.statistics import (
     update_user_session,
     toggle_correctness,
@@ -89,55 +88,84 @@ def display_confusion_matrix():
     results = get_confusion_matrix()
     matrix = results['matrix']
     metrics = results['metrics']
-    
-    # If no data
-    if all(v == 0 for v in matrix.values()):
-        st.sidebar.markdown(
-            "<div style='text-align: center; padding: 10px;'>"
-            "No evaluation data available yet."
-            "</div>", 
-            unsafe_allow_html=True
-        )
-        return
-    
+
     # Confusion Matrix
     z = [
-        [matrix['tp'], matrix['fn']], 
-        [matrix['fp'], matrix['tn']]
+        [matrix['fp'], matrix['tn']],
+        [matrix['tp'], matrix['fn']],
     ]
-    annotations = [
-        [str(matrix['tp']), str(matrix['fn'])],
-        [str(matrix['fp']), str(matrix['tn'])]
+    is_null = all(val == 0 for row in z for val in row) # check if values in matrix are all 0
+
+    text = [
+        ["FP: " + str(matrix['fp']), "TN: " + str(matrix['tn'])],
+        ["TP: " + str(matrix['tp']), "FN: " + str(matrix['fn'])]
+        
     ]
-    fig_matrix = go.Figure(data=go.Heatmap(
+    tooltips = [
+        [
+            "False Positive:<br>The chatbot answers for an unanswerable question.",
+            "True Negative:<br>The chatbot does not answer an unanswerable question."
+        ],
+        [
+            "True Positive:<br>The chatbot correctly answers an answerable question.",
+            "False Negative:<br>The chatbot incorrectly answers n answerable question."
+        ]
+    ]
+    colorscale = 'Whites' if is_null else 'Blues'
+    fig = go.Figure(data=go.Heatmap(
         z=z,
-        x=['Predicted Answerable', 'Predicted Unanswerable'],
-        y=['Actual Answerable', 'Actual Unanswerable'],
-        text=annotations,
+        x=['True', 'False'],
+        y=['False', 'True'],
+        text=text,
         texttemplate="%{text}",
         textfont={"size": 16},
+        showscale=False,
+        colorscale=[[0, 'white'], [1, 'white']] if is_null else 'Purples',
         hoverongaps=False,
-        colorscale='Blues'
+        hoverinfo='text',
+        hovertext=tooltips
     ))
-    fig_matrix.update_layout(
+    fig.update_layout(
         title='Confusion Matrix',
+        xaxis_title='Feedback',
+        yaxis_title='Answerable',
         width=300,
         height=300,
-        margin=dict(l=10, r=10, t=60, b=20)
+        margin=dict(l=50, r=50, t=50, b=50)
     )
-    st.sidebar.plotly_chart(fig_matrix, use_container_width=True)
+    st.sidebar.plotly_chart(fig, use_container_width=True)
     
     # Performance Metrics
-    valid_metrics = {k: v for k, v in metrics.items() if v is not None}
-    if valid_metrics:
-        st.sidebar.markdown("#### Performance Metrics")
-        for metric, value in valid_metrics.items():
-            # Display metric using the existing btn-stat style
-            st.sidebar.markdown(f"""
-                <div class='btn-stat-container'>
-                    <span class="btn-stat">{metric}: {value:.2f}</span>
-                </div>
-            """, unsafe_allow_html=True)
+    st.sidebar.markdown("#### Performance Metrics")
+    metrics_display = f"""
+    <div class='metrics-container'>
+        <div class='metric-item'>
+            <span class='metric-label'>Sensitivity:</span>
+            <span class='metric-value'>{f"{metrics['Recall']:.2f}" if metrics['Recall'] is not None else "N/A"}</span>
+        </div>
+        <div class='metric-item'>
+            <span class='metric-label'>Specificity:</span>
+            <span class='metric-value'>{f"{metrics['Specificity']:.2f}" if metrics['Specificity'] is not None else "N/A"}</span>
+        </div>
+        <div class='metric-item'>
+            <span class='metric-label'>Accuracy:</span>
+            <span class='metric-value'>{f"{metrics['Accuracy']:.2f}" if metrics['Accuracy'] is not None else "N/A"}</span>
+        </div>
+        <div class='metric-item'>
+            <span class='metric-label'>Precision:</span>
+            <span class='metric-value'>{f"{metrics['Precision']:.2f}" if metrics['Precision'] is not None else "N/A"}</span>
+        </div>
+        <div class='metric-item'>
+            <span class='metric-label'>Recall:</span>
+            <span class='metric-value'>{f"{metrics['Recall']:.2f}" if metrics['Recall'] is not None else "N/A"}</span>
+        </div>
+        <div class='metric-item'>
+            <span class='metric-label'>F1 Score:</span>
+            <span class='metric-value'>{f"{metrics['F1']:.2f}" if metrics['F1'] is not None else "N/A"}</span>
+        </div>
+    </div>
+    """
+    st.sidebar.markdown(metrics_display, unsafe_allow_html=True)
 
     # Reset button
     if st.sidebar.button("Reset"):
