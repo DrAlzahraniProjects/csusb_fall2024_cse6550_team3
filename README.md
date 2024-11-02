@@ -49,29 +49,28 @@ Running from Dockerhub
    git pull origin main
    ```
 
-4. Create a [Mistral AI token](https://console.mistral.ai/api-keys/). 
+4. Build the Docker image:
+   
+   Build the Docker image using the following command:
 
-   Then create a `.env` file  (Do not commit this file to git) and add the following:
+   Befere running this command include API key in the end
+   
+   Go to [team3](https://csusb.instructure.com/courses/43192/discussion_topics/419698) in canvas for API key
    ```
-   MISTRAL_API_KEY=<Mistral AI key>
-   ```
-
-5. Build the Docker image:
-   ```
-   docker build -t team3-app .
+   docker build -t team3-app . --build-arg MISTRAL=
    ```
 
-6. Now, run the Docker container:
-   ```
+5. Now, run the Docker container:
+   <!--```
 
    docker run --env-file .env -p 5003:5003 -p 6003:6003 -v $(pwd):/app team3-app
    ```
-   If there are issues with the above command use:
+   If there are issues with the above command use:-->
    ```
-   docker run --env-file .env -p 5003:5003 -p 6003:6003 team3-app
+   docker run -p 5003:5003 -p 6003:6003 team3-app
    ```
 
-7. After a few minutes, the application will be available at:
+6. After a few minutes, the application will be available at:
   
     Website: http://localhost:5003/team3
 
