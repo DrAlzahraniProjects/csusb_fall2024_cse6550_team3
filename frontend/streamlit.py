@@ -49,8 +49,14 @@ def main():
                 if conversation_id:
                     # Find the corresponding user question
                     user_message = next((msg for msg in st.session_state.messages if msg["role"] == "user" and msg["conversation_id"] == conversation_id), None)
-                    # Set feedback question based on whether question is in baseline
-                    feedback_question = ("Did the chatbot answer the question?" if user_message and user_message["content"] in baseline_questions else "Was this response helpful?")
+                    # Set feedback question based on baseline question type
+                    feedback_question = "Was this response helpful?"
+                    if user_message and user_message["content"] in baseline_questions:
+                        is_answerable = baseline_questions[user_message["content"]]
+                        feedback_question = (
+                            "Did the chatbot correctly answer this answerable question?" if is_answerable 
+                            else "Did the chatbot answer this unanswerable question?"
+                        )
                     st.caption(feedback_question)
                     feedback = st.feedback(
                         "thumbs",

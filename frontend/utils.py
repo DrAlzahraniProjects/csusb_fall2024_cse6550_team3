@@ -103,12 +103,12 @@ def display_confusion_matrix():
     ]
     tooltips = [
         [
-            "False Positive:<br>The chatbot answers for an unanswerable question.",
+            "False Positive:<br>The chatbot answers an unanswerable question.",
             "True Negative:<br>The chatbot does not answer an unanswerable question."
         ],
         [
             "True Positive:<br>The chatbot correctly answers an answerable question.",
-            "False Negative:<br>The chatbot incorrectly answers n answerable question."
+            "False Negative:<br>The chatbot incorrectly answers an answerable question."
         ]
     ]
     colorscale = 'Whites' if is_null else 'Blues'
