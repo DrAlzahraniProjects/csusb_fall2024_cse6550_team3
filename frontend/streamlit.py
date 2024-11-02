@@ -47,7 +47,17 @@ def main():
                 st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
                 conversation_id = message.get("conversation_id", None)
                 if conversation_id:
-                    st.caption("Was this response helpful?")
+                    # Find the corresponding user question
+                    user_message = next((msg for msg in st.session_state.messages if msg["role"] == "user" and msg["conversation_id"] == conversation_id), None)
+                    # Set feedback question based on baseline question type
+                    feedback_question = "Was this response helpful?"
+                    if user_message and user_message["content"] in baseline_questions:
+                        is_answerable = baseline_questions[user_message["content"]]
+                        feedback_question = (
+                            "Did the chatbot correctly answer this answerable question?" if is_answerable 
+                            else "Did the chatbot answer this unanswerable question?"
+                        )
+                    st.caption(feedback_question)
                     feedback = st.feedback(
                         "thumbs",
                         key=f"feedback_{conversation_id}",

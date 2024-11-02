@@ -92,3 +92,22 @@ p {
     display: flex;
     justify-content: center;
 }
+
+.metrics-container {
+    padding: 5px;
+    margin-bottom: 20px;
+}
+.metric-item {
+    margin: 5px 0;
+    color: rgb(204, 204, 204);
+}
+.metric-label {
+    font-weight: bold;
+}
+.metric-value {
+    margin-left: 5px;
+}
+
+.stButton {
+    margin: auto;
+}
