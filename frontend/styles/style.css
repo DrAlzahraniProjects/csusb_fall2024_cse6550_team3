@@ -1,4 +1,4 @@
-div[data-testid="stVerticalBlock"] div:has(div.fixed-header) {
+/* div[data-testid="stVerticalBlock"] div:has(div.fixed-header) {
     text-align: center;
     position: sticky;
     top: 2.875rem;
@@ -110,4 +110,77 @@ p {
 
 .stButton {
     margin: auto;
+} */
+
+h1, h2, h3, p, span {
+  margin: 0px;
+  padding: 0px
+}
+
+/* Main */
+h1 {
+  margin-bottom: 20px;
+}
+
+.user-message{
+  display: flex;
+  justify-content: right;
+  max-width: fit-content;
+  padding: 12px;
+  margin-left: auto;
+  margin-bottom: 10px;
+  background: #1E1E1E;
+  border-radius: 15px;
+}
+.assistant-message {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  gap: 10px 0px;
+  max-width: fit-content;
+  padding: 10px;
+  margin-right: auto;
+  margin-bottom: 5px;
+}
+
+/* Feedback */
+[data-testid="stCaptionContainer"]{
+  padding-left: 10px;
+}
+[data-testid="stButtonGroup"]{
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  padding-left: 10px;
+  padding-top: 5px;
+}
+
+/* Chat Input */
+[data-testid="stChatInput"] {
+  display: flex;
+  justify-content: center;
+  background: #1F1F1F;
+  border-radius: 20px;
+  outline: none;
+  padding: 10px;
+}
+[data-baseweb="base-input"],
+[data-baseweb="textarea"] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: #FFFFFF !important;
+  padding: 0px 5px;
+}
+[data-testid="stChatInput"] textarea:focus {color: #FFFFFF !important;}
+[data-testid="stChatInput"] textarea::placeholder {color: #9C9C9C !important;}
+/* For cross-browser compatibility */
+[data-testid="stChatInput"] textarea::-webkit-input-placeholder {color: #9C9C9C !important;}
+[data-testid="stChatInput"] textarea::-moz-placeholder {color: #9C9C9C !important;}
+[data-testid="stChatInput"] textarea:-ms-input-placeholder {color: #9C9C9C !important;}
+
+/* Sidebar */
+[data-testid="stSidebar"][aria-expanded="true"] {
+  min-width: 400px;
+  max-width: 400px;
 }
