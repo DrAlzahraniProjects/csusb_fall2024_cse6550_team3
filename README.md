@@ -8,30 +8,6 @@ Before you begin, make sure you have the following installed on your machine:
 - **Git**
 - **Docker**
 
-## Setup
-
-Running from Dockerhub
-   
-1. Pull the repository from DockerHub:
-  
-   ``` bash
-   docker pull pavankunchala/team3-app:latest
-   ```
-
-2. Run the Docker container:
-
-    Execute the Docker container downloaded from pavankunchala/team3-app
-   
-    ```bash
-    docker run -d -p 5003:5003 -p 6003:6003 pavankunchala/team3-app
-    ```
-
-3. After a few minutes, the application will be available at:
-  
-    Website: http://localhost:5003/team3
-
-    Jupyter: http://localhost:6003/team3/jupyter
-
 ## Developer Setup
 
 1. To get started, first clone the repository to your local machine:
