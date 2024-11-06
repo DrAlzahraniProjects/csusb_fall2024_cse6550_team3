@@ -116,6 +116,6 @@ def main():
                 "content": response,
                 "conversation_id": conversation_id
             })
-
+            
             update_user_session(st.session_state.user_id)
             st.rerun()
