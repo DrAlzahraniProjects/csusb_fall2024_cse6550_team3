@@ -42,7 +42,7 @@ Before you begin, make sure you have the following installed on your machine:
    docker run -d -p 5003:5003 -p 6003:6003 team3-app
    ```
 
-6. After a few minutes, the application will be available at:
+6. After atleast 5 minutes, the application will be available at:
   
     Website: [http://localhost:5003/team3](http://localhost:5003/team3)
    
