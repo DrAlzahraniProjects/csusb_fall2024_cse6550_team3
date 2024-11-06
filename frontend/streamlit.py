@@ -7,13 +7,12 @@ from backend.statistics import (
     init_user_session,
     update_user_session,
     insert_conversation,
+    handle_feedback
 )
 from .utils import (
     baseline_questions,
     load_css,
-    update_and_display_statistics,
     display_confusion_matrix,
-    handle_feedback,
     extract_keywords
 )
 
@@ -38,10 +37,9 @@ def main():
             print(f"Creating user#{st.session_state.user_id}")
 
         st.sidebar.empty()
-        display_confusion_matrix()  # Ensure it reflects the adjusted fp/tn logic
-        # update_and_display_statistics()
+        display_confusion_matrix()  # Ensure it reflects the current state of the confusion matrix
 
-        # Display messages
+        # Display messages and collect feedback
         for message in st.session_state.messages:
             if message["role"] == "assistant":
                 st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
@@ -67,14 +65,15 @@ def main():
                         on_change=handle_feedback,
                         kwargs={
                             "conversation_id": conversation_id,
-                            "feedback_mapping": {"👍": "true_negative", "👎": "false_positive"}
+                            "feedback_type": "true_negative" if not is_answerable else "true_positive"
                         }
                     )
             else:
                 st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
 
         # Handle user input
-        if prompt := st.chat_input("Ask your question?"):
+        prompt = st.chat_input("Ask your question?")
+        if prompt:
             st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
 
             response_container = st.empty()
