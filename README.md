@@ -39,7 +39,7 @@ Before you begin, make sure you have the following installed on your machine:
 
    To see all the running containers in your machine: 
 ```
-   docker ps : 
+   docker ps
 ```
   
   To stop a running container, replace <container_id> with the one found in docker ps
