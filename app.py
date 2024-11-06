@@ -1,31 +1,54 @@
-corpus_source = "swebok" # Guide to the Software Engineering Body of Knowledge
-# corpus_source = "default" # "Software Engineering: A PRACTITIONER’S APPROACH"
-
 import os
-
-# Add corpus source to enviroment variables
-if corpus_source != "swebok" and corpus_source != "default":
-    corpus_source = "swebok"
-CORPUS_SOURCE = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"data/{corpus_source}")
-os.environ["CORPUS_SOURCE"] = CORPUS_SOURCE
-print(f"\nCorpus source: ", CORPUS_SOURCE)
-
 import subprocess
-from frontend import streamlit
-from backend.statistics import init_db
 
-# Application entrypoint
-if __name__ == "__main__":
-    # If Streamlit instance is running
-    if os.environ.get("STREAMLIT_RUNNING") == "1":
-        # Initialize the database
-        init_db()
-        # Start the Streamlit frontend
-        streamlit.main()
+def setup_environment():
+    corpus_source = "swebok"  # default corpus
+    if corpus_source not in ["swebok", "default"]:
+        corpus_source = "swebok"
+    corpus_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"data/{corpus_source}")
+    os.environ["CORPUS_SOURCE"] = corpus_path
+    print(f"Corpus source set to: {corpus_path}")
+
+def start_streamlit():
+    streamlit_cmd = [
+        "streamlit", "run", __file__,
+        "--server.port=5003",
+        "--server.address=0.0.0.0",
+        "--server.baseUrlPath=/team3"
+    ]
+    subprocess.Popen(streamlit_cmd)
+    print("Streamlit started...")
+
+def start_jupyter():
+    jupyter_cmd = [
+        "jupyter", "notebook",
+        "--ip=0.0.0.0",
+        "--port=6003",
+        "--no-browser",
+        "--allow-root",
+        "--NotebookApp.base_url=/team3/jupyter",
+        "--NotebookApp.token=''",
+        "--NotebookApp.password=''"
+    ]
+    subprocess.run(jupyter_cmd)
+    print("Jupyter Notebook started...")
+
+def main():
+    setup_environment()
+    from backend.statistics import init_db
+    from frontend import streamlit
+
+    # Initialize the database
+    init_db()
+
+    # Check if Streamlit is running to prevent multiple instances
+    if os.environ.get("STREAMLIT_RUNNING") != "1":
+        os.environ["STREAMLIT_RUNNING"] = "1"
+        start_streamlit()
+        start_jupyter()
     else:
-        # Set the environment variable to indicate Streamlit is running
-        os.environ["STREAMLIT_RUNNING"] = "1"    
-        # Start Streamlit as a background process
-        subprocess.Popen(["streamlit", "run", __file__,"--server.port=5003", "--server.address=0.0.0.0", "--server.baseUrlPath=/team3"])
-        # Start Jupyter Notebook
-        subprocess.run(["jupyter", "notebook","--ip=0.0.0.0", "--port=6003","--no-browser", "--allow-root","--NotebookApp.base_url=/team3/jupyter","--NotebookApp.token=''", "--NotebookApp.password=''" ])
+        # Main application logic
+        streamlit.main()
+
+if __name__ == "__main__":
+    main()
