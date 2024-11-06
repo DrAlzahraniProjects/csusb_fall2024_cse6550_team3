@@ -7,11 +7,11 @@ from backend.statistics import (
     init_user_session,
     update_user_session,
     insert_conversation,
+    update_confusion_matrix,  # Make sure this function exists in statistics.py
 )
 from .utils import (
     baseline_questions,
     load_css,
-    update_and_display_statistics,
     display_confusion_matrix,
     handle_feedback,
     extract_keywords
@@ -38,10 +38,9 @@ def main():
             print(f"Creating user#{st.session_state.user_id}")
 
         st.sidebar.empty()
-        display_confusion_matrix()
-        # update_and_display_statistics()
+        display_confusion_matrix()  # Ensure it reflects the adjusted fp/tn logic
 
-        # Display messages
+        # Display messages and collect feedback
         for message in st.session_state.messages:
             if message["role"] == "assistant":
                 st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
@@ -49,20 +48,29 @@ def main():
                 if conversation_id:
                     # Find the corresponding user question
                     user_message = next((msg for msg in st.session_state.messages if msg["role"] == "user" and msg["conversation_id"] == conversation_id), None)
-                    # Set feedback question based on baseline question type
+                    
+                    # Set feedback question based on question type
                     feedback_question = "Was this response helpful?"
                     if user_message and user_message["content"] in baseline_questions:
                         is_answerable = baseline_questions[user_message["content"]]
                         feedback_question = (
                             "Did the chatbot correctly answer this answerable question?" if is_answerable 
-                            else "Did the chatbot answer this unanswerable question?"
+                            else "Did the chatbot correctly answer this unanswerable question?"
                         )
                     st.caption(feedback_question)
+
+                    # Assign appropriate feedback mapping
+                    feedback_mapping = {"👍": "true_negative" if not is_answerable else "true_positive",
+                                        "👎": "false_positive" if not is_answerable else "false_negative"}
+                    
                     feedback = st.feedback(
                         "thumbs",
                         key=f"feedback_{conversation_id}",
                         on_change=handle_feedback,
-                        kwargs={"conversation_id": conversation_id}
+                        kwargs={
+                            "conversation_id": conversation_id,
+                            "feedback_type": feedback_mapping[st.session_state.get(f"feedback_{conversation_id}")]
+                        }
                     )
             else:
                 st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
@@ -94,7 +102,7 @@ def main():
                 response_time=response_time,
                 correct=None,
                 user_id=st.session_state.user_id,
-                answerable = baseline_questions.get(prompt, None),
+                answerable=baseline_questions.get(prompt, None),
                 common_topics=keywords
             )
 
