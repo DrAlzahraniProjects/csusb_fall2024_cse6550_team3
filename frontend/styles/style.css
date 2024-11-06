@@ -118,6 +118,10 @@ h1, h2, h3, p, span {
 }
 
 /* Main */
+[data-testid="stMainBlockContainer"] {
+  padding-top: 5rem;
+}
+
 h1 {
   margin-bottom: 20px;
 }
@@ -160,9 +164,9 @@ h1 {
   display: flex;
   justify-content: center;
   background: #1F1F1F;
-  border-radius: 20px;
+  border-radius: 30px;
   outline: none;
-  padding: 10px;
+  padding: 6px;
 }
 [data-baseweb="base-input"],
 [data-baseweb="textarea"] {
@@ -170,7 +174,7 @@ h1 {
   outline: none !important;
   box-shadow: none !important;
   color: #FFFFFF !important;
-  padding: 0px 5px;
+  padding: 0px 6px;
 }
 [data-testid="stChatInput"] textarea:focus {color: #FFFFFF !important;}
 [data-testid="stChatInput"] textarea::placeholder {color: #9C9C9C !important;}
@@ -179,8 +183,34 @@ h1 {
 [data-testid="stChatInput"] textarea::-moz-placeholder {color: #9C9C9C !important;}
 [data-testid="stChatInput"] textarea:-ms-input-placeholder {color: #9C9C9C !important;}
 
+
 /* Sidebar */
 [data-testid="stSidebar"][aria-expanded="true"] {
   min-width: 400px;
   max-width: 400px;
+}
+
+/* Evaluation Report */
+h2 {
+  font-size: 30px !important;
+  text-align: center;
+  padding: 10px 0px;
+  border-bottom: 2px solid #1E1E1E;
+  margin-bottom: 20px;
+}
+/* Subheadings: Confusion Matrix, Performance Metrics*/
+h3{
+  font-size: 20px !important;
+  color: #F6F6F6;
+  text-align: left;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.metrics-container{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #131313;
+  padding: 10px;
 }

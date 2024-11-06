@@ -210,10 +210,11 @@ def get_confusion_matrix():
         return {
             'matrix': {'tp': tp, 'tn': tn, 'fp': fp, 'fn': fn},
             'metrics': {
+                'Specificity': specificity,
+                'Sensitivity': recall,
                 'Accuracy': accuracy,
                 'Precision': precision,
                 'Recall': recall,
-                'Specificity': specificity,
-                'F1': f1
+                'F1 Score': f1
             }
         }
