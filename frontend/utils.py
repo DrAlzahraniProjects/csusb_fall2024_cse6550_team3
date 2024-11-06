@@ -117,7 +117,7 @@ def display_confusion_matrix():
         'displayModeBar': False,
         'draggable': False
     }
-    bg_color = '#0E0E0E'
+    bg_color = '#0D0D0D'
 
     """
     Confusion Matrix
