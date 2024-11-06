@@ -22,9 +22,9 @@ def main():
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # Show the title only if there are no messages
-    if not st.session_state.messages:
-        st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
+    # # Show the title only if there are no messages
+    # if not st.session_state.messages:
+    st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
 
     # Load PDF
     if "view" in st.query_params and st.query_params["view"] == "pdf":

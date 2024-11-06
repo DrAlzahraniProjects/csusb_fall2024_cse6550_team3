@@ -49,6 +49,27 @@ def load_css():
     with open(css_file) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
+def handle_feedback(conversation_id):
+    """Handle feedback button click"""
+    feedback_value = st.session_state.get(f"feedback_{conversation_id}", None)
+    if feedback_value is not None:
+        toggle_correctness(conversation_id, feedback_value == 1)
+        update_user_session(st.session_state.user_id)
+
+def extract_keywords(texts):
+    """Extract top N keywords from text using YAKE"""
+    extractor = yake.KeywordExtractor(lan="en", n=1, features=None)
+    ignore_words = {
+        'pdf', 'education', 'engineering', 'software', 'practitioner', 'file', 'textbook.pdf', 'swebok', 'app', 'view',
+        'details', 'level', 'target', 'blank', 'page', 'href', 'pressman', 'detail', 'system', 'systems'
+    }
+    keywords = set()
+    for text in texts:
+        extracted = dict(extractor.extract_keywords(text)).keys()
+        filtered_keywords = {word.lower() for word in extracted if word.lower() not in ignore_words}
+        keywords.update(filtered_keywords)
+    return ", ".join(list(keywords))
+
 def update_and_display_statistics():
     """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
     st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
@@ -82,25 +103,34 @@ def update_and_display_statistics():
 
 def display_confusion_matrix():
     """Display confusion matrix and evaluation metrics"""
-    st.sidebar.markdown("<h1 class='title-stat'>Evaluation Report</h1>", unsafe_allow_html=True)
+    st.sidebar.header("Evaluation Report")
 
     # Get confusion matrix and metrics
     results = get_confusion_matrix()
     matrix = results['matrix']
     metrics = results['metrics']
 
-    # Confusion Matrix
+    # Plotly configurations
+    plotly_config={
+        'scrollZoom': False,'doubleClick': False,
+        'showTips': False,
+        'displayModeBar': False,
+        'draggable': False
+    }
+    bg_color = '#0D0D0D'
+
+    """
+    Confusion Matrix
+    """
     z = [
         [matrix['fp'], matrix['tn']],
         [matrix['tp'], matrix['fn']],
     ]
-    is_null = all(val == 0 for row in z for val in row) # check if values in matrix are all 0
-
     text = [
         ["FP: " + str(matrix['fp']), "TN: " + str(matrix['tn'])],
         ["TP: " + str(matrix['tp']), "FN: " + str(matrix['fn'])]
-        
     ]
+    is_null = all(val == 0 for row in z for val in row) # check if values in matrix are all 0
     tooltips = [
         [
             "False Positive:<br>The chatbot answers an unanswerable question.",
@@ -111,84 +141,74 @@ def display_confusion_matrix():
             "False Negative:<br>The chatbot incorrectly answers an answerable question."
         ]
     ]
-    colorscale = 'Whites' if is_null else 'Blues'
+    colorscale = 'Whites' if is_null else 'Purples'
     fig = go.Figure(data=go.Heatmap(
-        z=z,
-        x=['True', 'False'],
-        y=['False', 'True'],
-        text=text,
-        texttemplate="%{text}",
-        textfont={"size": 16},
-        showscale=False,
-        colorscale=[[0, 'white'], [1, 'white']] if is_null else 'Purples',
-        hoverongaps=False,
-        hoverinfo='text',
-        hovertext=tooltips
+        z=z, x=['True', 'False'], y=['False', 'True'],
+        text=text, texttemplate="%{text}", textfont={"size": 16},
+        showscale=False, colorscale=[[0, '#CFCFCF'], [1, '#CFCFCF']] if is_null else 'Purples',
+        hoverongaps=False, hoverinfo='text', hovertext=tooltips
     ))
     fig.update_layout(
-        title='Confusion Matrix',
-        xaxis_title='Feedback',
-        yaxis_title='Answerable',
-        width=300,
-        height=300,
-        margin=dict(l=50, r=50, t=50, b=50)
+        xaxis_title='Feedback', yaxis_title='Answerable', paper_bgcolor=bg_color,
+        width=300, height=250, margin=dict(l=50, r=30, t=50, b=50)
     )
-    st.sidebar.plotly_chart(fig, use_container_width=True)
+    st.sidebar.markdown("<h3>Confusion Matrix</h3>", unsafe_allow_html=True)
+    st.sidebar.plotly_chart(fig, use_container_width=True, config=plotly_config)
     
-    # Performance Metrics
-    st.sidebar.markdown("#### Performance Metrics")
-    metrics_display = f"""
-    <div class='metrics-container'>
-        <div class='metric-item'>
-            <span class='metric-label'>Sensitivity:</span>
-            <span class='metric-value'>{f"{metrics['Recall']:.2f}" if metrics['Recall'] is not None else "N/A"}</span>
-        </div>
-        <div class='metric-item'>
-            <span class='metric-label'>Specificity:</span>
-            <span class='metric-value'>{f"{metrics['Specificity']:.2f}" if metrics['Specificity'] is not None else "N/A"}</span>
-        </div>
-        <div class='metric-item'>
-            <span class='metric-label'>Accuracy:</span>
-            <span class='metric-value'>{f"{metrics['Accuracy']:.2f}" if metrics['Accuracy'] is not None else "N/A"}</span>
-        </div>
-        <div class='metric-item'>
-            <span class='metric-label'>Precision:</span>
-            <span class='metric-value'>{f"{metrics['Precision']:.2f}" if metrics['Precision'] is not None else "N/A"}</span>
-        </div>
-        <div class='metric-item'>
-            <span class='metric-label'>Recall:</span>
-            <span class='metric-value'>{f"{metrics['Recall']:.2f}" if metrics['Recall'] is not None else "N/A"}</span>
-        </div>
-        <div class='metric-item'>
-            <span class='metric-label'>F1 Score:</span>
-            <span class='metric-value'>{f"{metrics['F1']:.2f}" if metrics['F1'] is not None else "N/A"}</span>
-        </div>
-    </div>
     """
-    st.sidebar.markdown(metrics_display, unsafe_allow_html=True)
+    Performance Metrics
+    """
+    st.sidebar.markdown("<h3>Performance Metrics</h3>", unsafe_allow_html=True)
 
-    # Reset button
+    def create_metric_bars(metrics_list):
+        tooltips = {
+            'Sensitivity': 'Proportion of actual positives correctly identified',
+            'Specificity': 'Proportion of actual negatives correctly identified',
+            'Accuracy': 'Overall proportion of correct predictions',
+            'Precision': 'Proportion of positive identifications that were actually correct',
+            'Recall': 'Proportion of actual positives correctly identified (Sensitivity)',
+            'F1 Score': 'Harmonic mean of precision and recall'
+        }
+        
+        traces = []
+        for metric in metrics_list:
+            value = metrics.get(metric)
+            text = "N/A" if value is None else f"{value:.2f}"
+            hover_text = f"{tooltips[metric]}"
+            color = '#1D1D1D' if value is None else (
+                '#62A834' if value >= 0.8 else 
+                '#A89834' if value >= 0.5 else 
+                '#A83434'
+            )
+            traces.append(go.Bar(
+                name=f"{metric}_bg", y=[metric], x=[1], orientation='h', marker_color='#1D1D1D', 
+                hoverinfo='text', hovertext=hover_text, showlegend=False,
+            ))
+            traces.append(go.Bar(
+                name=metric, y=[metric], x=[value if value is not None else 0], orientation='h', hoverinfo='skip',
+                marker_color=color, showlegend=False, text=text, textposition='outside', textfont=dict(color='#D6D6D6', size=14), texttemplate='%{text}'
+            ))
+        return traces
+
+    traces = []
+    metrics_order = ['Sensitivity', 'Specificity', 'Accuracy', 'Precision', 'Recall', 'F1 Score']
+    for metric in metrics_order:
+        traces.extend(create_metric_bars([metric]))
+    fig = go.Figure(data=traces)
+    fig.update_layout(
+        barmode='overlay', plot_bgcolor=bg_color, paper_bgcolor=bg_color,
+        height=250, margin=dict(l=20, r=20, t=10, b=10),
+        yaxis=dict(
+            showgrid=False, zeroline=False, tickfont=dict(size=14), 
+            ticktext=metrics_order, tickvals=list(range(len(metrics_order))), autorange="reversed"
+        ),
+        xaxis=dict(range=[0, 1.2], showgrid=False, zeroline=False, showticklabels=False, showline=False)
+    )
+    st.sidebar.plotly_chart(fig, use_container_width=False, config=plotly_config)
+
+    """
+    Reset Button
+    """
     if st.sidebar.button("Reset"):
         reset_confusion_matrix()
         st.rerun()
-
-def handle_feedback(conversation_id):
-    """Handle feedback button click"""
-    feedback_value = st.session_state.get(f"feedback_{conversation_id}", None)
-    if feedback_value is not None:
-        toggle_correctness(conversation_id, feedback_value == 1)
-        update_user_session(st.session_state.user_id)
-
-def extract_keywords(texts):
-    """Extract top N keywords from text using YAKE"""
-    extractor = yake.KeywordExtractor(lan="en", n=1, features=None)
-    ignore_words = {
-        'pdf', 'education', 'engineering', 'software', 'practitioner', 'file', 'textbook.pdf', 'swebok', 'app', 'view',
-        'details', 'level', 'target', 'blank', 'page', 'href', 'pressman', 'detail', 'system', 'systems'
-    }
-    keywords = set()
-    for text in texts:
-        extracted = dict(extractor.extract_keywords(text)).keys()
-        filtered_keywords = {word.lower() for word in extracted if word.lower() not in ignore_words}
-        keywords.update(filtered_keywords)
-    return ", ".join(list(keywords))
