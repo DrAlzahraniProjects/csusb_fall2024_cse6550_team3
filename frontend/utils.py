@@ -176,9 +176,9 @@ def display_confusion_matrix():
             text = "N/A" if value is None else f"{value:.2f}"
             hover_text = f"{tooltips[metric]}"
             color = '#1D1D1D' if value is None else (
-                '#256A0C' if value >= 0.8 else 
-                '#82650E' if value >= 0.5 else 
-                '#731111'
+                '#62A834' if value >= 0.8 else 
+                '#A89834' if value >= 0.5 else 
+                '#A83434'
             )
             traces.append(go.Bar(
                 name=f"{metric}_bg", y=[metric], x=[1], orientation='h', marker_color='#1D1D1D', 
