@@ -182,6 +182,9 @@ h1 {
 [data-testid="stChatInput"] textarea::-webkit-input-placeholder {color: #9C9C9C !important;}
 [data-testid="stChatInput"] textarea::-moz-placeholder {color: #9C9C9C !important;}
 [data-testid="stChatInput"] textarea:-ms-input-placeholder {color: #9C9C9C !important;}
+[data-testid="stChatInputSubmitButton"]:hover {
+  background-color: none;
+}
 
 
 /* Sidebar */
@@ -194,23 +197,27 @@ h1 {
 h2 {
   font-size: 30px !important;
   text-align: center;
-  padding: 10px 0px;
+  padding-bottom: 10px;
   border-bottom: 2px solid #1E1E1E;
   margin-bottom: 20px;
 }
+[data-testid="stSidebarHeader"]{
+  padding: 0px;
+}
 /* Subheadings: Confusion Matrix, Performance Metrics*/
 h3{
-  font-size: 20px !important;
+  font-size: 18px !important;
   color: #F6F6F6;
   text-align: left;
-  margin-top: 15px;
+  margin-top: 10px;
   margin-bottom: 5px;
 }
-
-.metrics-container{
+.metric-tooltip{
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background: #131313;
-  padding: 10px;
+  text-align: left;
+}
+
+[data-testid="stButton"]{
+  display: flex;
+  justify-content: center;
 }

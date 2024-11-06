@@ -110,13 +110,14 @@ def display_confusion_matrix():
     matrix = results['matrix']
     metrics = results['metrics']
 
+    # Plotly configurations
     plotly_config={
-        'scrollZoom': False,
-        'doubleClick': False,
+        'scrollZoom': False,'doubleClick': False,
         'showTips': False,
         'displayModeBar': False,
         'draggable': False
     }
+    bg_color = '#0E0E0E'
 
     """
     Confusion Matrix
@@ -125,12 +126,11 @@ def display_confusion_matrix():
         [matrix['fp'], matrix['tn']],
         [matrix['tp'], matrix['fn']],
     ]
-    is_null = all(val == 0 for row in z for val in row) # check if values in matrix are all 0
-
     text = [
         ["FP: " + str(matrix['fp']), "TN: " + str(matrix['tn'])],
         ["TP: " + str(matrix['tp']), "FN: " + str(matrix['fn'])]
     ]
+    is_null = all(val == 0 for row in z for val in row) # check if values in matrix are all 0
     tooltips = [
         [
             "False Positive:<br>The chatbot answers an unanswerable question.",
@@ -143,26 +143,14 @@ def display_confusion_matrix():
     ]
     colorscale = 'Whites' if is_null else 'Purples'
     fig = go.Figure(data=go.Heatmap(
-        z=z,
-        x=['True', 'False'],
-        y=['False', 'True'],
-        text=text,
-        texttemplate="%{text}",
-        textfont={"size": 16},
-        showscale=False,
-        colorscale=[[0, '#CFCFCF'], [1, '#CFCFCF']] if is_null else 'Purples',
-        hoverongaps=False,
-        hoverinfo='text',
-        hovertext=tooltips
+        z=z, x=['True', 'False'], y=['False', 'True'],
+        text=text, texttemplate="%{text}", textfont={"size": 16},
+        showscale=False, colorscale=[[0, '#CFCFCF'], [1, '#CFCFCF']] if is_null else 'Purples',
+        hoverongaps=False, hoverinfo='text', hovertext=tooltips
     ))
     fig.update_layout(
-        # title='Confusion Matrix',
-        xaxis_title='Feedback',
-        yaxis_title='Answerable',
-        width=300,
-        height=250,
-        margin=dict(l=50, r=30, t=50, b=50),
-        paper_bgcolor='#151515'
+        xaxis_title='Feedback', yaxis_title='Answerable', paper_bgcolor=bg_color,
+        width=300, height=250, margin=dict(l=50, r=30, t=50, b=50)
     )
     st.sidebar.markdown("<h3>Confusion Matrix</h3>", unsafe_allow_html=True)
     st.sidebar.plotly_chart(fig, use_container_width=True, config=plotly_config)
@@ -186,18 +174,19 @@ def display_confusion_matrix():
         for metric in metrics_list:
             value = metrics.get(metric)
             text = "N/A" if value is None else f"{value:.2f}"
-            color = '#242424' if value is None else (
-                '#2ECC71' if value >= 0.8 else 
-                '#F39C12' if value >= 0.5 else 
-                '#E74C3C'
+            hover_text = f"{tooltips[metric]}"
+            color = '#1D1D1D' if value is None else (
+                '#256A0C' if value >= 0.8 else 
+                '#82650E' if value >= 0.5 else 
+                '#731111'
             )
             traces.append(go.Bar(
-                name=f"{metric}_bg", y=[metric], x=[1], orientation='h', marker_color='#222222', 
-                hoverinfo='text', hovertext=f"{metric}:<br>{tooltips[metric]}<br>Value: {text}", showlegend=False,
+                name=f"{metric}_bg", y=[metric], x=[1], orientation='h', marker_color='#1D1D1D', 
+                hoverinfo='text', hovertext=hover_text, showlegend=False,
             ))
             traces.append(go.Bar(
-                name=metric, y=[metric], x=[value if value is not None else 0], orientation='h', 
-                marker_color=color, showlegend=False,text=text, textposition='outside', textfont=dict(color='#D6D6D6', size=14), texttemplate='%{text}'
+                name=metric, y=[metric], x=[value if value is not None else 0], orientation='h', hoverinfo='skip',
+                marker_color=color, showlegend=False, text=text, textposition='outside', textfont=dict(color='#D6D6D6', size=14), texttemplate='%{text}'
             ))
         return traces
 
@@ -207,8 +196,8 @@ def display_confusion_matrix():
         traces.extend(create_metric_bars([metric]))
     fig = go.Figure(data=traces)
     fig.update_layout(
-        barmode='overlay', plot_bgcolor='#151515', paper_bgcolor='#151515',
-        height=250, margin=dict(l=20, r=20, t=20, b=20),
+        barmode='overlay', plot_bgcolor=bg_color, paper_bgcolor=bg_color,
+        height=250, margin=dict(l=20, r=20, t=10, b=10),
         yaxis=dict(
             showgrid=False, zeroline=False, tickfont=dict(size=14), 
             ticktext=metrics_order, tickvals=list(range(len(metrics_order))), autorange="reversed"
