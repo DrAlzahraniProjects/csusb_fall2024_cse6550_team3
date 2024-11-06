@@ -8,7 +8,7 @@ Before you begin, make sure you have the following installed on your machine:
 - **Git**
 - **Docker**
 
-## Developer Setup
+## Setup
 
 1. To get started, first clone the repository to your local machine:
    ```
@@ -25,45 +25,44 @@ Before you begin, make sure you have the following installed on your machine:
    git pull origin main
    ```
 
-4. Build the Docker image:
+4. Build the Docker image using the following command:
 
-   Build the Docker image using the following command:
-
-   Befere running this command include API key in the end
+   Befere running this command include API key in the end 
 
    Go to [team3](https://csusb.instructure.com/courses/43192/discussion_topics/419698) in canvas for API key
    
    ```
    docker build -t team3-app . --build-arg MISTRAL=
    ```
-5. Now, run the Docker container:
+
+5. Steps to delete the previous image 
+
+   To see all the running containers in your machine: 
+```
+   docker ps : 
+```
+  
+  To stop a running container, replace <container_id> with the one found in docker ps
+```
+  docker stop <container_id>
+```
+
+  To remove/delete a docker container, replace <container_id> with the one found in docker ps
+```
+  docker rm <container_id>
+```
+6. Now, run the Docker container:
  
    ```
    docker run -d -p 5003:5003 -p 6003:6003 team3-app
    ```
 
-6. After atleast 5 minutes, the application will be available at:
+7. After atleast 5 minutes, the application will be available at:
   
     Website: [http://localhost:5003/team3](http://localhost:5003/team3)
    
     Jupyter: [http://localhost:6003/team3/jupyter](http://localhost:6003/team3/jupyter)
 
-7. Steps to delete the previous image 
-
-   To see all the running containers in your machine: 
-```
-   docker ps -a : 
-```
-  
-  To stop a running container
-```
-  docker stop <container_id>
-```
-
-  To remove/delete a docker container
-```
-  docker rm <container_id>
-```
 
 <!-- Accessing Jupyter Notebook http://localhost:6003/ -->
 
