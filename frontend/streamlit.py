@@ -51,23 +51,23 @@ def main():
                     # Set feedback question based on baseline question type
                     feedback_question = "Was this response helpful?"
                     if user_message and user_message["content"] in baseline_questions:
-                        is_answerable = baseline_questions[user_message["content"]]
-                        feedback_question = (
-                            "Did the chatbot correctly answer this answerable question?" if is_answerable 
-                            else "Did the chatbot correctly answer this unanswerable question?"
+                        # Ensure is_answerable is assigned a default value before using it
+                        is_answerable = None  # Default value in case user_message is not found or baseline check fails
+                        
+                        if user_message and user_message["content"] in baseline_questions:
+                            is_answerable = baseline_questions[user_message["content"]]
+                        
+                        # Safely use is_answerable with a fallback check
+                        feedback = st.feedback(
+                            "thumbs",
+                            key=f"feedback_{conversation_id}",
+                            on_change=handle_feedback,
+                            kwargs={
+                                "conversation_id": conversation_id,
+                                "feedback_type": "true_negative" if is_answerable is False else "true_positive"
+                            }
                         )
-                    st.caption(feedback_question)
-                    
-                    # Adjust feedback functionality for 👍 as tn and 👎 as fp
-                    feedback = st.feedback(
-                        "thumbs",
-                        key=f"feedback_{conversation_id}",
-                        on_change=handle_feedback,
-                        kwargs={
-                            "conversation_id": conversation_id,
-                            "feedback_type": "true_negative" if not is_answerable else "true_positive"
-                        }
-                    )
+
             else:
                 st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
 
