@@ -7,11 +7,11 @@ from backend.statistics import (
     init_user_session,
     update_user_session,
     insert_conversation,
+    update_confusion_matrix,  # Make sure this function exists in statistics.py
 )
 from .utils import (
     baseline_questions,
     load_css,
-    update_and_display_statistics,
     display_confusion_matrix,
     handle_feedback,
     extract_keywords
@@ -39,9 +39,8 @@ def main():
 
         st.sidebar.empty()
         display_confusion_matrix()  # Ensure it reflects the adjusted fp/tn logic
-        # update_and_display_statistics()
 
-        # Display messages
+        # Display messages and collect feedback
         for message in st.session_state.messages:
             if message["role"] == "assistant":
                 st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
@@ -50,7 +49,7 @@ def main():
                     # Find the corresponding user question
                     user_message = next((msg for msg in st.session_state.messages if msg["role"] == "user" and msg["conversation_id"] == conversation_id), None)
                     
-                    # Set feedback question based on baseline question type
+                    # Set feedback question based on question type
                     feedback_question = "Was this response helpful?"
                     if user_message and user_message["content"] in baseline_questions:
                         is_answerable = baseline_questions[user_message["content"]]
@@ -59,15 +58,18 @@ def main():
                             else "Did the chatbot correctly answer this unanswerable question?"
                         )
                     st.caption(feedback_question)
+
+                    # Assign appropriate feedback mapping
+                    feedback_mapping = {"👍": "true_negative" if not is_answerable else "true_positive",
+                                        "👎": "false_positive" if not is_answerable else "false_negative"}
                     
-                    # Adjust feedback functionality for 👍 as tn and 👎 as fp
                     feedback = st.feedback(
                         "thumbs",
                         key=f"feedback_{conversation_id}",
                         on_change=handle_feedback,
                         kwargs={
                             "conversation_id": conversation_id,
-                            "feedback_mapping": {"👍": "true_negative", "👎": "false_positive"}
+                            "feedback_type": feedback_mapping[st.session_state.get(f"feedback_{conversation_id}")]
                         }
                     )
             else:
