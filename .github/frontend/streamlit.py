@@ -38,7 +38,7 @@ def main():
             print(f"Creating user#{st.session_state.user_id}")
 
         st.sidebar.empty()
-        display_confusion_matrix()  # Update to reflect flipped fn/tn logic
+        display_confusion_matrix()  # Ensure it reflects the adjusted fp/tn logic
         # update_and_display_statistics()
 
         # Display messages
@@ -56,18 +56,18 @@ def main():
                         is_answerable = baseline_questions[user_message["content"]]
                         feedback_question = (
                             "Did the chatbot correctly answer this answerable question?" if is_answerable 
-                            else "The question was unanswerable. Did the chatbot respond appropriately?"
+                            else "Did the chatbot correctly answer this unanswerable question?"
                         )
                     st.caption(feedback_question)
                     
-                    # Adjust feedback functionality for 👍 as fn and 👎 as tn
+                    # Adjust feedback functionality for 👍 as tn and 👎 as fp
                     feedback = st.feedback(
                         "thumbs",
                         key=f"feedback_{conversation_id}",
                         on_change=handle_feedback,
                         kwargs={
                             "conversation_id": conversation_id,
-                            "feedback_mapping": {"👍": "false_negative", "👎": "true_negative"}
+                            "feedback_mapping": {"👍": "true_negative", "👎": "false_positive"}
                         }
                     )
             else:
