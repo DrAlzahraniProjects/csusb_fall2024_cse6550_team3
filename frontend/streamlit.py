@@ -22,9 +22,9 @@ def main():
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # # Show the title only if there are no messages
-    # if not st.session_state.messages:
-    st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
+    # Show the title only if there are no messages
+    if not st.session_state.messages:
+        st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
 
     # Load PDF
     if "view" in st.query_params and st.query_params["view"] == "pdf":
@@ -38,7 +38,7 @@ def main():
             print(f"Creating user#{st.session_state.user_id}")
 
         st.sidebar.empty()
-        display_confusion_matrix()
+        display_confusion_matrix()  # Ensure it reflects the adjusted fp/tn logic
         # update_and_display_statistics()
 
         # Display messages
@@ -49,20 +49,26 @@ def main():
                 if conversation_id:
                     # Find the corresponding user question
                     user_message = next((msg for msg in st.session_state.messages if msg["role"] == "user" and msg["conversation_id"] == conversation_id), None)
+                    
                     # Set feedback question based on baseline question type
                     feedback_question = "Was this response helpful?"
                     if user_message and user_message["content"] in baseline_questions:
                         is_answerable = baseline_questions[user_message["content"]]
                         feedback_question = (
                             "Did the chatbot correctly answer this answerable question?" if is_answerable 
-                            else "Did the chatbot answer this unanswerable question?"
+                            else "Did the chatbot correctly answer this unanswerable question?"
                         )
                     st.caption(feedback_question)
+                    
+                    # Adjust feedback functionality for 👍 as tn and 👎 as fp
                     feedback = st.feedback(
                         "thumbs",
                         key=f"feedback_{conversation_id}",
                         on_change=handle_feedback,
-                        kwargs={"conversation_id": conversation_id}
+                        kwargs={
+                            "conversation_id": conversation_id,
+                            "feedback_mapping": {"👍": "true_negative", "👎": "false_positive"}
+                        }
                     )
             else:
                 st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
@@ -94,7 +100,7 @@ def main():
                 response_time=response_time,
                 correct=None,
                 user_id=st.session_state.user_id,
-                answerable = baseline_questions.get(prompt, None),
+                answerable=baseline_questions.get(prompt, None),
                 common_topics=keywords
             )
 
