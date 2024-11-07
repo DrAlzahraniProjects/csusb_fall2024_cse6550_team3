@@ -1,94 +1,109 @@
-div[data-testid="stVerticalBlock"] div:has(div.fixed-header) {
-    text-align: center;
-    position: sticky;
-    top: 2.875rem;
-    z-index: 999;
+h1, h2, h3, p, span {
+  margin: 0px;
+  padding: 0px
 }
 
-a {
-    text-decoration: none !important;
-    color: inherit;
+/* Main */
+[data-testid="stMainBlockContainer"] {
+  padding-top: 5rem;
 }
 
-p {
-    margin: 0px;
+h1 {
+  margin-bottom: 20px;
 }
 
-.user-message {
-    text-align: right;
-    background-color: #f1f1f1;
-    color: black;
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    max-width: 70%;
-    display: inline-block;
-    float: right;
+.user-message{
+  display: flex;
+  justify-content: right;
+  max-width: fit-content;
+  padding: 12px;
+  margin-left: auto;
+  margin-bottom: 10px;
+  background: #1E1E1E;
+  border-radius: 15px;
 }
-
 .assistant-message {
-    text-align: left;
-    padding: 0px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    width: 70%;
-    float: left;
-    clear: both;
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  gap: 10px 0px;
+  max-width: fit-content;
+  padding: 10px;
+  margin-right: auto;
+  margin-bottom: 5px;
 }
 
-.assistant-message p {
-    margin: 0px;
+/* Feedback */
+[data-testid="stCaptionContainer"]{
+  padding-left: 10px;
+}
+[data-testid="stButtonGroup"]{
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  padding-left: 10px;
+  padding-top: 5px;
 }
 
-.feedback-buttons {
-    text-align: left;
-    margin: 5px 0;
-    padding: 0;
-    display: flex;
-    gap: 8px;
+/* Chat Input */
+[data-testid="stChatInput"] {
+  display: flex;
+  justify-content: center;
+  background: #1F1F1F;
+  border-radius: 30px;
+  outline: none;
+  padding: 6px;
+}
+[data-baseweb="base-input"],
+[data-baseweb="textarea"] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: #FFFFFF !important;
+  padding: 0px 6px;
+}
+[data-testid="stChatInput"] textarea:focus {color: #FFFFFF !important;}
+[data-testid="stChatInput"] textarea::placeholder {color: #9C9C9C !important;}
+/* For cross-browser compatibility */
+[data-testid="stChatInput"] textarea::-webkit-input-placeholder {color: #9C9C9C !important;}
+[data-testid="stChatInput"] textarea::-moz-placeholder {color: #9C9C9C !important;}
+[data-testid="stChatInput"] textarea:-ms-input-placeholder {color: #9C9C9C !important;}
+[data-testid="stChatInputSubmitButton"]:hover {
+  background: none;
 }
 
-.feedback-icon {
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 2px;
-    display: inline-block;
-    position: relative;
+
+/* Sidebar */
+[data-testid="stSidebar"][aria-expanded="true"] {
+  min-width: 400px;
+  max-width: 400px;
 }
 
-.title-stat{
-    color: gray;
-    font-weight: bold;
-    font-size: 2rem !important;
-    text-align: center;
+/* Evaluation Report */
+h2 {
+  font-size: 30px !important;
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #1E1E1E;
+  margin-bottom: 20px;
+}
+[data-testid="stSidebarHeader"]{
+  padding: 0px;
+}
+/* Subheadings: Confusion Matrix, Performance Metrics*/
+h3{
+  font-size: 18px !important;
+  color: #F6F6F6;
+  text-align: left;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+.metric-tooltip{
+  display: flex;
+  text-align: left;
 }
 
-.btn-stat-container{
-    display: flex;
-    justify-content: center;
-}
-
-.btn-stat {
-    text-decoration: none;
-    background-color: #0D1118;
-    color: white !important;
-    border: none;
-    padding: 10px 20px;
-    text-align: left;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    border-radius: 8px;
-    width: 260px;
-    align-self: center !important;
-}
-
-.btn-stat:hover {
-    background-color: #555555;
-    color: white;
-}
-
-.stRadio > div[role="radiogroup"] {
-    display: flex;
-    justify-content: center;
+[data-testid="stButton"]{
+  display: flex;
+  justify-content: center;
 }
