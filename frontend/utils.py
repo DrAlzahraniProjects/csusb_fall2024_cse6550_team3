@@ -149,7 +149,7 @@ def display_confusion_matrix():
         hoverongaps=False, hoverinfo='text', hovertext=tooltips
     ))
     fig.update_layout(
-        xaxis_title='Feedback', yaxis_title='Answerable', paper_bgcolor=bg_color,
+        xaxis_title='User Feedback', yaxis_title='Answerable', paper_bgcolor=bg_color,
         width=300, height=250, margin=dict(l=50, r=30, t=50, b=50)
     )
     st.sidebar.markdown("<h3>Confusion Matrix</h3>", unsafe_allow_html=True)
