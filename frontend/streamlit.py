@@ -43,30 +43,37 @@ def main():
         # update_and_display_statistics()
 
         # Display messages
-        for message in st.session_state.messages:
-            if message["role"] == "assistant":
-                st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
-                conversation_id = message.get("conversation_id", None)
-                if conversation_id:
-                    # Find the corresponding user question
-                    user_message = next((msg for msg in st.session_state.messages if msg["role"] == "user" and msg["conversation_id"] == conversation_id), None)
-                    # Set feedback question based on baseline question type
-                    feedback_question = "Was this response helpful?"
-                    if user_message and user_message["content"] in baseline_questions:
-                        is_answerable = baseline_questions[user_message["content"]]
-                        feedback_question = (
-                            "Did the chatbot correctly answer this answerable question?" if is_answerable 
-                            else "Did the chatbot correctly answer this unanswerable question?"
-                        )
-                    st.caption(feedback_question)
-                    feedback = st.feedback(
-                        "thumbs",
-                        key=f"feedback_{conversation_id}",
-                        on_change=handle_feedback,
-                        kwargs={"conversation_id": conversation_id}
-                    )
-            else:
-                st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
+        for message in st.session_state.messages:for message in st.session_state.messages:
+        if message["role"] == "assistant":
+            st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
+            conversation_id = message.get("conversation_id", None)
+        if conversation_id:
+            # Find the corresponding user question
+            user_message = next((msg for msg in st.session_state.messages if msg["role"] == "user" and msg["conversation_id"] == conversation_id), None)
+
+            # Initialize is_answerable and set the feedback question appropriately
+            is_answerable = None
+            if user_message and user_message["content"] in baseline_questions:
+                is_answerable = baseline_questions[user_message["content"]]
+
+            feedback_question = "Was this response helpful?"
+            if is_answerable is not None:
+                feedback_question = (
+                    "Did the chatbot correctly answer this answerable question?" if is_answerable
+                    else "Did the chatbot correctly answer this unanswerable question?"
+                )
+            
+            st.caption(feedback_question)
+            
+            # Display feedback option if applicable
+            feedback = st.feedback(
+                "thumbs",
+                key=f"feedback_{conversation_id}",
+                on_change=handle_feedback,
+                kwargs={"conversation_id": conversation_id}
+            )
+    else:
+        st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
 
         # Handle user input
         if prompt := st.chat_input("Ask your question?"):
