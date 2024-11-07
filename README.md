@@ -34,8 +34,7 @@ Before you begin, make sure you have the following installed on your machine:
    ```
    docker build -t team3-app . --build-arg MISTRAL=
    ```
-
-5. Steps to delete the previous image 
+5. Preliminary steps: make sure to execute all three steps given below to delete previous image
 
    To see all the running containers in your machine: 
 ```
