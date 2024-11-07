@@ -181,11 +181,10 @@ def get_confusion_matrix():
         # Calculate values for the confusion matrix
         tp = sum(1 for c in conversations if c.correct and c.answerable)
         fn = sum(1 for c in conversations if not c.correct and c.answerable)
-         # False Positives (FP): The chatbot provides an answer for an unanswerable question.
-        fp = sum(1 for c in conversations if not c.correct and not c.answerable)
-        # True Negatives (TN): The chatbot correctly identifies an unanswerable question.
-        tn = sum(1 for c in conversations if c.correct and not c.answerable)
+        fp = sum(1 for c in conversations if c.correct and not c.answerable)
+        tn = sum(1 for c in conversations if not c.correct and not c.answerable)
 
+        # Calculate metrics only if total is greater than 0 to avoid division by zero
         total = tp + tn + fp + fn
         accuracy = (tp + tn) / total if total > 0 else None
         precision = tp / (tp + fp) if (tp + fp) > 0 else None
@@ -204,7 +203,7 @@ def get_confusion_matrix():
                 'F1 Score': f1
             }
         }
-
+        
 def handle_feedback(conversation_id, feedback_type):
     """Handle user feedback and update the correctness of a conversation."""
     print(f"Handling feedback for conversation #{conversation_id}, Type: {feedback_type}")
