@@ -1,3 +1,4 @@
+
 import os
 import time
 import streamlit as st
@@ -7,12 +8,13 @@ from backend.statistics import (
     init_user_session,
     update_user_session,
     insert_conversation,
-    handle_feedback
 )
 from .utils import (
     baseline_questions,
     load_css,
+    update_and_display_statistics,
     display_confusion_matrix,
+    handle_feedback,
     extract_keywords
 )
 
@@ -21,9 +23,9 @@ def main():
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # Show the title only if there are no messages
-    if not st.session_state.messages:
-        st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
+    # # Show the title only if there are no messages
+    # if not st.session_state.messages:
+    st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
 
     # Load PDF
     if "view" in st.query_params and st.query_params["view"] == "pdf":
@@ -37,9 +39,10 @@ def main():
             print(f"Creating user#{st.session_state.user_id}")
 
         st.sidebar.empty()
-        display_confusion_matrix()  # Ensure it reflects the current state of the confusion matrix
+        display_confusion_matrix()
+        # update_and_display_statistics()
 
-        # Display messages and collect feedback
+        # Display messages
         for message in st.session_state.messages:
             if message["role"] == "assistant":
                 st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
@@ -47,33 +50,26 @@ def main():
                 if conversation_id:
                     # Find the corresponding user question
                     user_message = next((msg for msg in st.session_state.messages if msg["role"] == "user" and msg["conversation_id"] == conversation_id), None)
-                    
                     # Set feedback question based on baseline question type
                     feedback_question = "Was this response helpful?"
                     if user_message and user_message["content"] in baseline_questions:
-                        # Ensure is_answerable is assigned a default value before using it
-                        is_answerable = None  # Default value in case user_message is not found or baseline check fails
-                        
-                        if user_message and user_message["content"] in baseline_questions:
-                            is_answerable = baseline_questions[user_message["content"]]
-                        
-                        # Safely use is_answerable with a fallback check
-                        feedback = st.feedback(
-                            "thumbs",
-                            key=f"feedback_{conversation_id}",
-                            on_change=handle_feedback,
-                            kwargs={
-                                "conversation_id": conversation_id,
-                                "feedback_type": "true_negative" if is_answerable is False else "true_positive"
-                            }
+                        is_answerable = baseline_questions[user_message["content"]]
+                       feedback_question = (
+                            "Did the chatbot correctly answer this answerable question?" if is_answerable 
+                            else "Did the chatbot correctly answer this unanswerable question?"
                         )
-
+                    st.caption(feedback_question)
+                    feedback = st.feedback(
+                        "thumbs",
+                        key=f"feedback_{conversation_id}",
+                        on_change=handle_feedback,
+                        kwargs={"conversation_id": conversation_id}
+                    )
             else:
                 st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
 
         # Handle user input
-        prompt = st.chat_input("Ask your question?")
-        if prompt:
+        if prompt := st.chat_input("Ask your question?"):
             st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
 
             response_container = st.empty()
@@ -99,7 +95,7 @@ def main():
                 response_time=response_time,
                 correct=None,
                 user_id=st.session_state.user_id,
-                answerable=baseline_questions.get(prompt, None),
+                answerable = baseline_questions.get(prompt, None),
                 common_topics=keywords
             )
 
