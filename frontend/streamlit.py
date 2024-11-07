@@ -54,7 +54,7 @@ def main():
                     feedback_question = "Was this response helpful?"
                     if user_message and user_message["content"] in baseline_questions:
                         is_answerable = baseline_questions[user_message["content"]]
-                       feedback_question = (
+                        feedback_question = (
                             "Did the chatbot correctly answer this answerable question?" if is_answerable 
                             else "Did the chatbot correctly answer this unanswerable question?"
                         )
