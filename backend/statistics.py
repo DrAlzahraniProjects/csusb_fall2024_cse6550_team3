@@ -1,3 +1,4 @@
+
 import time
 from datetime import datetime, timedelta
 from sqlalchemy.ext.declarative import declarative_base
@@ -180,8 +181,10 @@ def get_confusion_matrix():
         # Calculate values for the confusion matrix
         tp = sum(1 for c in conversations if c.correct and c.answerable)
         fn = sum(1 for c in conversations if not c.correct and c.answerable)
-        fp = sum(1 for c in conversations if c.correct and not c.answerable)
-        tn = sum(1 for c in conversations if not c.correct and not c.answerable)
+         # False Positives (FP): The chatbot provides an answer for an unanswerable question.
+        fp = sum(1 for c in conversations if not c.correct and not c.answerable)
+        # True Negatives (TN): The chatbot correctly identifies an unanswerable question.
+        tn = sum(1 for c in conversations if c.correct and not c.answerable)
 
         total = tp + tn + fp + fn
         accuracy = (tp + tn) / total if total > 0 else None
