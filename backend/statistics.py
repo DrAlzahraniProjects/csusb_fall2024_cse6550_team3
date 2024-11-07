@@ -191,9 +191,9 @@ def get_confusion_matrix():
         # False Negatives (FN): The chatbot fails to provide a correct answer for an answerable question.
         fn = sum(1 for c in conversations if not c.correct and c.answerable)
         # False Positives (FP): The chatbot provides an answer for an unanswerable question.
-        fp = sum(1 for c in conversations if c.correct and not c.answerable)
+        fp = sum(1 for c in conversations if not c.correct and not c.answerable)
         # True Negatives (TN): The chatbot correctly identifies an unanswerable question.
-        tn = sum(1 for c in conversations if not c.correct and not c.answerable)
+        tn = sum(1 for c in conversations if c.correct and not c.answerable)
         
         total = tp + tn + fp + fn
         # Accuracy: Measures the proportion of correctly classified questions (both answerable and unanswerable).
@@ -218,3 +218,4 @@ def get_confusion_matrix():
                 'F1 Score': f1
             }
         }
+        

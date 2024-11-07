@@ -55,7 +55,7 @@ def main():
                         is_answerable = baseline_questions[user_message["content"]]
                         feedback_question = (
                             "Did the chatbot correctly answer this answerable question?" if is_answerable 
-                            else "Did the chatbot answer this unanswerable question?"
+                            else "Did the chatbot correctly answer this unanswerable question?"
                         )
                     st.caption(feedback_question)
                     feedback = st.feedback(
