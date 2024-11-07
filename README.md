@@ -25,16 +25,7 @@ Before you begin, make sure you have the following installed on your machine:
    git pull origin main
    ```
 
-4. Build the Docker image using the following command:
-
-   Befere running this command include API key in the end 
-
-   Go to [team3](https://csusb.instructure.com/courses/43192/discussion_topics/419698) in canvas for API key
-   
-   ```
-   docker build -t team3-app . --build-arg MISTRAL=
-   ```
-5. Preliminary steps: make sure to execute all three steps given below to delete previous image
+4. Preliminary steps: make sure to execute all three steps given below to delete previous image
 
    To see all the running containers in your machine: 
 ```
@@ -50,6 +41,15 @@ Before you begin, make sure you have the following installed on your machine:
 ```
   docker rm <container_id>
 ```
+5. Build the Docker image using the following command:
+
+   Befere running this command include API key in the end 
+
+   Go to [team3](https://csusb.instructure.com/courses/43192/discussion_topics/419698) in canvas for API key
+   
+   ```
+   docker build -t team3-app . --build-arg MISTRAL=
+   ```
 6. Now, run the Docker container:
  
    ```
