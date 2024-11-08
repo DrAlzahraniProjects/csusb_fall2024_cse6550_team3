@@ -49,9 +49,15 @@ SHELL ["mamba", "run", "-n", "team3_env", "/bin/bash", "-c"]
 # Copy requirements.txt into the container
 COPY requirements.txt /app/requirements.txt
 
-# Install Python packages from requirements.txt
+# Install Python packages from requirements.txt using Mamba
 RUN mamba install --yes --file requirements.txt && mamba clean --all -f -y
-RUN pip install rank_bm25 streamlit-pdf-viewer
+
+# Use the specific path to install cython and NeMo toolkit's NLP components
+RUN /opt/miniforge/envs/team3_env/bin/pip install cython
+RUN /opt/miniforge/envs/team3_env/bin/pip install nemo_toolkit[all]
+
+# Install other required packages with pip
+RUN /opt/miniforge/envs/team3_env/bin/pip install rank_bm25 streamlit-pdf-viewer
 
 # Copy the current directory contents into the container at /app
 COPY . /app
