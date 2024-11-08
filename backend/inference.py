@@ -6,7 +6,7 @@ from .document_loading import (
   similarity_search,
 )
 from .prompts import prompt
-from .citations import get_answer_with_source
+from .citations import get_citations, format_citations
 
 # Import and load environment variables
 from dotenv import load_dotenv
@@ -62,7 +62,6 @@ def chat_completion(question):
   
   # Get relevant documents from the FAISS store
   relevant_docs = similarity_search(question, faiss_store, 10)
-
   context = "\n\n".join([doc.page_content for doc in relevant_docs])
   messages = prompt.format_messages(input=question,context=context)
   
@@ -72,10 +71,9 @@ def chat_completion(question):
     full_response["answer"] += chunk.content
     yield (chunk.content, MODEL_NAME)
 
-  # After streaming is complete, use the full response to extract citations
+  # After streaming is complete, return formated citations
   if relevant_docs:
-    final_answer = get_answer_with_source(full_response)
-    # Yield any remaining part of the answer with citations
-    remaining_answer = final_answer[len(full_response["answer"]):]
-    if remaining_answer:
-      yield (remaining_answer, MODEL_NAME)
+    page_numbers = get_citations(relevant_docs)
+    if page_numbers != []:
+      citations = format_citations(page_numbers)
+      yield (citations, MODEL_NAME)
