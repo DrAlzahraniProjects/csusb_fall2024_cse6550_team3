@@ -81,10 +81,12 @@ def main():
                 end_time = time.time()
                 response_time = int((end_time - start_time))
 
+                # Extract keywords
                 conversation_texts = [prompt + " " + response]
                 keywords = extract_keywords(conversation_texts)
                 print(f"Extracted Keywords: {keywords}")
 
+            # Add conversation to database
             conversation_id = insert_conversation(
                 question=prompt,
                 response=response,
