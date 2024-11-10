@@ -3,6 +3,10 @@ from .document_loading import load_documents_from_directory, load_or_create_fais
 from .prompts import prompt
 from .citations import get_citations, format_citations
 from langchain_mistralai import ChatMistralAI
+from nemoguardrails import RailsConfig
+from nemoguardrails.integration.langchain.runnable_rails import RunnableRails
+config = RailsConfig.from_path("guardrails.yml")
+guardrails = RunnableRails(config)
 
 # Load environment variables
 from dotenv import load_dotenv
@@ -61,7 +65,8 @@ def chat_completion(question):
   
     # Stream response from LLM
     full_response = {"answer": "", "context": relevant_docs}
-    for chunk in llm.stream(messages):
+    llm_with_guardrails = guardrails | llm
+    for chunk in llm_with_guardrails.stream(messages):
         full_response["answer"] += chunk.content
         yield (chunk.content, MODEL_NAME)
 

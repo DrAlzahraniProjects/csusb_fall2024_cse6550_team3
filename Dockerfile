@@ -52,7 +52,7 @@ COPY requirements.txt /app/requirements.txt
 # Install Python packages from requirements.txt
 RUN mamba install --yes --file requirements.txt && mamba clean --all -f -y
 RUN pip install rank_bm25 streamlit-pdf-viewer
-RUN pip install guardrails-ai
+RUN pip install nemoguardrails
 # Copy the current directory contents into the container at /app
 COPY . /app
 
