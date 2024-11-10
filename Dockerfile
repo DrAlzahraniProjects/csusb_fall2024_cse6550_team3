@@ -56,6 +56,10 @@ RUN pip install rank_bm25 streamlit-pdf-viewer
 # Copy the current directory contents into the container at /app
 COPY . /app
 
+# Copy the main.ipynb file into the jupyter folder inside the container
+COPY ./path/to/main.ipynb /app/jupyter/main.ipynb
+
+
 # Expose Streamlit port
 EXPOSE 5003
 
