@@ -1,83 +1,30 @@
 import os
 import time
 import streamlit as st
-import yake
 from .pdf import serve_pdf
 from backend.inference import chat_completion
 from backend.statistics import (
     init_user_session,
     update_user_session,
     insert_conversation,
-    get_statistics,
-    toggle_correctness
 )
-
-def load_css():
-    """Load CSS styles"""
-    css_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "styles", "style.css")
-    with open(css_file) as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-
-def update_and_display_statistics():
-    """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
-    st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
-    stat_period = st.sidebar.radio(
-        "Statistics period (Daily or Overall)",
-        ('Daily', 'Overall'),
-        key="stats_period",
-        label_visibility="hidden",
-        horizontal=True
-    )
-    stats = get_statistics(stat_period)
-    st.session_state.statistics = stats
-    statistics = [
-        f"Number of questions: {stats['num_questions']}",
-        f"Number of correct answers: {stats['num_correct']}",
-        f"Number of incorrect answers: {stats['num_incorrect']}",
-        f"User engagement metrics: {stats['user_engagement']:.2f} seconds",
-        f"Response time analysis: {stats['avg_response_time']:.2f} seconds",
-        f"Accuracy rate: {stats['accuracy_rate']:.2f}%",
-        f"Satisfaction rate: {stats['satisfaction_rate']:.2f}%",
-        f"Common topics or keywords: {stats['common_topics']}",
-        f"Improvement over time",
-        f"Feedback summary"
-    ]
-    for stat in statistics:
-        st.sidebar.markdown(f"""
-            <div class='btn-stat-container'>
-                <span class="btn-stat">{stat}</span>
-            </div>
-        """, unsafe_allow_html=True)
-
-def handle_feedback(conversation_id):
-    """Handle feedback button click"""
-    feedback_value = st.session_state.get(f"feedback_{conversation_id}", None)
-    if feedback_value is not None:
-        toggle_correctness(conversation_id, feedback_value == 1)
-        update_user_session(st.session_state.user_id)
-
-def extract_keywords(texts):
-    """Extract top N keywords from text using YAKE"""
-    extractor = yake.KeywordExtractor(lan="en", n=1, features=None)
-    ignore_words = {
-        'pdf', 'education', 'engineering', 'software', 'practitioner', 'file', 'textbook.pdf', 'swebok', 'app', 'view',
-        'details', 'level', 'target', 'blank', 'page', 'href', 'pressman', 'detail', 'system', 'systems'
-    }
-    keywords = set()
-    for text in texts:
-        extracted = dict(extractor.extract_keywords(text)).keys()
-        filtered_keywords = {word.lower() for word in extracted if word.lower() not in ignore_words}
-        keywords.update(filtered_keywords)
-    return ", ".join(list(keywords))
+from .utils import (
+    baseline_questions,
+    load_css,
+    update_and_display_statistics,
+    display_confusion_matrix,
+    handle_feedback,
+    extract_keywords
+)
 
 def main():
     """Main Streamlit app logic"""
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # Show the title only if there are no messages
-    if not st.session_state.messages:
-        st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
+    # # Show the title only if there are no messages
+    # if not st.session_state.messages:
+    st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
 
     # Load PDF
     if "view" in st.query_params and st.query_params["view"] == "pdf":
@@ -91,7 +38,8 @@ def main():
             print(f"Creating user#{st.session_state.user_id}")
 
         st.sidebar.empty()
-        update_and_display_statistics()
+        display_confusion_matrix()
+        # update_and_display_statistics()
 
         # Display messages
         for message in st.session_state.messages:
@@ -99,7 +47,17 @@ def main():
                 st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
                 conversation_id = message.get("conversation_id", None)
                 if conversation_id:
-                    st.caption("Was this response helpful?")
+                    # Find the corresponding user question
+                    user_message = next((msg for msg in st.session_state.messages if msg["role"] == "user" and msg["conversation_id"] == conversation_id), None)
+                    # Set feedback question based on baseline question type
+                    feedback_question = "Was this response helpful?"
+                    if user_message and user_message["content"] in baseline_questions:
+                        is_answerable = baseline_questions[user_message["content"]]
+                        feedback_question = (
+                            "Did the chatbot correctly answer this answerable question?" if is_answerable 
+                            else "Did the chatbot correctly answer this unanswerable question?"
+                        )
+                    st.caption(feedback_question)
                     feedback = st.feedback(
                         "thumbs",
                         key=f"feedback_{conversation_id}",
@@ -123,10 +81,12 @@ def main():
                 end_time = time.time()
                 response_time = int((end_time - start_time))
 
+                # Extract keywords
                 conversation_texts = [prompt + " " + response]
                 keywords = extract_keywords(conversation_texts)
                 print(f"Extracted Keywords: {keywords}")
 
+            # Add conversation to database
             conversation_id = insert_conversation(
                 question=prompt,
                 response=response,
@@ -136,6 +96,7 @@ def main():
                 response_time=response_time,
                 correct=None,
                 user_id=st.session_state.user_id,
+                answerable = baseline_questions.get(prompt, None),
                 common_topics=keywords
             )
 
@@ -152,6 +113,3 @@ def main():
 
             update_user_session(st.session_state.user_id)
             st.rerun()
-
-if __name__ == "__main__":
-    main()
