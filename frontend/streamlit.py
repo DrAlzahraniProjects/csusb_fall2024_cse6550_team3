@@ -19,10 +19,25 @@ from .utils import (
 )
 
 def display_custom_confusion_matrix(matrix, metrics):
-    """Displays the confusion matrix and metrics in the sidebar with standardized labels."""
+    """Displays Sensitivity and Specificity above the confusion matrix, followed by other metrics."""
     st.sidebar.markdown("## Confusion Matrix")
-    
-    # Display confusion matrix with updated labels
+
+    # Display Sensitivity and Specificity above the confusion matrix table
+    st.sidebar.markdown("### Key Metrics")
+    st.sidebar.markdown(
+        f"<div class='metric-container'>Sensitivity: {metrics['Sensitivity']:.2f}</div>" 
+        if metrics['Sensitivity'] is not None else 
+        "<div class='metric-container'>Sensitivity: N/A</div>",
+        unsafe_allow_html=True
+    )
+    st.sidebar.markdown(
+        f"<div class='metric-container'>Specificity: {metrics['Specificity']:.2f}</div>" 
+        if metrics['Specificity'] is not None else 
+        "<div class='metric-container'>Specificity: N/A</div>",
+        unsafe_allow_html=True
+    )
+
+    # Display the confusion matrix table
     st.sidebar.markdown(
         """
         <table class="confusion-matrix-table">
@@ -50,22 +65,9 @@ def display_custom_confusion_matrix(matrix, metrics):
         ),
         unsafe_allow_html=True
     )
-    
-    # Display metrics in the sidebar
-    st.sidebar.markdown("### Performance Metrics")
-    
-    st.sidebar.markdown(
-        f"<div class='metric-container'>Sensitivity: {metrics['Sensitivity']:.2f}</div>" 
-        if metrics['Sensitivity'] is not None else 
-        "<div class='metric-container'>Sensitivity: N/A</div>",
-        unsafe_allow_html=True
-    )
-    st.sidebar.markdown(
-        f"<div class='metric-container'>Specificity: {metrics['Specificity']:.2f}</div>" 
-        if metrics['Specificity'] is not None else 
-        "<div class='metric-container'>Specificity: N/A</div>",
-        unsafe_allow_html=True
-    )
+
+    # Display other performance metrics below the confusion matrix
+    st.sidebar.markdown("### Additional Performance Metrics")
     st.sidebar.markdown(
         f"<div class='metric-container'>Accuracy: {metrics['Accuracy']:.2f}</div>" 
         if metrics['Accuracy'] is not None else 
