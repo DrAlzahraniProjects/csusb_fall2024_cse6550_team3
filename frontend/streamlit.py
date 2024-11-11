@@ -22,22 +22,22 @@ def display_custom_confusion_matrix(matrix, metrics):
     """Displays the confusion matrix and metrics in the sidebar with standardized labels."""
     st.sidebar.markdown("## Confusion Matrix")
     
-    # Display confusion matrix
+    # Display confusion matrix with updated labels
     st.sidebar.markdown(
         """
         <table class="confusion-matrix-table">
             <tr>
                 <th></th>
-                <th>Pred. Ans</th>
-                <th>Pred. Unans</th>
+                <th>Predicted +</th>
+                <th>Predicted -</th>
             </tr>
             <tr>
-                <th>Actual Ans</th>
+                <th>Actual +</th>
                 <td>{tp} (TP)</td>
                 <td>{fn} (FN)</td>
             </tr>
             <tr>
-                <th>Actual Unans</th>
+                <th>Actual -</th>
                 <td>{fp} (FP)</td>
                 <td>{tn} (TN)</td>
             </tr>
