@@ -167,6 +167,13 @@ h3 {
   display: block;
 }
 
+/* Gold-colored labels for specific metrics */
+[data-testid="stSidebar"] .metric-container span.metric-sensitivity-label,
+[data-testid="stSidebar"] .metric-container span.metric-specificity-label {
+  color: gold;
+  font-weight: bold;
+}
+
 /* Styling for metric borders */
 [data-testid="stSidebar"] .metric-container {
   border: 1px solid #CCCCCC;
