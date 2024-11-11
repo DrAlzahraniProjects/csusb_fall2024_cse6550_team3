@@ -1,20 +1,19 @@
-/* General text and layout */
+/* General Reset */
 h1, h2, h3, p, span {
   margin: 0px;
   padding: 0px;
 }
 
-/* Main container */
+/* Main */
 [data-testid="stMainBlockContainer"] {
   padding-top: 5rem;
 }
 
-/* Title styling */
 h1 {
   margin-bottom: 20px;
 }
 
-/* Chat message styling */
+/* User and Assistant Messages */
 .user-message {
   display: flex;
   justify-content: right;
@@ -24,7 +23,6 @@ h1 {
   margin-bottom: 10px;
   background: #1E1E1E;
   border-radius: 15px;
-  color: #FFFFFF;
 }
 
 .assistant-message {
@@ -36,12 +34,9 @@ h1 {
   padding: 10px;
   margin-right: auto;
   margin-bottom: 5px;
-  background: #2D2D2D;
-  border-radius: 15px;
-  color: #FFFFFF;
 }
 
-/* Feedback section */
+/* Feedback */
 [data-testid="stCaptionContainer"] {
   padding-left: 10px;
 }
@@ -54,7 +49,7 @@ h1 {
   padding-top: 5px;
 }
 
-/* Chat input styling */
+/* Chat Input */
 [data-testid="stChatInput"] {
   display: flex;
   justify-content: center;
@@ -81,7 +76,6 @@ h1 {
   color: #9C9C9C !important;
 }
 
-/* For cross-browser compatibility */
 [data-testid="stChatInput"] textarea::-webkit-input-placeholder {
   color: #9C9C9C !important;
 }
@@ -98,13 +92,22 @@ h1 {
   background: none;
 }
 
-/* Sidebar styling */
+/* Sidebar */
 [data-testid="stSidebar"][aria-expanded="true"] {
   min-width: 400px;
   max-width: 400px;
+  padding: 20px;
+  background-color: #2A2A2A; /* Background color for sidebar */
 }
 
-/* Evaluation report section */
+/* Sidebar text */
+.sidebar-text {
+  font-size: 14px;
+  color: #DDDDDD;
+  margin-bottom: 5px;
+}
+
+/* Evaluation Report */
 h2 {
   font-size: 30px !important;
   text-align: center;
@@ -117,7 +120,7 @@ h2 {
   padding: 0px;
 }
 
-/* Subheadings */
+/* Subheadings: Confusion Matrix, Performance Metrics */
 h3 {
   font-size: 18px !important;
   color: #F6F6F6;
@@ -126,43 +129,55 @@ h3 {
   margin-bottom: 5px;
 }
 
-/* Highlighted labels */
-.highlight-label {
-  background-color: #BEBEBE; /* Ash color */
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 10px;
-  border: 1px solid #A9A9A9; /* Border for highlighted labels */
-}
-
-/* Confusion matrix table */
+/* Confusion Matrix Styling */
 .confusion-matrix-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 15px;
 }
 
-.confusion-matrix-table th, .confusion-matrix-table td {
-  border: 1px solid #A9A9A9; /* Border for table cells */
+.confusion-matrix-table th,
+.confusion-matrix-table td {
+  border: 1px solid #444;
   padding: 8px;
   text-align: center;
 }
 
-/* Metrics section */
-.metrics-label {
-  background-color: #F0F0F0; /* Light grey background */
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #A9A9A9; /* Border for metrics container */
+.confusion-matrix-table th {
+  background-color: #2a2a2a;
+  color: #ffffff;
 }
 
-.metrics-label p {
+.confusion-matrix-table td {
+  background-color: #333;
+  color: #ffffff;
+}
+
+/* Styling for sidebar metrics */
+[data-testid="stSidebar"] .sidebar-text {
+  font-size: 14px;
+  color: #dddddd;
+  margin-bottom: 5px;
+}
+
+[data-testid="stSidebar"] .metric-label {
+  font-size: 16px;
+  color: #ffffff;
   margin: 5px 0;
+  display: block;
 }
 
-/* Reset button styling */
-[data-testid="stButton"] {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
+/* Styling for the reset button */
+[data-testid="stSidebar"] .stButton button {
+  background-color: #444;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+[data-testid="stSidebar"] .stButton button:hover {
+  background-color: #555;
 }
