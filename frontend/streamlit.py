@@ -7,7 +7,8 @@ from backend.statistics import (
     init_user_session,
     update_user_session,
     insert_conversation,
-    get_confusion_matrix  # Ensure this function is imported
+    get_confusion_matrix,  # Ensure this function is imported
+    reset_confusion_matrix  # Import reset function
 )
 from .utils import (
     baseline_questions,
@@ -17,26 +18,26 @@ from .utils import (
     extract_keywords
 )
 
-def display_custom_confusion_matrix(matrix):
-    """Displays the confusion matrix with standardized labels."""
-    st.markdown("### Confusion Matrix")
+def display_custom_confusion_matrix(matrix, metrics):
+    """Displays the confusion matrix and metrics in the sidebar with standardized labels."""
+    st.sidebar.markdown("## Confusion Matrix")
     
-    # Display the confusion matrix using standard labels
-    st.markdown(
+    # Display confusion matrix
+    st.sidebar.markdown(
         """
         <table class="confusion-matrix-table">
             <tr>
                 <th></th>
-                <th>Predicted +</th>
-                <th>Predicted -</th>
+                <th>Pred. Ans</th>
+                <th>Pred. Unans</th>
             </tr>
             <tr>
-                <th>Actual +</th>
+                <th>Actual Ans</th>
                 <td>{tp} (TP)</td>
                 <td>{fn} (FN)</td>
             </tr>
             <tr>
-                <th>Actual -</th>
+                <th>Actual Unans</th>
                 <td>{fp} (FP)</td>
                 <td>{tn} (TN)</td>
             </tr>
@@ -49,6 +50,19 @@ def display_custom_confusion_matrix(matrix):
         ),
         unsafe_allow_html=True
     )
+    
+    # Display metrics in the sidebar
+    st.sidebar.markdown("### Performance Metrics")
+    st.sidebar.text(f"Sensitivity: {metrics['Sensitivity']:.2f}" if metrics['Sensitivity'] is not None else "Sensitivity: N/A")
+    st.sidebar.text(f"Specificity: {metrics['Specificity']:.2f}" if metrics['Specificity'] is not None else "Specificity: N/A")
+    st.sidebar.text(f"Accuracy: {metrics['Accuracy']:.2f}" if metrics['Accuracy'] is not None else "Accuracy: N/A")
+    st.sidebar.text(f"Precision: {metrics['Precision']:.2f}" if metrics['Precision'] is not None else "Precision: N/A")
+    st.sidebar.text(f"F1 Score: {metrics['F1 Score']:.2f}" if metrics['F1 Score'] is not None else "F1 Score: N/A")
+
+    # Reset button
+    if st.sidebar.button("Reset"):
+        reset_confusion_matrix()
+        st.experimental_rerun()
 
 def main():
     """Main Streamlit app logic"""
@@ -70,8 +84,8 @@ def main():
             print(f"Creating user#{st.session_state.user_id}")
 
         # Fetch and display the custom confusion matrix with actual data
-        confusion_matrix = get_confusion_matrix()
-        display_custom_confusion_matrix(confusion_matrix['matrix'])
+        confusion_matrix_data = get_confusion_matrix()
+        display_custom_confusion_matrix(confusion_matrix_data['matrix'], confusion_matrix_data['metrics'])
 
         # Display the conversation history
         for message in st.session_state.messages:
