@@ -53,11 +53,37 @@ def display_custom_confusion_matrix(matrix, metrics):
     
     # Display metrics in the sidebar
     st.sidebar.markdown("### Performance Metrics")
-    st.sidebar.text(f"Sensitivity: {metrics['Sensitivity']:.2f}" if metrics['Sensitivity'] is not None else "Sensitivity: N/A")
-    st.sidebar.text(f"Specificity: {metrics['Specificity']:.2f}" if metrics['Specificity'] is not None else "Specificity: N/A")
-    st.sidebar.text(f"Accuracy: {metrics['Accuracy']:.2f}" if metrics['Accuracy'] is not None else "Accuracy: N/A")
-    st.sidebar.text(f"Precision: {metrics['Precision']:.2f}" if metrics['Precision'] is not None else "Precision: N/A")
-    st.sidebar.text(f"F1 Score: {metrics['F1 Score']:.2f}" if metrics['F1 Score'] is not None else "F1 Score: N/A")
+    
+    st.sidebar.markdown(
+        f"<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>Sensitivity: {metrics['Sensitivity']:.2f}</div>" 
+        if metrics['Sensitivity'] is not None else 
+        "<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>Sensitivity: N/A</div>",
+        unsafe_allow_html=True
+    )
+    st.sidebar.markdown(
+        f"<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>Specificity: {metrics['Specificity']:.2f}</div>" 
+        if metrics['Specificity'] is not None else 
+        "<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>Specificity: N/A</div>",
+        unsafe_allow_html=True
+    )
+    st.sidebar.markdown(
+        f"<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>Accuracy: {metrics['Accuracy']:.2f}</div>" 
+        if metrics['Accuracy'] is not None else 
+        "<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>Accuracy: N/A</div>",
+        unsafe_allow_html=True
+    )
+    st.sidebar.markdown(
+        f"<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>Precision: {metrics['Precision']:.2f}</div>" 
+        if metrics['Precision'] is not None else 
+        "<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>Precision: N/A</div>",
+        unsafe_allow_html=True
+    )
+    st.sidebar.markdown(
+        f"<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>F1 Score: {metrics['F1 Score']:.2f}</div>" 
+        if metrics['F1 Score'] is not None else 
+        "<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>F1 Score: N/A</div>",
+        unsafe_allow_html=True
+    )
 
     # Reset button
     if st.sidebar.button("Reset"):
@@ -159,14 +185,3 @@ def main():
             st.session_state.messages.append({
                 "role": "user",
                 "content": prompt,
-                "conversation_id": conversation_id,
-            })
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": response,
-                "conversation_id": conversation_id
-            })
-
-            # Update the user session
-            update_user_session(st.session_state.user_id)
-            st.rerun()
