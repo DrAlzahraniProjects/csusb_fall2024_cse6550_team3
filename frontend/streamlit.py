@@ -20,13 +20,13 @@ from .utils import (
 def display_custom_confusion_matrix(matrix, metrics):
     """Displays the confusion matrix and metrics in the sidebar with standardized labels."""
     st.sidebar.markdown("## Confusion Matrix")
-    
+
     # Highlighted labels for Sensitivity and Specificity above the table
     st.sidebar.markdown(
         f"""
         <div class="highlight-label">
-            <p><strong>Sensitivity:</strong> {metrics['Sensitivity']:.2f}</p>
-            <p><strong>Specificity:</strong> {metrics['Specificity']:.2f}</p>
+            <p><strong>Sensitivity:</strong> {metrics['Sensitivity']:.2f if metrics['Sensitivity'] is not None else 'N/A'}</p>
+            <p><strong>Specificity:</strong> {metrics['Specificity']:.2f if metrics['Specificity'] is not None else 'N/A'}</p>
         </div>
         """,
         unsafe_allow_html=True
@@ -65,9 +65,9 @@ def display_custom_confusion_matrix(matrix, metrics):
     st.sidebar.markdown(
         f"""
         <div class="metrics-label">
-            <p><strong>Accuracy:</strong> {metrics['Accuracy']:.2f}</p>
-            <p><strong>Precision:</strong> {metrics['Precision']:.2f}</p>
-            <p><strong>F1 Score:</strong> {metrics['F1 Score']:.2f}</p>
+            <p><strong>Accuracy:</strong> {metrics['Accuracy']:.2f if metrics['Accuracy'] is not None else 'N/A'}</p>
+            <p><strong>Precision:</strong> {metrics['Precision']:.2f if metrics['Precision'] is not None else 'N/A'}</p>
+            <p><strong>F1 Score:</strong> {metrics['F1 Score']:.2f if metrics['F1 Score'] is not None else 'N/A'}</p>
         </div>
         """,
         unsafe_allow_html=True
