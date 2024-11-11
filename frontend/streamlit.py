@@ -7,12 +7,12 @@ from backend.statistics import (
     init_user_session,
     update_user_session,
     insert_conversation,
+    get_confusion_matrix  # Ensure this function is imported
 )
 from .utils import (
     baseline_questions,
     load_css,
     update_and_display_statistics,
-    display_confusion_matrix,
     handle_feedback,
     extract_keywords
 )
@@ -21,19 +21,33 @@ def display_custom_confusion_matrix(matrix):
     """Displays the confusion matrix with standardized labels."""
     st.markdown("### Confusion Matrix")
     
-    # Display metrics with standardized labels
-    st.write(
+    # Display the confusion matrix using standard labels
+    st.markdown(
         """
-        |           | Predicted + | Predicted - |
-        |-----------|-------------|-------------|
-        | Actual +  | {tp} (TP)   | {fn} (FN)   |
-        | Actual -  | {fp} (FP)   | {tn} (TN)   |
+        <table class="confusion-matrix-table">
+            <tr>
+                <th></th>
+                <th>Predicted +</th>
+                <th>Predicted -</th>
+            </tr>
+            <tr>
+                <th>Actual +</th>
+                <td>{tp} (TP)</td>
+                <td>{fn} (FN)</td>
+            </tr>
+            <tr>
+                <th>Actual -</th>
+                <td>{fp} (FP)</td>
+                <td>{tn} (TN)</td>
+            </tr>
+        </table>
         """.format(
             tp=matrix['tp'],
             fn=matrix['fn'],
             fp=matrix['fp'],
             tn=matrix['tn']
-        )
+        ),
+        unsafe_allow_html=True
     )
 
 def main():
@@ -55,14 +69,9 @@ def main():
             st.session_state.user_id = init_user_session()
             print(f"Creating user#{st.session_state.user_id}")
 
-        # Display the custom confusion matrix with new labels
-        matrix = {
-            'tp': 0,  # Replace with actual data as needed
-            'fn': 0,  # Replace with actual data as needed
-            'fp': 0,  # Replace with actual data as needed
-            'tn': 0   # Replace with actual data as needed
-        }
-        display_custom_confusion_matrix(matrix)
+        # Fetch and display the custom confusion matrix with actual data
+        confusion_matrix = get_confusion_matrix()
+        display_custom_confusion_matrix(confusion_matrix['matrix'])
 
         # Display the conversation history
         for message in st.session_state.messages:
