@@ -55,33 +55,33 @@ def display_custom_confusion_matrix(matrix, metrics):
     st.sidebar.markdown("### Performance Metrics")
     
     st.sidebar.markdown(
-        f"<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>Sensitivity: {metrics['Sensitivity']:.2f}</div>" 
+        f"<div class='metric-container'>Sensitivity: {metrics['Sensitivity']:.2f}</div>" 
         if metrics['Sensitivity'] is not None else 
-        "<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>Sensitivity: N/A</div>",
+        "<div class='metric-container'>Sensitivity: N/A</div>",
         unsafe_allow_html=True
     )
     st.sidebar.markdown(
-        f"<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>Specificity: {metrics['Specificity']:.2f}</div>" 
+        f"<div class='metric-container'>Specificity: {metrics['Specificity']:.2f}</div>" 
         if metrics['Specificity'] is not None else 
-        "<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>Specificity: N/A</div>",
+        "<div class='metric-container'>Specificity: N/A</div>",
         unsafe_allow_html=True
     )
     st.sidebar.markdown(
-        f"<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>Accuracy: {metrics['Accuracy']:.2f}</div>" 
+        f"<div class='metric-container'>Accuracy: {metrics['Accuracy']:.2f}</div>" 
         if metrics['Accuracy'] is not None else 
-        "<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>Accuracy: N/A</div>",
+        "<div class='metric-container'>Accuracy: N/A</div>",
         unsafe_allow_html=True
     )
     st.sidebar.markdown(
-        f"<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>Precision: {metrics['Precision']:.2f}</div>" 
+        f"<div class='metric-container'>Precision: {metrics['Precision']:.2f}</div>" 
         if metrics['Precision'] is not None else 
-        "<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>Precision: N/A</div>",
+        "<div class='metric-container'>Precision: N/A</div>",
         unsafe_allow_html=True
     )
     st.sidebar.markdown(
-        f"<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>F1 Score: {metrics['F1 Score']:.2f}</div>" 
+        f"<div class='metric-container'>F1 Score: {metrics['F1 Score']:.2f}</div>" 
         if metrics['F1 Score'] is not None else 
-        "<div style='border: 1px solid #CCCCCC; padding: 8px; border-radius: 5px; margin-bottom: 5px;'>F1 Score: N/A</div>",
+        "<div class='metric-container'>F1 Score: N/A</div>",
         unsafe_allow_html=True
     )
 
@@ -185,3 +185,14 @@ def main():
             st.session_state.messages.append({
                 "role": "user",
                 "content": prompt,
+                "conversation_id": conversation_id,
+            })
+            st.session_state.messages.append({
+                "role": "assistant",
+                "content": response,
+                "conversation_id": conversation_id
+            })
+
+            # Update the user session
+            update_user_session(st.session_state.user_id)
+            st.rerun()
