@@ -176,37 +176,4 @@ def display_confusion_matrix():
             text = "N/A" if value is None else f"{value:.2f}"
             hover_text = f"{tooltips[metric]}"
             color = '#1D1D1D' if value is None else (
-                '#62A834' if value >= 0.8 else # Good values get green
-                '#D7AA21' if value >= 0.5 else # Mid values get yellow
-                '#A83434'# Low values get red
-            )
-            traces.append(go.Bar(
-                name=f"{metric}_bg", y=[metric], x=[1], orientation='h', marker_color='#1D1D1D', hoverinfo='text', hovertext=hover_text, showlegend=False,
-            ))
-            traces.append(go.Bar(
-                name=metric, y=[metric], x=[value if value is not None else 0], orientation='h', hoverinfo='skip', marker_color=color, showlegend=False, text=text, textposition='outside', textfont=dict(color='#D6D6D6', size=14), texttemplate='%{text}'
-            ))
-        return traces
-
-    traces = []
-    metrics_order = ['Sensitivity', 'Specificity', 'Accuracy', 'Precision', 'Recall', 'F1 Score']
-    for metric in metrics_order:
-        traces.extend(create_metric_bars([metric]))
-    fig = go.Figure(data=traces)
-    fig.update_layout(
-        barmode='overlay', plot_bgcolor=bg_color, paper_bgcolor=bg_color, height=250, margin=dict(l=100, r=20, t=10, b=10),
-        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, autorange="reversed"),
-        xaxis=dict(range=[0, 1.2], showgrid=False, zeroline=False, showticklabels=False, showline=False)
-    )
-    # Add custom annotations for each metric
-    for i, metric in enumerate(metrics_order):
-        color = '#FFDF40' if metric in ['Sensitivity', 'Specificity'] else '#FFFFFF'
-        fig.add_annotation(x=-0.1, y=i,text=metric, showarrow=False, font=dict(color=color, size=14), xref='paper', yref='y',xanchor='right')
-    st.sidebar.plotly_chart(fig, use_container_width=False, config=plotly_config)
-
-    """
-    Reset Button
-    """
-    if st.sidebar.button("Reset"):
-        reset_confusion_matrix()
-        st.rerun()
+                '#
