@@ -18,7 +18,7 @@ from sqlalchemy import (
 from collections import Counter
 
 Base = declarative_base()
-engine = create_engine('sqlite:///team3.db', echo=False) # Set echo=True for debuggin
+engine = create_engine('sqlite:///team3.db', echo=False) # Set echo=True for debugging
 Session = sessionmaker(bind=engine)
 
 ###################
@@ -141,6 +141,7 @@ def query_common_topics(session, top_k, date_filter):
     most_common_topics = common_topic_counts.most_common(top_k)
     return ", ".join([topic for topic, _ in most_common_topics])
         
+
 def get_statistics(period="Daily"):
     """Retrieve various statistics from the database."""
     with Session() as session:
@@ -220,5 +221,3 @@ def get_confusion_matrix():
                 'F1 Score': f1
             }
         }
-
-        
