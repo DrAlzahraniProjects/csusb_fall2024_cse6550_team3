@@ -167,6 +167,16 @@ h3 {
   display: block;
 }
 
+/* Styling for metric borders */
+[data-testid="stSidebar"] .metric-container {
+  border: 1px solid #CCCCCC;
+  padding: 8px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  background-color: #333;
+  color: #ffffff;
+}
+
 /* Styling for the reset button */
 [data-testid="stSidebar"] .stButton button {
   background-color: #444;
