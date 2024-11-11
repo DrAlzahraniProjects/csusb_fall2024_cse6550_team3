@@ -1,6 +1,7 @@
+/* General Reset */
 h1, h2, h3, p, span {
   margin: 0px;
-  padding: 0px
+  padding: 0px;
 }
 
 /* Main */
@@ -12,7 +13,8 @@ h1 {
   margin-bottom: 20px;
 }
 
-.user-message{
+/* User and Assistant Messages */
+.user-message {
   display: flex;
   justify-content: right;
   max-width: fit-content;
@@ -22,6 +24,7 @@ h1 {
   background: #1E1E1E;
   border-radius: 15px;
 }
+
 .assistant-message {
   display: flex;
   flex-direction: column;
@@ -34,10 +37,11 @@ h1 {
 }
 
 /* Feedback */
-[data-testid="stCaptionContainer"]{
+[data-testid="stCaptionContainer"] {
   padding-left: 10px;
 }
-[data-testid="stButtonGroup"]{
+
+[data-testid="stButtonGroup"] {
   display: flex;
   flex-direction: row;
   justify-content: start;
@@ -54,6 +58,7 @@ h1 {
   outline: none;
   padding: 6px;
 }
+
 [data-baseweb="base-input"],
 [data-baseweb="textarea"] {
   border: none !important;
@@ -62,21 +67,44 @@ h1 {
   color: #FFFFFF !important;
   padding: 0px 6px;
 }
-[data-testid="stChatInput"] textarea:focus {color: #FFFFFF !important;}
-[data-testid="stChatInput"] textarea::placeholder {color: #9C9C9C !important;}
-/* For cross-browser compatibility */
-[data-testid="stChatInput"] textarea::-webkit-input-placeholder {color: #9C9C9C !important;}
-[data-testid="stChatInput"] textarea::-moz-placeholder {color: #9C9C9C !important;}
-[data-testid="stChatInput"] textarea:-ms-input-placeholder {color: #9C9C9C !important;}
+
+[data-testid="stChatInput"] textarea:focus {
+  color: #FFFFFF !important;
+}
+
+[data-testid="stChatInput"] textarea::placeholder {
+  color: #9C9C9C !important;
+}
+
+[data-testid="stChatInput"] textarea::-webkit-input-placeholder {
+  color: #9C9C9C !important;
+}
+
+[data-testid="stChatInput"] textarea::-moz-placeholder {
+  color: #9C9C9C !important;
+}
+
+[data-testid="stChatInput"] textarea:-ms-input-placeholder {
+  color: #9C9C9C !important;
+}
+
 [data-testid="stChatInputSubmitButton"]:hover {
   background: none;
 }
-
 
 /* Sidebar */
 [data-testid="stSidebar"][aria-expanded="true"] {
   min-width: 400px;
   max-width: 400px;
+  padding: 20px;
+  background-color: #2A2A2A; /* Background color for sidebar */
+}
+
+/* Sidebar text */
+.sidebar-text {
+  font-size: 14px;
+  color: #DDDDDD;
+  margin-bottom: 5px;
 }
 
 /* Evaluation Report */
@@ -87,23 +115,86 @@ h2 {
   border-bottom: 2px solid #1E1E1E;
   margin-bottom: 20px;
 }
-[data-testid="stSidebarHeader"]{
+
+[data-testid="stSidebarHeader"] {
   padding: 0px;
 }
-/* Subheadings: Confusion Matrix, Performance Metrics*/
-h3{
+
+/* Subheadings: Confusion Matrix, Performance Metrics */
+h3 {
   font-size: 18px !important;
   color: #F6F6F6;
   text-align: left;
   margin-top: 10px;
   margin-bottom: 5px;
 }
-.metric-tooltip{
-  display: flex;
-  text-align: left;
+
+/* Confusion Matrix Styling */
+.confusion-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
 }
 
-[data-testid="stButton"]{
-  display: flex;
-  justify-content: center;
+.confusion-matrix-table th,
+.confusion-matrix-table td {
+  border: 1px solid #444;
+  padding: 8px;
+  text-align: center;
+}
+
+.confusion-matrix-table th {
+  background-color: #2a2a2a;
+  color: #ffffff;
+}
+
+.confusion-matrix-table td {
+  background-color: #333;
+  color: #ffffff;
+}
+
+/* Styling for sidebar metrics */
+[data-testid="stSidebar"] .sidebar-text {
+  font-size: 14px;
+  color: #dddddd;
+  margin-bottom: 5px;
+}
+
+[data-testid="stSidebar"] .metric-label {
+  font-size: 16px;
+  color: #ffffff;
+  margin: 5px 0;
+  display: block;
+}
+
+/* Gold-colored labels for specific metrics */
+[data-testid="stSidebar"] .metric-container span.metric-sensitivity-label,
+[data-testid="stSidebar"] .metric-container span.metric-specificity-label {
+  color: gold;
+  font-weight: bold;
+}
+
+/* Styling for metric borders */
+[data-testid="stSidebar"] .metric-container {
+  border: 1px solid #CCCCCC;
+  padding: 8px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  background-color: #333;
+  color: #ffffff;
+}
+
+/* Styling for the reset button */
+[data-testid="stSidebar"] .stButton button {
+  background-color: #444;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+[data-testid="stSidebar"] .stButton button:hover {
+  background-color: #555;
 }
