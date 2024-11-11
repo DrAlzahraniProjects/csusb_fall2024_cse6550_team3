@@ -187,30 +187,23 @@ def get_confusion_matrix():
             Conversation.answerable.isnot(None)
         ).all()
 
-        # Calculate values for the confusion matrix
-        # True Positives (TP): Correctly identified answerable questions with correct answers
-        tp = sum(1 for c in conversations if c.correct and c.answerable)
+        # Calculate confusion matrix values
+        tp = sum(1 for c in conversations if c.correct and c.answerable)  # True Positives
+        fn = sum(1 for c in conversations if not c.correct and c.answerable)  # False Negatives
+        tn = sum(1 for c in conversations if not c.correct and not c.answerable)  # True Negatives
+        fp = sum(1 for c in conversations if c.correct and not c.answerable)  # False Positives
 
-        # False Negatives (FN): Answerable questions that were not correctly answered
-        fn = sum(1 for c in conversations if not c.correct and c.answerable)
-
-        # True Negatives (TN): Correctly identified unanswerable questions without providing an answer
-        tn = sum(1 for c in conversations if not c.correct and not c.answerable)
-
-        # False Positives (FP): Incorrectly provided an answer for unanswerable questions
-        fp = sum(1 for c in conversations if c.correct and not c.answerable)
-
-        # Total number of evaluated conversations
+        # Calculate total for normalization
         total = tp + tn + fp + fn
 
-        # Calculate metrics if total is greater than 0 to avoid division by zero
+        # Calculate metrics, handling division by zero safely
         accuracy = (tp + tn) / total if total > 0 else None
         precision = tp / (tp + fp) if (tp + fp) > 0 else None
         recall = tp / (tp + fn) if (tp + fn) > 0 else None
         specificity = tn / (tn + fp) if (tn + fp) > 0 else None
         f1 = 2 * (precision * recall) / (precision + recall) if (precision and recall and (precision + recall) > 0) else None
 
-        # Return confusion matrix and metrics
+        # Return confusion matrix and calculated metrics
         return {
             'matrix': {
                 'tp': tp,
@@ -227,4 +220,5 @@ def get_confusion_matrix():
                 'F1 Score': f1
             }
         }
+
         
