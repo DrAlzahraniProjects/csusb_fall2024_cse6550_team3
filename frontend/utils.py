@@ -210,3 +210,4 @@ def display_confusion_matrix():
     if st.sidebar.button("Reset"):
         reset_confusion_matrix()
         st.rerun()
+        
