@@ -112,7 +112,7 @@ def display_confusion_matrix():
 
     # Plotly configurations
     plotly_config={
-        'scrollZoom': False,'doubleClick': False,
+        'scrollZoom': False, 'doubleClick': False,
         'showTips': False,
         'displayModeBar': False,
         'draggable': False
@@ -130,7 +130,7 @@ def display_confusion_matrix():
         ["FP: " + str(matrix['fp']), "TN: " + str(matrix['tn'])],
         ["TP: " + str(matrix['tp']), "FN: " + str(matrix['fn'])]
     ]
-    is_null = all(val == 0 for row in z for val in row) # check if values in matrix are all 0
+    is_null = all(val == 0 for row in z for val in row)  # check if values in matrix are all 0
     tooltips = [
         [
             "False Positive:<br>The chatbot answers an unanswerable question.",
@@ -176,9 +176,9 @@ def display_confusion_matrix():
             text = "N/A" if value is None else f"{value:.2f}"
             hover_text = f"{tooltips[metric]}"
             color = '#1D1D1D' if value is None else (
-                '#62A834' if value >= 0.8 else # Good values get green
-                '#D7AA21' if value >= 0.5 else # Mid values get yellow
-                '#A83434'# Low values get red
+                '#62A834' if value >= 0.8 else  # Good values get green
+                '#D7AA21' if value >= 0.5 else  # Mid values get yellow
+                '#A83434'  # Low values get red
             )
             traces.append(go.Bar(
                 name=f"{metric}_bg", y=[metric], x=[1], orientation='h', marker_color='#1D1D1D', hoverinfo='text', hovertext=hover_text, showlegend=False,
@@ -201,7 +201,7 @@ def display_confusion_matrix():
     # Add custom annotations for each metric
     for i, metric in enumerate(metrics_order):
         color = '#FFDF40' if metric in ['Sensitivity', 'Specificity'] else '#FFFFFF'
-        fig.add_annotation(x=-0.1, y=i,text=metric, showarrow=False, font=dict(color=color, size=14), xref='paper', yref='y',xanchor='right')
+        fig.add_annotation(x=-0.1, y=i, text=metric, showarrow=False, font=dict(color=color, size=14), xref='paper', yref='y', xanchor='right')
     st.sidebar.plotly_chart(fig, use_container_width=False, config=plotly_config)
 
     """
@@ -209,4 +209,4 @@ def display_confusion_matrix():
     """
     if st.sidebar.button("Reset"):
         reset_confusion_matrix()
-        st.rerun()
+        st.experimental_rerun()
