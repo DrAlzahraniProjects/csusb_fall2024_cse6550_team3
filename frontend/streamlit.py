@@ -88,7 +88,7 @@ def display_custom_confusion_matrix(matrix, metrics):
     # Reset button
     if st.sidebar.button("Reset"):
         reset_confusion_matrix()
-        st.experimental_rerun()
+        st.session_state.rerun()
 
 def main():
     """Main Streamlit app logic"""
