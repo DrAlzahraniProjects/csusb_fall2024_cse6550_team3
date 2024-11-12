@@ -6,98 +6,23 @@ from backend.inference import chat_completion
 from backend.statistics import (
     init_user_session,
     update_user_session,
-    insert_conversation,
-    get_confusion_matrix,  # Ensure this function is imported
-    reset_confusion_matrix  # Import reset function
+    insert_conversation
 )
 from .utils import (
     baseline_questions,
     load_css,
     update_and_display_statistics,
     handle_feedback,
-    extract_keywords
+    extract_keywords,
+    display_confusion_matrix
 )
-
-def display_custom_confusion_matrix(matrix, metrics):
-    """Displays Sensitivity and Specificity above the confusion matrix, followed by other metrics."""
-    st.sidebar.markdown("## Confusion Matrix")
-
-    # Display Sensitivity and Specificity above the confusion matrix table
-    st.sidebar.markdown("### Key Metrics")
-    st.sidebar.markdown(
-        f"<div class='metric-container'>Sensitivity: {metrics['Sensitivity']:.2f}</div>" 
-        if metrics['Sensitivity'] is not None else 
-        "<div class='metric-container'>Sensitivity: N/A</div>",
-        unsafe_allow_html=True
-    )
-    st.sidebar.markdown(
-        f"<div class='metric-container'>Specificity: {metrics['Specificity']:.2f}</div>" 
-        if metrics['Specificity'] is not None else 
-        "<div class='metric-container'>Specificity: N/A</div>",
-        unsafe_allow_html=True
-    )
-
-    # Display the confusion matrix table
-    st.sidebar.markdown(
-        """
-        <table class="confusion-matrix-table">
-            <tr>
-                <th></th>
-                <th>Predicted +</th>
-                <th>Predicted -</th>
-            </tr>
-            <tr>
-                <th>Actual +</th>
-                <td>{tp} (TP)</td>
-                <td>{fn} (FN)</td>
-            </tr>
-            <tr>
-                <th>Actual -</th>
-                <td>{fp} (FP)</td>
-                <td>{tn} (TN)</td>
-            </tr>
-        </table>
-        """.format(
-            tp=matrix['tp'],
-            fn=matrix['fn'],
-            fp=matrix['fp'],
-            tn=matrix['tn']
-        ),
-        unsafe_allow_html=True
-    )
-
-    # Display other performance metrics below the confusion matrix
-    st.sidebar.markdown("### Additional Performance Metrics")
-    st.sidebar.markdown(
-        f"<div class='metric-container'>Accuracy: {metrics['Accuracy']:.2f}</div>" 
-        if metrics['Accuracy'] is not None else 
-        "<div class='metric-container'>Accuracy: N/A</div>",
-        unsafe_allow_html=True
-    )
-    st.sidebar.markdown(
-        f"<div class='metric-container'>Precision: {metrics['Precision']:.2f}</div>" 
-        if metrics['Precision'] is not None else 
-        "<div class='metric-container'>Precision: N/A</div>",
-        unsafe_allow_html=True
-    )
-    st.sidebar.markdown(
-        f"<div class='metric-container'>F1 Score: {metrics['F1 Score']:.2f}</div>" 
-        if metrics['F1 Score'] is not None else 
-        "<div class='metric-container'>F1 Score: N/A</div>",
-        unsafe_allow_html=True
-    )
-
-    # Reset button
-    if st.sidebar.button("Reset"):
-        reset_confusion_matrix()
-        st.session_state.rerun()
 
 def main():
     """Main Streamlit app logic"""
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # Show the title at the top of the app
+    # Application Title
     st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
 
     # Load PDF if requested
@@ -111,9 +36,8 @@ def main():
             st.session_state.user_id = init_user_session()
             print(f"Creating user#{st.session_state.user_id}")
 
-        # Fetch and display the custom confusion matrix with actual data
-        confusion_matrix_data = get_confusion_matrix()
-        display_custom_confusion_matrix(confusion_matrix_data['matrix'], confusion_matrix_data['metrics'])
+        st.sidebar.empty()
+        display_confusion_matrix()
 
         # Display the conversation history
         for message in st.session_state.messages:
@@ -121,25 +45,18 @@ def main():
                 st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
                 conversation_id = message.get("conversation_id", None)
                 if conversation_id:
-                    # Find the corresponding user message
+                    # Find the corresponding user question
                     user_message = next((msg for msg in st.session_state.messages if msg["role"] == "user" and msg["conversation_id"] == conversation_id), None)
-                    
-                    # Determine if the question is answerable
-                    is_answerable = None
+                    # Set feedback question based on baseline question type
+                    feedback_question = "Was this response helpful?"
                     if user_message and user_message["content"] in baseline_questions:
                         is_answerable = baseline_questions[user_message["content"]]
-
-                    # Set the feedback question based on whether the question is answerable
-                    feedback_question = "Was this response helpful?"
-                    if is_answerable is not None:
                         feedback_question = (
                             "Did the chatbot correctly answer this answerable question?" if is_answerable
-                            else "Did the chatbot correctly identify this as an unanswerable question?"
+                            else "Did the chatbot correctly answer this unanswerable question?"
                         )
-                    
                     # Display feedback caption
                     st.caption(feedback_question)
-
                     # Display feedback option
                     feedback = st.feedback(
                         "thumbs",
@@ -150,7 +67,7 @@ def main():
             else:
                 st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
 
-        # Handle user input and generate responses
+        # Handle user input and display response
         if prompt := st.chat_input("Ask your question?"):
             st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
 
@@ -175,7 +92,7 @@ def main():
                 response=response,
                 citations="",
                 model_name=model_name,
-                source=os.getenv("CORPUS_SOURCE").split("/")[-1] if os.getenv("CORPUS_SOURCE") else "unknown",
+                source=os.getenv("CORPUS_SOURCE").split("/")[-1],
                 response_time=response_time,
                 correct=None,
                 user_id=st.session_state.user_id,

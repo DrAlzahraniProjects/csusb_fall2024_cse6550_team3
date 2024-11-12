@@ -141,7 +141,6 @@ def query_common_topics(session, top_k, date_filter):
     most_common_topics = common_topic_counts.most_common(top_k)
     return ", ".join([topic for topic, _ in most_common_topics])
         
-
 def get_statistics(period="Daily"):
     """Retrieve various statistics from the database."""
     with Session() as session:
@@ -179,7 +178,7 @@ def get_statistics(period="Daily"):
         })
         return stats
 
-def get_confusion_matrix():
+def get_confusion_matrix_data():
     """Calculate confusion matrix and evaluation metrics"""
     with Session() as session:
         # Fetch conversations with valid 'correct' and 'answerable' values
@@ -189,7 +188,7 @@ def get_confusion_matrix():
         ).all()
 
         # Calculate confusion matrix values
-         # True Positives (TP): The chatbot correctly answers an answerable question.
+        # True Positives (TP): The chatbot correctly answers an answerable question.
         tp = sum(1 for c in conversations if c.correct and c.answerable)
         # False Negatives (FN): The chatbot fails to provide a correct answer for an answerable question.
         fn = sum(1 for c in conversations if not c.correct and c.answerable)
@@ -198,17 +197,15 @@ def get_confusion_matrix():
         # True Negatives (TN): The chatbot correctly identifies an unanswerable question.
         tn = sum(1 for c in conversations if c.correct and not c.answerable)
 
-        # Calculate total for normalization
         total = tp + tn + fp + fn
 
-        # Calculate metrics, handling division by zero safely
+        # Calculate performance metrics
         accuracy = (tp + tn) / total if total > 0 else None
         precision = tp / (tp + fp) if (tp + fp) > 0 else None
         recall = tp / (tp + fn) if (tp + fn) > 0 else None
         specificity = tn / (tn + fp) if (tn + fp) > 0 else None
         f1 = 2 * (precision * recall) / (precision + recall) if (precision and recall and (precision + recall) > 0) else None
 
-        # Return confusion matrix and calculated metrics
         return {
             'matrix': {
                 'tp': tp,

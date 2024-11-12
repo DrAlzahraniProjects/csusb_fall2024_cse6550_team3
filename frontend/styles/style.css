@@ -3,6 +3,10 @@ h1, h2, h3, p, span {
   margin: 0px;
   padding: 0px;
 }
+a {
+  text-decoration: none;
+  margin-right: 5px;
+}
 
 /* Main */
 [data-testid="stMainBlockContainer"] {
@@ -64,29 +68,16 @@ h1 {
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
-  color: #FFFFFF !important;
+  color: #E8E8E8 !important;
   padding: 0px 6px;
 }
 
-[data-testid="stChatInput"] textarea:focus {
-  color: #FFFFFF !important;
-}
-
-[data-testid="stChatInput"] textarea::placeholder {
-  color: #9C9C9C !important;
-}
-
-[data-testid="stChatInput"] textarea::-webkit-input-placeholder {
-  color: #9C9C9C !important;
-}
-
-[data-testid="stChatInput"] textarea::-moz-placeholder {
-  color: #9C9C9C !important;
-}
-
-[data-testid="stChatInput"] textarea:-ms-input-placeholder {
-  color: #9C9C9C !important;
-}
+[data-testid="stChatInput"] textarea:focus {color: #FFFFFF !important;}
+[data-testid="stChatInput"] textarea::placeholder {color: #9C9C9C !important;}
+/* For cross-browser compatibility */
+[data-testid="stChatInput"] textarea::-webkit-input-placeholder {color: #9C9C9C !important;}
+[data-testid="stChatInput"] textarea::-moz-placeholder {color: #9C9C9C !important;}
+[data-testid="stChatInput"] textarea:-ms-input-placeholder {color: #9C9C9C !important;}
 
 [data-testid="stChatInputSubmitButton"]:hover {
   background: none;
@@ -96,15 +87,6 @@ h1 {
 [data-testid="stSidebar"][aria-expanded="true"] {
   min-width: 400px;
   max-width: 400px;
-  padding: 20px;
-  background-color: #2A2A2A; /* Background color for sidebar */
-}
-
-/* Sidebar text */
-.sidebar-text {
-  font-size: 14px;
-  color: #DDDDDD;
-  margin-bottom: 5px;
 }
 
 /* Evaluation Report */
@@ -119,11 +101,14 @@ h2 {
 [data-testid="stSidebarHeader"] {
   padding: 0px;
 }
+[data-testid="stSidebarUserContent"] {
+  padding-bottom: 0px;
+}
 
 /* Subheadings: Confusion Matrix, Performance Metrics */
 h3 {
-  font-size: 18px !important;
-  color: #F6F6F6;
+  font-size: 20px !important;
+  color: #dadada;;
   text-align: left;
   margin-top: 10px;
   margin-bottom: 5px;
@@ -132,69 +117,61 @@ h3 {
 /* Confusion Matrix Styling */
 .confusion-matrix-table {
   width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 15px;
+  margin-top: 10px !important;
+  margin-bottom: 40px !important;
+  border-collapse: collapse !important;
+  border-radius: 20px !important;
+  background: #0D0D0D !important;
 }
-
 .confusion-matrix-table th,
 .confusion-matrix-table td {
-  border: 1px solid #444;
   padding: 8px;
   text-align: center;
 }
-
 .confusion-matrix-table th {
-  background-color: #2a2a2a;
-  color: #ffffff;
+  background: #090909;
 }
-
 .confusion-matrix-table td {
-  background-color: #333;
-  color: #ffffff;
+  background: #181818;
 }
 
-/* Styling for sidebar metrics */
-[data-testid="stSidebar"] .sidebar-text {
-  font-size: 14px;
-  color: #dddddd;
-  margin-bottom: 5px;
+/* Styling for performance metrics */
+.metric-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 14px;
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
 
-[data-testid="stSidebar"] .metric-label {
-  font-size: 16px;
-  color: #ffffff;
-  margin: 5px 0;
-  display: block;
-}
-
-/* Gold-colored labels for specific metrics */
-[data-testid="stSidebar"] .metric-container span.metric-sensitivity-label,
-[data-testid="stSidebar"] .metric-container span.metric-specificity-label {
-  color: gold;
-  font-weight: bold;
-}
-
-/* Styling for metric borders */
-[data-testid="stSidebar"] .metric-container {
-  border: 1px solid #CCCCCC;
-  padding: 8px;
-  border-radius: 5px;
-  margin-bottom: 5px;
-  background-color: #333;
-  color: #ffffff;
-}
-
-/* Styling for the reset button */
-[data-testid="stSidebar"] .stButton button {
-  background-color: #444;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
+.metric-main, .metric-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
   padding: 8px 16px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  border-radius: 10px;
+}
+.metric-main {
+  border: 1px solid #181818;
+  background: #3f1580;
+}
+.metric-item{
+  border: 1px solid #2a2929;
+  background: #0D0D0D;
+}
+.metric-label, .metric-value{
+  font-size: 16px;
+}
+.metric-label{
+  width: 85px;
 }
 
-[data-testid="stSidebar"] .stButton button:hover {
-  background-color: #555;
+[data-testid="stButton"]{
+  display: flex;
+  justify-content: center;
+}
+[data-testid="stButton"] button:hover{
+  border: 1px solid rgb(96, 96, 96);
 }
