@@ -18,7 +18,7 @@ from sqlalchemy import (
 from collections import Counter
 
 Base = declarative_base()
-engine = create_engine('sqlite:///team3.db', echo=False) # Set echo=True for debugging
+engine = create_engine('sqlite:///team3.db', echo=False) # Set echo=True for debuggin
 Session = sessionmaker(bind=engine)
 
 ###################
@@ -181,7 +181,6 @@ def get_statistics(period="Daily"):
 def get_confusion_matrix_data():
     """Calculate confusion matrix and evaluation metrics"""
     with Session() as session:
-        # Fetch conversations with valid 'correct' and 'answerable' values
         conversations = session.query(Conversation).filter(
             Conversation.correct.isnot(None),
             Conversation.answerable.isnot(None)
@@ -200,19 +199,19 @@ def get_confusion_matrix_data():
         total = tp + tn + fp + fn
 
         # Calculate performance metrics
+        # Accuracy: Measures the proportion of correctly classified questions (both answerable and unanswerable).
         accuracy = (tp + tn) / total if total > 0 else None
+        # Precision (or Positive Predictive Value): Measures the proportion of questions classified as answerable that were actually answerable.
         precision = tp / (tp + fp) if (tp + fp) > 0 else None
+        # Recall (Sensitivity): Measures the proportion of answerable questions that were correctly answered.
         recall = tp / (tp + fn) if (tp + fn) > 0 else None
+        # Specificity: Measures the proportion of unanswerable questions that were correctly identified as unanswerable.
         specificity = tn / (tn + fp) if (tn + fp) > 0 else None
+        # F1 Score: The harmonic mean of precision and recall, providing a balance between the two, especially when the dataset is imbalanced.
         f1 = 2 * (precision * recall) / (precision + recall) if (precision and recall and (precision + recall) > 0) else None
 
         return {
-            'matrix': {
-                'tp': tp,
-                'tn': tn,
-                'fp': fp,
-                'fn': fn
-            },
+            'matrix': {'tp': tp, 'tn': tn, 'fp': fp, 'fn': fn},
             'metrics': {
                 'Specificity': specificity,
                 'Sensitivity': recall,
@@ -222,3 +221,4 @@ def get_confusion_matrix_data():
                 'F1 Score': f1
             }
         }
+        
