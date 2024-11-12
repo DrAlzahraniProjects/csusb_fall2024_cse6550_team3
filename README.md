@@ -28,19 +28,20 @@ Before you begin, make sure you have the following installed on your machine:
 4. Preliminary steps: make sure to execute all three steps given below to delete previous image
 
    To see all the running containers in your machine: 
-```
-   docker ps
-```
+   ```
+    docker ps
+   ```
   
-  To stop a running container, replace <container_id> with the one found in docker ps
-```
-  docker stop <container_id>
-```
+   To stop a running container, replace <container_id> with the one found in docker ps
+   ```
+   docker stop <container_id>
+   ```
 
-  To remove/delete a docker container, replace <container_id> with the one found in docker ps
-```
-  docker rm <container_id>
-```
+   To remove/delete a docker container, replace <container_id> with the one found in docker ps
+   ```
+   docker rm <container_id>
+   ```
+
 5. Build the Docker image using the following command:
 
    Befere running this command include API key in the end 
@@ -64,9 +65,76 @@ Before you begin, make sure you have the following installed on your machine:
    
     Jupyter: [http://localhost:6003/team3/jupyter](http://localhost:6003/team3/jupyter)
 
+---
 
-<!-- Accessing Jupyter Notebook http://localhost:6003/ -->
+## Evaluation Questions
 
+1. Answerable questions
+
+   ```
+   Who is Hironori Washizaki?
+   ```
+   ```
+   What is software quality?
+   ```
+   ```
+   What is agile approach?
+   ```
+   ```
+   How does the Agile approach impact software quality?
+   ```
+   ```
+   What is software testing process?
+   ```
+   ```
+   What is ROI?
+   ```
+   ```
+   What is a Quality Management System (QMS) in software?
+   ```
+   ```
+   What are some key challenges to ensuring software quality?
+   ```
+   ```
+   How do risk management and SQA interact in projects?
+   ```
+   ```
+   How does testability affect software testing processes?
+   ```
+
+2. Unanswerable questions
+   
+   ```
+   How many defects will occur in a specific software project?
+   ```
+   ```
+   What is the cost of nonconformance for a project?
+   ```
+   ```
+   How will a new process affect software defect rates?
+   ```
+   ```
+   What is the probability of a defect reoccurring in software?
+   ```
+   ```
+   How long will it take to resolve defects from an audit?
+   ```
+   ```
+   What level of software quality is `good enough` for stakeholders?
+   ```
+   ```
+   What is the future impact of AI on software quality standards?
+   ```
+   ```
+   What ROI will be achieved through additional SQA measures?
+   ```
+   ```
+   What specific changes improve software quality across all projects?
+   ```
+   ```
+   How many resources are needed to achieve a quality level?
+   ```
+   
 ---
 ## Project Structure
 

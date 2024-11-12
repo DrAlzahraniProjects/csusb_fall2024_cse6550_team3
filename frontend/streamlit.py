@@ -9,19 +9,40 @@ from backend.statistics import (
     insert_conversation
 )
 from .utils import (
-    baseline_questions,
     load_css,
     update_and_display_statistics,
     handle_feedback,
-    extract_keywords,
     display_confusion_matrix
 )
 
+baseline_questions = {
+    # 10 Answerable questions
+    "Who is Hironori Washizaki?": True,
+    "What is software quality?": True,
+    "What is agile approach?": True,
+    "How does the Agile approach impact software quality?": True,
+    "What is software testing process?": True,
+    "What is ROI?": True,
+    "What is a Quality Management System (QMS) in software?": True,
+    "What are some key challenges to ensuring software quality?": True,
+    "How do risk management and SQA interact in projects?": True,
+    "How does testability affect software testing processes?": True,
+
+    # 10 Unanswerable Questions
+    "How many defects will occur in a specific software project?": False,
+    "What is the cost of nonconformance for a project?": False,
+    "How will a new process affect software defect rates?": False,
+    "What is the probability of a defect reoccurring in software?": False,
+    "How long will it take to resolve defects from an audit?": False,
+    "What level of software quality is `good enough` for stakeholders?": False,
+    "What is the future impact of AI on software quality standards?": False,
+    "What ROI will be achieved through additional SQA measures?": False,
+    "What specific changes improve software quality across all projects?": False,
+    "How many resources are needed to achieve a quality level?": False
+}
+
 def main():
     """Main Streamlit app logic"""
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
     # Application Title
     st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
 
@@ -40,6 +61,8 @@ def main():
         display_confusion_matrix()
 
         # Display the conversation history
+        if "messages" not in st.session_state:
+            st.session_state.messages = []
         for message in st.session_state.messages:
             if message["role"] == "assistant":
                 st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
@@ -81,10 +104,10 @@ def main():
                 end_time = time.time()
                 response_time = int((end_time - start_time))
 
-                # Extract keywords
-                conversation_texts = [prompt + " " + response]
-                keywords = extract_keywords(conversation_texts)
-                print(f"Extracted Keywords: {keywords}")
+                # Extract keywords (Not required)
+                # conversation_texts = [prompt + " " + response]
+                # keywords = extract_keywords(conversation_texts)
+                # print(f"Extracted Keywords: {keywords}")
 
             # Add conversation to database
             conversation_id = insert_conversation(
@@ -97,7 +120,6 @@ def main():
                 correct=None,
                 user_id=st.session_state.user_id,
                 answerable=baseline_questions.get(prompt, None),
-                common_topics=keywords
             )
 
             # Append the new conversation to session state

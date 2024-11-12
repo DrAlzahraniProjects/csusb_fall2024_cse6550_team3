@@ -2,9 +2,10 @@
 h1, h2, h3, p, span {
   margin: 0px;
   padding: 0px;
+  text-decoration: none;
 }
 a {
-  text-decoration: none;
+  text-decoration: none !important;
   margin-right: 5px;
 }
 
@@ -108,10 +109,16 @@ h2 {
 /* Subheadings: Confusion Matrix, Performance Metrics */
 h3 {
   font-size: 20px !important;
-  color: #dadada;;
+  color: #dadada !important;
   text-align: left;
   margin-top: 10px;
   margin-bottom: 5px;
+}
+h3 a{
+  color: #dadada !important;
+}
+h3 a:hover{
+  color: #c2c2c2 !important;
 }
 
 /* Confusion Matrix Styling */

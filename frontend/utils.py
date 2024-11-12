@@ -10,32 +10,6 @@ from backend.statistics import (
     get_confusion_matrix_data
 )
 
-baseline_questions = {
-    # 10 Answerable questions
-    "Who is Hironori Washizaki?": True,
-    "What is software quality?": True,
-    "What is agile approach?": True,
-    "How does the Agile approach impact software quality?": True,
-    "What is software testing process?": True,
-    "What is ROI?": True,
-    "What is a Quality Management System (QMS) in software?": True,
-    "What are some key challenges to ensuring software quality?": True,
-    "How do risk management and SQA interact in projects?": True,
-    "How does testability affect software testing processes?": True,
-
-    # 10 Unanswerable Questions
-    "How many defects will occur in a specific software project?": False,
-    "What is the cost of nonconformance for a project?": False,
-    "How will a new process affect software defect rates?": False,
-    "What is the probability of a defect reoccurring in software?": False,
-    "How long will it take to resolve defects from an audit?": False,
-    "What level of software quality is `good enough` for stakeholders?": False,
-    "What is the future impact of AI on software quality standards?": False,
-    "What ROI will be achieved through additional SQA measures?": False,
-    "What specific changes improve software quality across all projects?": False,
-    "How many resources are needed to achieve a quality level?": False
-}
-
 def search_questions(search_term: str):
     """Search function for the searchbox"""
     if not search_term:
@@ -110,15 +84,15 @@ def display_confusion_matrix():
     metrics = results['metrics']
     
     # CONFUSION MATRIX
-    st.sidebar.markdown("<h3>Confusion Matrix</h3>", unsafe_allow_html=True)
+    st.sidebar.markdown("<h3><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Confusion Matrix</a></h3>", unsafe_allow_html=True)
     cm_tooltip = {
         "fp": "False positive: The chatbot incorrectly answers an unanswerable question",
-        "Tn": "True negative: The chatbot correctly answers an unanswerable question",
-        "Tp": "True positive: The chatbot correctly answers an answerable question",
+        "tn": "True negative: The chatbot correctly answers an unanswerable question",
+        "tp": "True positive: The chatbot correctly answers an answerable question",
         "fn": "False negative: The chatbot incorrectly answers an answerable question"
     }
     st.sidebar.markdown(
-        """
+        f"""
         <table class="confusion-matrix-table">
             <tr>
                 <th></th>
@@ -127,58 +101,53 @@ def display_confusion_matrix():
             </tr>
             <tr>
                 <th>Actual +</th>
-                <td>{tp} (TP)</td>
-                <td>{fn} (FN)</td>
+                <td title="{cm_tooltip['tp']}">{matrix['tp']} (TP)</td>
+                <td title="{cm_tooltip['fn']}">{matrix['fn']} (FN)</td>
             </tr>
             <tr>
                 <th>Actual -</th>
-                <td>{fp} (FP)</td>
-                <td>{tn} (TN)</td>
+                <td title="{cm_tooltip['fp']}">{matrix['fp']} (FP)</td>
+                <td title="{cm_tooltip['tn']}">{matrix['tn']} (TN)</td>
             </tr>
         </table>
-        """.format(
-            tp=matrix['tp'],
-            fn=matrix['fn'],
-            fp=matrix['fp'],
-            tn=matrix['tn']
-        ),
+        """,
         unsafe_allow_html=True
     )
 
     # PERFORMANCE METRICS
-    st.sidebar.markdown("<h3>Performance Metrics</h3>", unsafe_allow_html=True)
+    st.sidebar.markdown("<h3><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Performance Metrics</a></h3>", unsafe_allow_html=True)
     pm_tooltip = {
-        'Sensitivity': 'Proportion of actual positives correctly identified',
-        'Specificity': 'Proportion of actual negatives correctly identified',
-        'Accuracy': 'Overall proportion of correct predictions',
-        'Precision': 'Proportion of positive identifications that were actually correct',
-        'Recall': 'Proportion of actual positives correctly identified (Sensitivity)',
-        'F1 Score': 'Harmonic mean of precision and recall'
+        'Sensitivity': 'Sensitivity: Proportion of actual positives correctly identified',
+        'Specificity': 'Specificity: Proportion of actual negatives correctly identified',
+        'Accuracy': 'Accuracy: Overall proportion of correct predictions',
+        'Precision': 'Precision: Proportion of positive identifications that were actually correct',
+        'Recall': 'Recall: Proportion of actual positives correctly identified',
+        'F1 Score': 'F1 Score: Harmonic mean of precision and recall'
     }
     st.sidebar.markdown(
         f"""
         <div class='metric-container'>
-            <div class='metric-main'>
+            <div class='metric-main' title="{pm_tooltip['Sensitivity']}">
                 <span class='metric-label'>Sensitivity:</span>
                 <span class='metric-value'>{f"{metrics['Sensitivity']:.2f}" if metrics['Sensitivity'] is not None else 'N/A'}</span>
             </div>
-            <div class='metric-main'>
+            <div class='metric-main' title="{pm_tooltip['Specificity']}">
                 <span class='metric-label'>Specificity:</span>
                 <span class='metric-value'>{f"{metrics['Specificity']:.2f}" if metrics['Specificity'] is not None else 'N/A'}</span>
             </div>
-            <div class='metric-item'>
+            <div class='metric-item' title="{pm_tooltip['Accuracy']}">
                 <span class='metric-label'>Accuracy:</span>
                 <span class='metric-value'>{f"{metrics['Accuracy']:.2f}" if metrics['Accuracy'] is not None else 'N/A'}</span>
             </div>
-            <div class='metric-item'>
+            <div class='metric-item' title="{pm_tooltip['Precision']}">
                 <span class='metric-label'>Precision:</span>
                 <span class='metric-value'>{f"{metrics['Precision']:.2f}" if metrics['Precision'] is not None else 'N/A'}</span>
             </div>
-            <div class='metric-item'>
+            <div class='metric-item' title="{pm_tooltip['Recall']}">
                 <span class='metric-label'>Recall:</span>
                 <span class='metric-value'>{f"{metrics['Recall']:.2f}" if metrics['Recall'] is not None else 'N/A'}</span>
             </div>
-            <div class='metric-item'>
+            <div class='metric-item' title="{pm_tooltip['F1 Score']}">
                 <span class='metric-label'>F1 Score:</span>
                 <span class='metric-value'>{f"{metrics['F1 Score']:.2f}" if metrics['F1 Score'] is not None else 'N/A'}</span>
             </div>
