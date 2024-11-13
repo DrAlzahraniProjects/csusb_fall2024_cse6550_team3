@@ -76,21 +76,51 @@ def update_and_display_statistics():
 
 def display_confusion_matrix():
     """Display confusion matrix and evaluation metrics"""
-    st.sidebar.header("Evaluation Report")
+    st.sidebar.markdown("<h2><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Evaluation Report</a></h2>", unsafe_allow_html=True)
 
     # Get confusion matrix and metrics
     results = get_confusion_matrix_data()
     matrix = results['matrix']
     metrics = results['metrics']
-    
-    # CONFUSION MATRIX
-    st.sidebar.markdown("<h3><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Confusion Matrix</a></h3>", unsafe_allow_html=True)
+
+    # Tooltip for confusion metrics
     cm_tooltip = {
         "fp": "False positive: The chatbot incorrectly answers an unanswerable question",
         "tn": "True negative: The chatbot correctly answers an unanswerable question",
         "tp": "True positive: The chatbot correctly answers an answerable question",
         "fn": "False negative: The chatbot incorrectly answers an answerable question"
     }
+
+    # Tooltip for metrics
+    m_tooltip = {
+        'Sensitivity': 'Sensitivity: Proportion of actual positives correctly identified',
+        'Specificity': 'Specificity: Proportion of actual negatives correctly identified',
+        'Accuracy': 'Accuracy: Overall proportion of correct predictions',
+        'Precision': 'Precision: Proportion of positive identifications that were actually correct',
+        'Recall': 'Recall: Proportion of actual positives correctly identified',
+        'F1 Score': 'F1 Score: Harmonic mean of precision and recall'
+    }
+    
+    # Key METRICS
+    st.sidebar.markdown("<h3><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Key Metrics</a></h3>", unsafe_allow_html=True)
+    st.sidebar.markdown(
+        f"""
+        <div class='metric-container'>
+            <div class='metric-main' title="{m_tooltip['Sensitivity']}">
+                <span class='metric-label'>Sensitivity:</span>
+                <span class='metric-value'>{f"{metrics['Sensitivity']:.2f}" if metrics['Sensitivity'] is not None else 'N/A'}</span>
+            </div>
+            <div class='metric-main' title="{m_tooltip['Specificity']}">
+                <span class='metric-label'>Specificity:</span>
+                <span class='metric-value'>{f"{metrics['Specificity']:.2f}" if metrics['Specificity'] is not None else 'N/A'}</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # CONFUSION MATRIX
+    st.sidebar.markdown("<h3><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Confusion Matrix</a></h3>", unsafe_allow_html=True)
     st.sidebar.markdown(
         f"""
         <table class="confusion-matrix-table">
@@ -114,40 +144,24 @@ def display_confusion_matrix():
         unsafe_allow_html=True
     )
 
-    # PERFORMANCE METRICS
-    st.sidebar.markdown("<h3><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Performance Metrics</a></h3>", unsafe_allow_html=True)
-    pm_tooltip = {
-        'Sensitivity': 'Sensitivity: Proportion of actual positives correctly identified',
-        'Specificity': 'Specificity: Proportion of actual negatives correctly identified',
-        'Accuracy': 'Accuracy: Overall proportion of correct predictions',
-        'Precision': 'Precision: Proportion of positive identifications that were actually correct',
-        'Recall': 'Recall: Proportion of actual positives correctly identified',
-        'F1 Score': 'F1 Score: Harmonic mean of precision and recall'
-    }
+    # OTHER METRICS
+    st.sidebar.markdown("<h3><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Other Metrics</a></h3>", unsafe_allow_html=True)
     st.sidebar.markdown(
         f"""
         <div class='metric-container'>
-            <div class='metric-main' title="{pm_tooltip['Sensitivity']}">
-                <span class='metric-label'>Sensitivity:</span>
-                <span class='metric-value'>{f"{metrics['Sensitivity']:.2f}" if metrics['Sensitivity'] is not None else 'N/A'}</span>
-            </div>
-            <div class='metric-main' title="{pm_tooltip['Specificity']}">
-                <span class='metric-label'>Specificity:</span>
-                <span class='metric-value'>{f"{metrics['Specificity']:.2f}" if metrics['Specificity'] is not None else 'N/A'}</span>
-            </div>
-            <div class='metric-item' title="{pm_tooltip['Accuracy']}">
+            <div class='metric-item' title="{m_tooltip['Accuracy']}">
                 <span class='metric-label'>Accuracy:</span>
                 <span class='metric-value'>{f"{metrics['Accuracy']:.2f}" if metrics['Accuracy'] is not None else 'N/A'}</span>
             </div>
-            <div class='metric-item' title="{pm_tooltip['Precision']}">
+            <div class='metric-item' title="{m_tooltip['Precision']}">
                 <span class='metric-label'>Precision:</span>
                 <span class='metric-value'>{f"{metrics['Precision']:.2f}" if metrics['Precision'] is not None else 'N/A'}</span>
             </div>
-            <div class='metric-item' title="{pm_tooltip['Recall']}">
+            <div class='metric-item' title="{m_tooltip['Recall']}">
                 <span class='metric-label'>Recall:</span>
                 <span class='metric-value'>{f"{metrics['Recall']:.2f}" if metrics['Recall'] is not None else 'N/A'}</span>
             </div>
-            <div class='metric-item' title="{pm_tooltip['F1 Score']}">
+            <div class='metric-item' title="{m_tooltip['F1 Score']}">
                 <span class='metric-label'>F1 Score:</span>
                 <span class='metric-value'>{f"{metrics['F1 Score']:.2f}" if metrics['F1 Score'] is not None else 'N/A'}</span>
             </div>

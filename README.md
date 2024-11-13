@@ -134,16 +134,29 @@ Before you begin, make sure you have the following installed on your machine:
    ```
    How many resources are needed to achieve a quality level?
    ```
+
+---
+
+## Troubleshooting
+
+1. I ran the docker run command but the website gives me `localhost refused to connect` error
    
+   This is probably because the application is still being spun up. Wait for a few minutes and try again.
+   
+2. I'm in light mode and the website is unreadable
+   
+   On the streamlit homepage, go to settings and select the custom theme
+   
+
 ---
 ## Project Structure
 
-- `.github/workflows/docker-publish.yml`: Defines a GitHub Action workflow to automate Docker publishing
+- `.github/workflows/docker-publish.yml`: GitHub Action workflow to automate Docker publishing
 - `app.py`: Main entry point for the application
 - `data`
 	- `default`: Contains textbook PDF and FAISS indexes
 		- `textbook` PDF
-		- `faiss_indexes`: Contains pre-built embeddings and metadata for the textbook
+		- `faiss_indexes`: Pre-built embeddings and metadata for the textbook
 - `backend`
 	- `document_loading.py`: Document loading, embedding creation and search logic
 	- `inference.py`: LLM inference and RAG logic
@@ -151,23 +164,24 @@ Before you begin, make sure you have the following installed on your machine:
 	- `citations.py`: Logic for getting sources for a response
 	- `statistics.py`: Database schema and querying
 - `frontend`
-	- `styles/`: Contains CSS styling for Streamlit
+	- `styles/`: CSS styling
 	- `streamlit.py`: Main streamlit file
 	- `pdf.py`: PDF viewer
+   - `utils.py`: Contains utility functions such as the confusion matrix
 - `jupyter`
-	- `Hello_world.ipynb`: Main Jupyter notebook file
+	- `main.ipynb`: Jupyter notebook file
 - `.env.template`: Template for what a .env file should look like
-- `.gitignore`: Specifies which files and directories should be ignored by Git
-- `Dockerfile`: Contains instructions to build the Docker image for the project
-- `README.md`: Project documentation containing setup instructions and information about the project
-- `requirements.txt`: Lists Python package dependencies required for the project
+- `.gitignore`: Files and directories should be ignored by Git
+- `Dockerfile`: Instructions to build the Docker image
+- `README.md`: Project documentation
+- `requirements.txt`: Lists required python dependencies
 
 ---
 
 ## Affiliation
 
-TEAM 3
+Built by `Team 3`
 
-CSE 6550: Software Engineer Concepts, Fall 24
+Course: CSE 6550, Fall '24 (Software Engineer Concepts)
 
-California State University, San Bernardino
+Institution: California State University, San Bernardino
