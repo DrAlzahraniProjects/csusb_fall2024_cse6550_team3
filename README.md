@@ -65,11 +65,8 @@ Before you begin, make sure you have the following installed on your machine:
    
     Jupyter: [http://localhost:6003/team3/jupyter](http://localhost:6003/team3/jupyter)
 
----
 
 ## Evaluation Questions
----
-# Answerable and Unanswerable Questions
 
 Below is a list of answerable and unanswerable questions related to Software Quality Assurance (SQA).
 
@@ -86,7 +83,7 @@ Below is a list of answerable and unanswerable questions related to Software Qua
 | How do risk management and SQA interact in projects?               | What specific changes improve software quality across all projects?     |
 | How does testability affect software testing processes?            | How many resources are needed to achieve a quality level?               |
 
----
+
 ## Troubleshooting
 
 1. I ran the docker run command but the website gives me `localhost refused to connect` error
@@ -98,7 +95,6 @@ Below is a list of answerable and unanswerable questions related to Software Qua
    On the streamlit homepage, go to settings and select the custom theme
    
 
----
 ## Project Structure
 
 - `.github/workflows/docker-publish.yml`: GitHub Action workflow to automate Docker publishing
@@ -125,8 +121,6 @@ Below is a list of answerable and unanswerable questions related to Software Qua
 - `Dockerfile`: Instructions to build the Docker image
 - `README.md`: Project documentation
 - `requirements.txt`: Lists required python dependencies
-
----
 
 ## Affiliation
 
