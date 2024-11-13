@@ -38,7 +38,7 @@ def load_llm_api(model_name):
     return ChatMistralAI(
         model=model_name,
         mistral_api_key=api_key,
-        temperature=0.2,
+        temperature=0.05,
         max_tokens=256,
         top_p=0.4,
     )
@@ -59,7 +59,7 @@ def chat_completion(question):
     relevant_docs = similarity_search(question, faiss_store, 10)
     context = "\n\n".join([doc.page_content for doc in relevant_docs])
     messages = prompt.format_messages(input=question,context=context)
-  
+
     # Stream response from LLM
     full_response = {"answer": "", "context": relevant_docs}
     for chunk in llm.stream(messages):
@@ -69,6 +69,7 @@ def chat_completion(question):
     # After streaming is complete, handle citations
     if relevant_docs:
         page_numbers = get_citations(relevant_docs)
+        print(page_numbers)
         if page_numbers:
             response = full_response["answer"]
             citations = format_citations(page_numbers, response)
