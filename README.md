@@ -68,75 +68,25 @@ Before you begin, make sure you have the following installed on your machine:
 ---
 
 ## Evaluation Questions
+---
+# Answerable and Unanswerable Questions
 
-1. Answerable questions
+Below is a list of answerable and unanswerable questions related to Software Quality Assurance (SQA).
 
-   ```
-   Who is Hironori Washizaki?
-   ```
-   ```
-   What is software quality?
-   ```
-   ```
-   What is agile approach?
-   ```
-   ```
-   How does the Agile approach impact software quality?
-   ```
-   ```
-   What is software testing process?
-   ```
-   ```
-   What is ROI?
-   ```
-   ```
-   What is a Quality Management System (QMS) in software?
-   ```
-   ```
-   What are some key challenges to ensuring software quality?
-   ```
-   ```
-   How do risk management and SQA interact in projects?
-   ```
-   ```
-   How does testability affect software testing processes?
-   ```
-
-2. Unanswerable questions
-   
-   ```
-   How many defects will occur in a specific software project?
-   ```
-   ```
-   What is the cost of nonconformance for a project?
-   ```
-   ```
-   How will a new process affect software defect rates?
-   ```
-   ```
-   What is the probability of a defect reoccurring in software?
-   ```
-   ```
-   How long will it take to resolve defects from an audit?
-   ```
-   ```
-   What level of software quality is `good enough` for stakeholders?
-   ```
-   ```
-   What is the future impact of AI on software quality standards?
-   ```
-   ```
-   What ROI will be achieved through additional SQA measures?
-   ```
-   ```
-   What specific changes improve software quality across all projects?
-   ```
-   ```
-   How many resources are needed to achieve a quality level?
-   ```
+| **Answerable**                                               | **Unanswerable**                                                   |
+|--------------------------------------------------------------|--------------------------------------------------------------------|
+| Who is Hironori Washizaki?                                   | How many defects will occur in a specific software project?        |
+| What is software quality?                                    | What is the cost of nonconformance for a project?                  |
+| What is agile approach?                                      | How will a new process affect software defect rates?               |
+| How does the Agile approach impact software quality?         | What is the probability of a defect reoccurring in software?       |
+| What is the software testing process?                        | How long will it take to resolve defects from an audit?            |
+| What is ROI?                                                 | What level of software quality is `good enough` for stakeholders?  |
+| What is a Quality Management System (QMS) in software?       | What is the future impact of AI on software quality standards?     |
+| What are some key challenges to ensuring software quality?   | What ROI will be achieved through additional SQA measures?         |
+| How do risk management and SQA interact in projects?         | What specific changes improve software quality across all projects?|
+| How does testability affect software testing processes?      | How many resources are needed to achieve a quality level?          |
 
 ---
-
 ## Troubleshooting
 
 1. I ran the docker run command but the website gives me `localhost refused to connect` error
