@@ -1,6 +1,11 @@
 h1, h2, h3, p, span {
   margin: 0px;
-  padding: 0px
+  padding: 0px;
+  text-decoration: none;
+}
+a {
+  text-decoration: none !important;
+  margin-right: 5px;
 }
 
 /* Main */
@@ -12,7 +17,8 @@ h1 {
   margin-bottom: 20px;
 }
 
-.user-message{
+/* User and Assistant Messages */
+.user-message {
   display: flex;
   justify-content: right;
   max-width: fit-content;
@@ -22,6 +28,7 @@ h1 {
   background: #1E1E1E;
   border-radius: 15px;
 }
+
 .assistant-message {
   display: flex;
   flex-direction: column;
@@ -34,10 +41,11 @@ h1 {
 }
 
 /* Feedback */
-[data-testid="stCaptionContainer"]{
+[data-testid="stCaptionContainer"] {
   padding-left: 10px;
 }
-[data-testid="stButtonGroup"]{
+
+[data-testid="stButtonGroup"] {
   display: flex;
   flex-direction: row;
   justify-content: start;
@@ -54,24 +62,26 @@ h1 {
   outline: none;
   padding: 6px;
 }
+
 [data-baseweb="base-input"],
 [data-baseweb="textarea"] {
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
-  color: #FFFFFF !important;
+  color: #E8E8E8 !important;
   padding: 0px 6px;
 }
+
 [data-testid="stChatInput"] textarea:focus {color: #FFFFFF !important;}
 [data-testid="stChatInput"] textarea::placeholder {color: #9C9C9C !important;}
 /* For cross-browser compatibility */
 [data-testid="stChatInput"] textarea::-webkit-input-placeholder {color: #9C9C9C !important;}
 [data-testid="stChatInput"] textarea::-moz-placeholder {color: #9C9C9C !important;}
 [data-testid="stChatInput"] textarea:-ms-input-placeholder {color: #9C9C9C !important;}
+
 [data-testid="stChatInputSubmitButton"]:hover {
   background: none;
 }
-
 
 /* Sidebar */
 [data-testid="stSidebar"][aria-expanded="true"] {
@@ -82,28 +92,96 @@ h1 {
 /* Evaluation Report */
 h2 {
   font-size: 30px !important;
+  color: #E8E8E8 !important;
   text-align: center;
   padding-bottom: 10px;
   border-bottom: 2px solid #1E1E1E;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
-[data-testid="stSidebarHeader"]{
+h2 a{
+  color: #E8E8E8 !important;
+}
+
+[data-testid="stSidebarHeader"] {
   padding: 0px;
 }
-/* Subheadings: Confusion Matrix, Performance Metrics*/
-h3{
-  font-size: 18px !important;
-  color: #F6F6F6;
+[data-testid="stSidebarUserContent"] {
+  padding-bottom: 0px;
+}
+
+/* Subheadings: Confusion Matrix, Performance Metrics */
+h3 {
+  font-size: 20px !important;
+  color: #dadada !important;
   text-align: left;
   margin-top: 10px;
   margin-bottom: 5px;
 }
-.metric-tooltip{
+h3 a{
+  color: #dadada !important;
+}
+h3 a:hover{
+  color: #c2c2c2 !important;
+}
+
+/* Confusion Matrix Styling */
+.confusion-matrix-table {
+  width: 100%;
+  margin-top: 10px !important;
+  margin-bottom: 20px !important;
+  border-collapse: collapse !important;
+  border-radius: 20px !important;
+  background: #0D0D0D !important;
+}
+.confusion-matrix-table th,
+.confusion-matrix-table td {
+  padding: 8px;
+  text-align: center;
+}
+.confusion-matrix-table th {
+  background: #090909;
+}
+.confusion-matrix-table td {
+  background: #181818;
+}
+
+/* Styling for performance metrics */
+.metric-container {
   display: flex;
-  text-align: left;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 14px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.metric-main, .metric-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 10px;
+}
+.metric-main {
+  border: 1px solid #181818;
+  background: #3f1580;
+}
+.metric-item{
+  border: 1px solid #2a2929;
+  background: #0D0D0D;
+}
+.metric-label, .metric-value{
+  font-size: 16px;
+}
+.metric-label{
+  width: 85px;
 }
 
 [data-testid="stButton"]{
   display: flex;
   justify-content: center;
+}
+[data-testid="stButton"] button:hover{
+  border: 1px solid rgb(96, 96, 96);
 }

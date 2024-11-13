@@ -7,7 +7,6 @@ langchain-community
 langchain-huggingface
 langchain-mistralai
 pandas
-plotly
 pypdf
 python-dotenv
 roman
