@@ -1,6 +1,6 @@
 import os
 from .document_loading import load_documents_from_directory, load_or_create_faiss_vector_store, similarity_search
-from .prompts import prompt
+from .prompts import get_prompt
 from .citations import get_citations, format_citations
 from langchain_mistralai import ChatMistralAI
 
@@ -58,7 +58,10 @@ def chat_completion(question):
     # Get relevant documents from the FAISS store
     relevant_docs = similarity_search(question, faiss_store, 10)
     context = "\n\n".join([doc.page_content for doc in relevant_docs])
-    messages = prompt.format_messages(input=question,context=context)
+
+    # Get appropriate prompt
+    prompt = get_prompt(has_context=bool(relevant_docs))
+    messages = prompt.format_messages(input=question, context=context)
 
     # Stream response from LLM
     full_response = {"answer": "", "context": relevant_docs}
@@ -69,7 +72,6 @@ def chat_completion(question):
     # After streaming is complete, handle citations
     if relevant_docs:
         page_numbers = get_citations(relevant_docs)
-        print(page_numbers)
         if page_numbers:
             response = full_response["answer"]
             citations = format_citations(page_numbers, response)
