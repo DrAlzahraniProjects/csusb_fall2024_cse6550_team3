@@ -72,16 +72,16 @@ Below is a list of answerable and unanswerable questions related to Software Qua
 
 | **Answerable**                                                     | **Unanswerable**                                                        |
 |--------------------------------------------------------------------|-------------------------------------------------------------------------|
-| Who is Hironori Washizaki?                                         | How many defects will occur in a specific software project?             |
-| What is software quality?                                          | What is the cost of nonconformance for a project?                       |
-| What is agile approach?                                            | How will a new process affect software defect rates?                    |
-| How does the Agile approach impact software quality?               | What is the probability of a defect reoccurring in software?            |
-| What is the software testing process?                              | How long will it take to resolve defects from an audit?                 |
-| What is ROI?                                                       | What level of software quality is `good enough` for stakeholders?       |
-| What is a Quality Management System (QMS) in software?             | What is the future impact of AI on software quality standards?          |
-| What are some key challenges to ensuring software quality?         | What ROI will be achieved through additional SQA measures?              |
-| How do risk management and SQA interact in projects?               | What specific changes improve software quality across all projects?     |
-| How does testability affect software testing processes?            | How many resources are needed to achieve a quality level?               |
+| Who is Hironori Washizaki?                                         | How many developers are ideal for any given software project?            |
+| What is software quality?                                          | Can all software bugs be prevented with enough testing?                       |
+| What is the agile methodology?                                            | What is the exact ROI of refactoring legacy code?                    |
+| How does the agile methodology impact software quality?                | How long should code reviews ideally take for maximum effectiveness?            |
+| What is software testing process?                              | Is there a universally best way to measure developer productivity?                 |
+| What is the purpose of a task network in project scheduling?        | Can software be made 100% secure?       |
+| What is a Quality Management System (QMS) in software?             | Is there a way to build a fully self-sustaining human colony on Mars with current technology?          |
+| What are some key challenges to ensuring software quality?         | What's the upper limit of computational power for classical computers?              |
+| How do risk management and SQA interact in projects?               | How could we fully eliminate all types of noise in wireless communications?     |
+| How does testability affect software testing processes?            | Is there a way to completely avoid all cyber threats in interconnected global networks?               |
 
 
 ## Troubleshooting
