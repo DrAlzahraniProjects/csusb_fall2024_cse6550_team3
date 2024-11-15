@@ -1,5 +1,7 @@
 import time
+from typing import List, Dict
 from datetime import datetime, timedelta
+from collections import Counter
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import (
@@ -14,8 +16,6 @@ from sqlalchemy import (
     func,
     and_
 )
-
-from collections import Counter
 
 Base = declarative_base()
 engine = create_engine('sqlite:///team3.db', echo=False) # Set echo=True for debuggin
@@ -178,47 +178,82 @@ def get_statistics(period="Daily"):
         })
         return stats
 
-def get_confusion_matrix_data():
-    """Calculate confusion matrix and evaluation metrics"""
+def calculate_confusion_matrix(conversations: List[Conversation]) -> Dict[str, int]:
+    """Calculate confusion matrix values from conversations."""
+    # True Positives (TP): The chatbot correctly answers an answerable question.
+    tp = sum(1 for c in conversations if c.correct and c.answerable)
+    # False Negatives (FN): The chatbot fails to provide a correct answer for an answerable question.
+    fn = sum(1 for c in conversations if not c.correct and c.answerable)
+    # False Positives (FP): The chatbot provides an answer for an unanswerable question.
+    fp = sum(1 for c in conversations if not c.correct and not c.answerable)
+    tn = sum(1 for c in conversations if c.correct and not c.answerable)
+    # True Negatives (TN): The chatbot correctly identifies an unanswerable question.
+    return {'tp': tp, 'fn': fn, 'fp': fp, 'tn': tn}
+
+def calculate_confusion_matrix_elements(confusion_matrix: Dict[str, int]) -> tuple:
+    """
+    Extracts elements from confusion matrix for easier use in metrics calculation.
+    """
+    tp = confusion_matrix.get('tp', 0)
+    fn = confusion_matrix.get('fn', 0)
+    fp = confusion_matrix.get('fp', 0)
+    tn = confusion_matrix.get('tn', 0)
+    return tp, fn, fp, tn
+
+def calculate_accuracy(tp: int, tn: int, fp: int, fn: int) -> float:
+    """Accuracy: Measures the proportion of correctly classified questions (both answerable and unanswerable)"""
+    total = tp + tn + fp + fn
+    return (tp + tn) / total if total > 0 else None
+
+def calculate_precision(tp: int, fp: int) -> float:
+    """Precision (or Positive Predictive Value): Measures the proportion of questions classified as answerable that were actually answerable"""
+    return tp / (tp + fp) if (tp + fp) > 0 else None
+
+def calculate_recall(tp: int, fn: int) -> float:
+    """Recall (Sensitivity): Measures the proportion of answerable questions that were correctly answered"""
+    return tp / (tp + fn) if (tp + fn) > 0 else None
+
+def calculate_specificity(tn: int, fp: int) -> float:
+    """Specificity: Measures the proportion of unanswerable questions that were correctly identified as unanswerable"""
+    return tn / (tn + fp) if (tn + fp) > 0 else None
+
+def calculate_f1(precision: float, recall: float) -> float:
+    """F1 Score: The harmonic mean of precision and recall, providing a balance between the two, especially when the dataset is imbalanced"""
+    return (2 * precision * recall) / (precision + recall) if precision and recall and (precision + recall) > 0 else None
+
+def calculate_metrics(confusion_matrix: Dict[str, int]) -> Dict[str, float]:
+    tp, fn, fp, tn = calculate_confusion_matrix_elements(confusion_matrix)
+    accuracy = calculate_accuracy(tp, tn, fp, fn)
+    precision = calculate_precision(tp, fp)
+    recall = calculate_recall(tp, fn)
+    specificity = calculate_specificity(tn, fp)
+    f1 = calculate_f1(precision, recall)
+    return {
+        'Specificity': specificity,
+        'Sensitivity': recall,
+        'Accuracy': accuracy,
+        'Precision': precision,
+        'Recall': recall,
+        'F1 Score': f1
+    }
+
+def get_metrics() -> Dict[str, Dict]:
+    """
+    Retrieve confusion matrix and evaluation metrics from the database.
+
+    This function queries the database for conversations where the correctness 
+    and answerability are determined. It calculates the confusion matrix from 
+    these conversations and computes various performance metrics based on it 
+    (e.g., accuracy, precision, recall).
+
+    Returns:
+        dict: A dictionary containing the confusion matrix and the computed metrics.
+    """
     with Session() as session:
         conversations = session.query(Conversation).filter(
             Conversation.correct.isnot(None),
             Conversation.answerable.isnot(None)
         ).all()
-
-        # Calculate confusion matrix values
-        # True Positives (TP): The chatbot correctly answers an answerable question.
-        tp = sum(1 for c in conversations if c.correct and c.answerable)
-        # False Negatives (FN): The chatbot fails to provide a correct answer for an answerable question.
-        fn = sum(1 for c in conversations if not c.correct and c.answerable)
-        # False Positives (FP): The chatbot provides an answer for an unanswerable question.
-        fp = sum(1 for c in conversations if not c.correct and not c.answerable)
-        # True Negatives (TN): The chatbot correctly identifies an unanswerable question.
-        tn = sum(1 for c in conversations if c.correct and not c.answerable)
-
-        total = tp + tn + fp + fn
-
-        # Calculate performance metrics
-        # Accuracy: Measures the proportion of correctly classified questions (both answerable and unanswerable).
-        accuracy = (tp + tn) / total if total > 0 else None
-        # Precision (or Positive Predictive Value): Measures the proportion of questions classified as answerable that were actually answerable.
-        precision = tp / (tp + fp) if (tp + fp) > 0 else None
-        # Recall (Sensitivity): Measures the proportion of answerable questions that were correctly answered.
-        recall = tp / (tp + fn) if (tp + fn) > 0 else None
-        # Specificity: Measures the proportion of unanswerable questions that were correctly identified as unanswerable.
-        specificity = tn / (tn + fp) if (tn + fp) > 0 else None
-        # F1 Score: The harmonic mean of precision and recall, providing a balance between the two, especially when the dataset is imbalanced.
-        f1 = 2 * (precision * recall) / (precision + recall) if (precision and recall and (precision + recall) > 0) else None
-
-        return {
-            'matrix': {'tp': tp, 'tn': tn, 'fp': fp, 'fn': fn},
-            'metrics': {
-                'Specificity': specificity,
-                'Sensitivity': recall,
-                'Accuracy': accuracy,
-                'Precision': precision,
-                'Recall': recall,
-                'F1 Score': f1
-            }
-        }
-        
+        matrix = calculate_confusion_matrix(conversations)
+        metrics = calculate_metrics(matrix)
+        return {'matrix': matrix, 'metrics': metrics}
