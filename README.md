@@ -3,6 +3,10 @@
 
 The Textbook Chatbot project for CSE 6550 is designed to assist with queries related to the textbook."Software Engineering: A Practitioner's Approach." The chatbot serves as an educational tool, helping users by providing information, answering questions, and possibly retrieving content from the textbook.
 
+[Website](https://sec.cse.csusb.edu/team3/) 
+
+[Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter)
+
 ## Prerequisites
 Before you begin, make sure you have the following installed on your machine:
 - **Git**
