@@ -17,12 +17,12 @@ RUN echo "MISTRAL_API_KEY=$MISTRAL" > /app/.env
 
 # Update and install necessary packages
 RUN apt-get update && apt-get install -y \
-	wget \
-	bzip2 \
-	ca-certificates \
-	build-essential \
-	cmake \
-	&& rm -rf /var/lib/apt/lists/*
+    wget \
+    bzip2 \
+    ca-certificates \
+    build-essential \
+    cmake \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Mambaforge for the appropriate architecture
 RUN arch=$(uname -m) && \
@@ -54,10 +54,14 @@ RUN mamba install --yes --file requirements.txt && mamba clean --all -f -y
 
 # Use the specific path to install cython and NeMo toolkit's NLP components
 RUN /opt/miniforge/envs/team3_env/bin/pip install cython
-RUN /opt/miniforge/envs/team3_env/bin/pip install nemo_toolkit[all]
+# RUN /opt/miniforge/envs/team3_env/bin/pip install nemo_toolkit[all]
 
 # Install other required packages with pip
 RUN /opt/miniforge/envs/team3_env/bin/pip install rank_bm25 streamlit-pdf-viewer
+
+# Download the embedding model using LangChain's HuggingFaceEmbeddings
+RUN python -c "from langchain_huggingface import HuggingFaceEmbeddings; \
+               HuggingFaceEmbeddings(model_name='Alibaba-NLP/gte-large-en-v1.5', model_kwargs={'trust_remote_code': True})"
 
 # Copy the current directory contents into the container at /app
 COPY . /app
