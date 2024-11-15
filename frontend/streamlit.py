@@ -6,42 +6,63 @@ from backend.inference import chat_completion
 from backend.statistics import (
     init_user_session,
     update_user_session,
-    insert_conversation,
+    insert_conversation
 )
 from .utils import (
-    baseline_questions,
     load_css,
     update_and_display_statistics,
-    display_confusion_matrix,
     handle_feedback,
-    extract_keywords
+    display_confusion_matrix
 )
+
+baseline_questions = {
+    # 10 Answerable questions
+    "Who is Hironori Washizaki?": True,
+    "What is software quality?": True,
+    "What is agile approach?": True,
+    "How does the Agile approach impact software quality?": True,
+    "What is software testing process?": True,
+    "What is ROI?": True,
+    "What is a Quality Management System (QMS) in software?": True,
+    "What are some key challenges to ensuring software quality?": True,
+    "How do risk management and SQA interact in projects?": True,
+    "How does testability affect software testing processes?": True,
+
+    # 10 Unanswerable Questions
+    "How many defects will occur in a specific software project?": False,
+    "What is the cost of nonconformance for a project?": False,
+    "How will a new process affect software defect rates?": False,
+    "What is the probability of a defect reoccurring in software?": False,
+    "How long will it take to resolve defects from an audit?": False,
+    "What level of software quality is `good enough` for stakeholders?": False,
+    "What is the future impact of AI on software quality standards?": False,
+    "What ROI will be achieved through additional SQA measures?": False,
+    "What specific changes improve software quality across all projects?": False,
+    "How many resources are needed to achieve a quality level?": False
+}
 
 def main():
     """Main Streamlit app logic"""
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
-    # # Show the title only if there are no messages
-    # if not st.session_state.messages:
+    # Application Title
     st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
 
-    # Load PDF
+    # Load PDF if requested
     if "view" in st.query_params and st.query_params["view"] == "pdf":
         serve_pdf()
     else:
         load_css()
 
-        # Create user session
+        # Create a new user session if one doesn't already exist
         if "user_id" not in st.session_state:
             st.session_state.user_id = init_user_session()
             print(f"Creating user#{st.session_state.user_id}")
 
         st.sidebar.empty()
         display_confusion_matrix()
-        # update_and_display_statistics()
 
-        # Display messages
+        # Display the conversation history
+        if "messages" not in st.session_state:
+            st.session_state.messages = []
         for message in st.session_state.messages:
             if message["role"] == "assistant":
                 st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
@@ -54,10 +75,12 @@ def main():
                     if user_message and user_message["content"] in baseline_questions:
                         is_answerable = baseline_questions[user_message["content"]]
                         feedback_question = (
-                            "Did the chatbot correctly answer this answerable question?" if is_answerable 
+                            "Did the chatbot correctly answer this answerable question?" if is_answerable
                             else "Did the chatbot correctly answer this unanswerable question?"
                         )
+                    # Display feedback caption
                     st.caption(feedback_question)
+                    # Display feedback option
                     feedback = st.feedback(
                         "thumbs",
                         key=f"feedback_{conversation_id}",
@@ -67,7 +90,7 @@ def main():
             else:
                 st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
 
-        # Handle user input
+        # Handle user input and display response
         if prompt := st.chat_input("Ask your question?"):
             st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
 
@@ -81,10 +104,12 @@ def main():
                 end_time = time.time()
                 response_time = int((end_time - start_time))
 
-                conversation_texts = [prompt + " " + response]
-                keywords = extract_keywords(conversation_texts)
-                print(f"Extracted Keywords: {keywords}")
+                # Extract keywords (Not required)
+                # conversation_texts = [prompt + " " + response]
+                # keywords = extract_keywords(conversation_texts)
+                # print(f"Extracted Keywords: {keywords}")
 
+            # Add conversation to database
             conversation_id = insert_conversation(
                 question=prompt,
                 response=response,
@@ -94,10 +119,10 @@ def main():
                 response_time=response_time,
                 correct=None,
                 user_id=st.session_state.user_id,
-                answerable = baseline_questions.get(prompt, None),
-                common_topics=keywords
+                answerable=baseline_questions.get(prompt, None),
             )
 
+            # Append the new conversation to session state
             st.session_state.messages.append({
                 "role": "user",
                 "content": prompt,
@@ -109,5 +134,6 @@ def main():
                 "conversation_id": conversation_id
             })
 
+            # Update the user session
             update_user_session(st.session_state.user_id)
             st.rerun()

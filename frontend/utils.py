@@ -2,40 +2,13 @@ import os
 import yake
 import streamlit as st
 import pandas as pd
-import plotly.graph_objects as go
 from backend.statistics import (
     update_user_session,
     toggle_correctness,
     reset_confusion_matrix,
     get_statistics,
-    get_confusion_matrix
+    get_confusion_matrix_data
 )
-
-baseline_questions = {
-    # 10 Answerable questions
-    "Who is Hironori Washizaki?": True,
-    "What is software quality?": True,
-    "What is agile approach?": True,
-    "How does the Agile approach impact software quality?": True,
-    "What is software testing process?": True,
-    "What is ROI?": True,
-    "What is a Quality Management System (QMS) in software?": True,
-    "What are some key challenges to ensuring software quality?": True,
-    "How do risk management and SQA interact in projects?": True,
-    "How does testability affect software testing processes?": True,
-
-    # 10 Unanswerable Questions
-    "How many defects will occur in a specific software project?": False,
-    "What is the cost of nonconformance for a project?": False,
-    "How will a new process affect software defect rates?": False,
-    "What is the probability of a defect reoccurring in software?": False,
-    "How long will it take to resolve defects from an audit?": False,
-    "What level of software quality is `good enough` for stakeholders?": False,
-    "What is the future impact of AI on software quality standards?": False,
-    "What ROI will be achieved through additional SQA measures?": False,
-    "What specific changes improve software quality across all projects?": False,
-    "How many resources are needed to achieve a quality level?": False
-}
 
 def search_questions(search_term: str):
     """Search function for the searchbox"""
@@ -103,110 +76,101 @@ def update_and_display_statistics():
 
 def display_confusion_matrix():
     """Display confusion matrix and evaluation metrics"""
-    st.sidebar.header("Evaluation Report")
+    st.sidebar.markdown("<h2><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Evaluation Report</a></h2>", unsafe_allow_html=True)
 
     # Get confusion matrix and metrics
-    results = get_confusion_matrix()
+    results = get_confusion_matrix_data()
     matrix = results['matrix']
     metrics = results['metrics']
 
-    # Plotly configurations
-    plotly_config={
-        'scrollZoom': False,'doubleClick': False,
-        'showTips': False,
-        'displayModeBar': False,
-        'draggable': False
+    # Tooltip for confusion metrics
+    cm_tooltip = {
+        "fp": "False positive: The chatbot incorrectly answers an unanswerable question",
+        "tn": "True negative: The chatbot correctly answers an unanswerable question",
+        "tp": "True positive: The chatbot correctly answers an answerable question",
+        "fn": "False negative: The chatbot incorrectly answers an answerable question"
     }
-    bg_color = '#0D0D0D'
 
-    """
-    Confusion Matrix
-    """
-    z = [
-        [matrix['fp'], matrix['tn']],
-        [matrix['tp'], matrix['fn']],
-    ]
-    text = [
-        ["FP: " + str(matrix['fp']), "TN: " + str(matrix['tn'])],
-        ["TP: " + str(matrix['tp']), "FN: " + str(matrix['fn'])]
-    ]
-    is_null = all(val == 0 for row in z for val in row) # check if values in matrix are all 0
-    tooltips = [
-        [
-            "False Positive:<br>The chatbot answers an unanswerable question.",
-            "True Negative:<br>The chatbot does not answer an unanswerable question."
-        ],
-        [
-            "True Positive:<br>The chatbot correctly answers an answerable question.",
-            "False Negative:<br>The chatbot incorrectly answers an answerable question."
-        ]
-    ]
-    colorscale = 'Whites' if is_null else 'Purples'
-    fig = go.Figure(data=go.Heatmap(
-        z=z, x=['True', 'False'], y=['False', 'True'],
-        text=text, texttemplate="%{text}", textfont={"size": 16},
-        showscale=False, colorscale=[[0, '#CFCFCF'], [1, '#CFCFCF']] if is_null else 'Purples',
-        hoverongaps=False, hoverinfo='text', hovertext=tooltips
-    ))
-    fig.update_layout(
-        xaxis_title='User Feedback', yaxis_title='Answerable', paper_bgcolor=bg_color,
-        width=300, height=250, margin=dict(l=50, r=30, t=50, b=50)
-    )
-    st.sidebar.markdown("<h3>Confusion Matrix</h3>", unsafe_allow_html=True)
-    st.sidebar.plotly_chart(fig, use_container_width=True, config=plotly_config)
+    # Tooltip for metrics
+    m_tooltip = {
+        'Sensitivity': 'Sensitivity: Proportion of actual positives correctly identified',
+        'Specificity': 'Specificity: Proportion of actual negatives correctly identified',
+        'Accuracy': 'Accuracy: Overall proportion of correct predictions',
+        'Precision': 'Precision: Proportion of positive identifications that were actually correct',
+        'Recall': 'Recall: Proportion of actual positives correctly identified',
+        'F1 Score': 'F1 Score: Harmonic mean of precision and recall'
+    }
     
-    """
-    Performance Metrics
-    """
-    st.sidebar.markdown("<h3>Performance Metrics</h3>", unsafe_allow_html=True)
-
-    def create_metric_bars(metrics_list):
-        tooltips = {
-            'Sensitivity': 'Proportion of actual positives correctly identified',
-            'Specificity': 'Proportion of actual negatives correctly identified',
-            'Accuracy': 'Overall proportion of correct predictions',
-            'Precision': 'Proportion of positive identifications that were actually correct',
-            'Recall': 'Proportion of actual positives correctly identified (Sensitivity)',
-            'F1 Score': 'Harmonic mean of precision and recall'
-        }
-        
-        traces = []
-        for metric in metrics_list:
-            value = metrics.get(metric)
-            text = "N/A" if value is None else f"{value:.2f}"
-            hover_text = f"{tooltips[metric]}"
-            color = '#1D1D1D' if value is None else (
-                '#62A834' if value >= 0.8 else # Good values get green
-                '#D7AA21' if value >= 0.5 else # Mid values get yellow
-                '#A83434'# Low values get red
-            )
-            traces.append(go.Bar(
-                name=f"{metric}_bg", y=[metric], x=[1], orientation='h', marker_color='#1D1D1D', hoverinfo='text', hovertext=hover_text, showlegend=False,
-            ))
-            traces.append(go.Bar(
-                name=metric, y=[metric], x=[value if value is not None else 0], orientation='h', hoverinfo='skip', marker_color=color, showlegend=False, text=text, textposition='outside', textfont=dict(color='#D6D6D6', size=14), texttemplate='%{text}'
-            ))
-        return traces
-
-    traces = []
-    metrics_order = ['Sensitivity', 'Specificity', 'Accuracy', 'Precision', 'Recall', 'F1 Score']
-    for metric in metrics_order:
-        traces.extend(create_metric_bars([metric]))
-    fig = go.Figure(data=traces)
-    fig.update_layout(
-        barmode='overlay', plot_bgcolor=bg_color, paper_bgcolor=bg_color, height=250, margin=dict(l=100, r=20, t=10, b=10),
-        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, autorange="reversed"),
-        xaxis=dict(range=[0, 1.2], showgrid=False, zeroline=False, showticklabels=False, showline=False)
+    # Key METRICS
+    st.sidebar.markdown("<h3><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Key Metrics</a></h3>", unsafe_allow_html=True)
+    st.sidebar.markdown(
+        f"""
+        <div class='metric-container'>
+            <div class='metric-main' title="{m_tooltip['Sensitivity']}">
+                <span class='metric-label'>Sensitivity:</span>
+                <span class='metric-value'>{f"{metrics['Sensitivity']:.2f}" if metrics['Sensitivity'] is not None else 'N/A'}</span>
+            </div>
+            <div class='metric-main' title="{m_tooltip['Specificity']}">
+                <span class='metric-label'>Specificity:</span>
+                <span class='metric-value'>{f"{metrics['Specificity']:.2f}" if metrics['Specificity'] is not None else 'N/A'}</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
-    # Add custom annotations for each metric
-    for i, metric in enumerate(metrics_order):
-        color = '#FFDF40' if metric in ['Sensitivity', 'Specificity'] else '#FFFFFF'
-        fig.add_annotation(x=-0.1, y=i,text=metric, showarrow=False, font=dict(color=color, size=14), xref='paper', yref='y',xanchor='right')
-    st.sidebar.plotly_chart(fig, use_container_width=False, config=plotly_config)
 
-    """
-    Reset Button
-    """
+    # CONFUSION MATRIX
+    st.sidebar.markdown("<h3><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Confusion Matrix</a></h3>", unsafe_allow_html=True)
+    st.sidebar.markdown(
+        f"""
+        <table class="confusion-matrix-table">
+            <tr>
+                <th></th>
+                <th>Predicted +</th>
+                <th>Predicted -</th>
+            </tr>
+            <tr>
+                <th>Actual +</th>
+                <td title="{cm_tooltip['tp']}">{matrix['tp']} (TP)</td>
+                <td title="{cm_tooltip['fn']}">{matrix['fn']} (FN)</td>
+            </tr>
+            <tr>
+                <th>Actual -</th>
+                <td title="{cm_tooltip['fp']}">{matrix['fp']} (FP)</td>
+                <td title="{cm_tooltip['tn']}">{matrix['tn']} (TN)</td>
+            </tr>
+        </table>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # OTHER METRICS
+    st.sidebar.markdown("<h3><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Other Metrics</a></h3>", unsafe_allow_html=True)
+    st.sidebar.markdown(
+        f"""
+        <div class='metric-container'>
+            <div class='metric-item' title="{m_tooltip['Accuracy']}">
+                <span class='metric-label'>Accuracy:</span>
+                <span class='metric-value'>{f"{metrics['Accuracy']:.2f}" if metrics['Accuracy'] is not None else 'N/A'}</span>
+            </div>
+            <div class='metric-item' title="{m_tooltip['Precision']}">
+                <span class='metric-label'>Precision:</span>
+                <span class='metric-value'>{f"{metrics['Precision']:.2f}" if metrics['Precision'] is not None else 'N/A'}</span>
+            </div>
+            <div class='metric-item' title="{m_tooltip['Recall']}">
+                <span class='metric-label'>Recall:</span>
+                <span class='metric-value'>{f"{metrics['Recall']:.2f}" if metrics['Recall'] is not None else 'N/A'}</span>
+            </div>
+            <div class='metric-item' title="{m_tooltip['F1 Score']}">
+                <span class='metric-label'>F1 Score:</span>
+                <span class='metric-value'>{f"{metrics['F1 Score']:.2f}" if metrics['F1 Score'] is not None else 'N/A'}</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # RESET BUTTON
     if st.sidebar.button("Reset"):
         reset_confusion_matrix()
         st.rerun()
