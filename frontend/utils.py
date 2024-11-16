@@ -7,7 +7,7 @@ from backend.statistics import (
     toggle_correctness,
     reset_confusion_matrix,
     get_statistics,
-    get_confusion_matrix_data
+    get_metrics
 )
 
 def search_questions(search_term: str):
@@ -79,7 +79,7 @@ def display_confusion_matrix():
     st.sidebar.markdown("<h2><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Evaluation Report</a></h2>", unsafe_allow_html=True)
 
     # Get confusion matrix and metrics
-    results = get_confusion_matrix_data()
+    results = get_metrics()
     matrix = results['matrix']
     metrics = results['metrics']
 

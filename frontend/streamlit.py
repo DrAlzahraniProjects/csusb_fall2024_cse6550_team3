@@ -19,26 +19,26 @@ baseline_questions = {
     # 10 Answerable questions
     "Who is Hironori Washizaki?": True,
     "What is software quality?": True,
-    "What is agile approach?": True,
-    "How does the Agile approach impact software quality?": True,
+    "What is the agile methodology?": True,
+    "How does the agile methodology impact software quality?": True,
     "What is software testing process?": True,
-    "What is ROI?": True,
+    "What is the purpose of a task network in project scheduling?": True,
     "What is a Quality Management System (QMS) in software?": True,
     "What are some key challenges to ensuring software quality?": True,
     "How do risk management and SQA interact in projects?": True,
     "How does testability affect software testing processes?": True,
 
     # 10 Unanswerable Questions
-    "How many defects will occur in a specific software project?": False,
-    "What is the cost of nonconformance for a project?": False,
-    "How will a new process affect software defect rates?": False,
-    "What is the probability of a defect reoccurring in software?": False,
-    "How long will it take to resolve defects from an audit?": False,
-    "What level of software quality is `good enough` for stakeholders?": False,
-    "What is the future impact of AI on software quality standards?": False,
-    "What ROI will be achieved through additional SQA measures?": False,
-    "What specific changes improve software quality across all projects?": False,
-    "How many resources are needed to achieve a quality level?": False
+    "How many developers are ideal for any given software project?": False,
+    "Can all software bugs be prevented with enough testing?": False,
+    "What is the exact ROI of refactoring legacy code?": False,
+    "How long should code reviews ideally take for maximum effectiveness?": False,
+    "Is there a universally best way to measure developer productivity?": False,
+    f"Can software be made 100% secure?": False,
+    "Is there a way to build a fully self-sustaining human colony on Mars with current technology?": False,
+    "What's the upper limit of computational power for classical computers?": False,
+    "How could we fully eliminate all types of noise in wireless communications?": False,
+    "Is there a way to completely avoid all cyber threats in interconnected global networks?": False
 }
 
 def main():
