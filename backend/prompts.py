@@ -1,16 +1,28 @@
 from langchain_core.prompts import ChatPromptTemplate
 
-# Prompts
-system_prompt = """
+SYSTEM_PROMPT_WITH_CONTEXT = """
 You are a chatbot that answers the question in the <question> tags.
 - Answer based only on provided context in <context> tags only if relevant.
-- If unsure, say "I don't have enough information to answer."
-- For unclear questions, ask for clarification.
 - Always identify yourself as a chatbot, not the textbook.
-- To questions about your purpose, say: "I'm a chatbot designed to answer questions about the provided textbook."
 """
 
-prompt = ChatPromptTemplate.from_messages([
-  ("system", system_prompt),
-  ("human", "<question>{input}</question>\n\n<context>{context}<context>"),
-])
+SYSTEM_PROMPT_NO_CONTEXT = """
+- To questions about your purpose, say: "I'm a chatbot designed to answer questions about the provided textbook."
+- Inform the user that you cannot answer their question as no relevant information was found
+- DO NOT attempt to answer the question.
+- Suggest they rephrase or try a different question
+"""
+
+def get_prompt(has_context=True):
+    """
+    Get the appropriate prompt template based on context availability.
+    Args:
+        has_context (bool): Whether relevant context exists
+    Returns:
+        ChatPromptTemplate: Configured prompt template
+    """
+    system_prompt = SYSTEM_PROMPT_WITH_CONTEXT if has_context else SYSTEM_PROMPT_NO_CONTEXT
+    return ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        ("human", "<question>{input}</question>\n\n<context>{context}<context>"),
+    ])

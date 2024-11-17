@@ -3,6 +3,10 @@
 
 The Textbook Chatbot project for CSE 6550 is designed to assist with queries related to the textbook."Software Engineering: A Practitioner's Approach." The chatbot serves as an educational tool, helping users by providing information, answering questions, and possibly retrieving content from the textbook.
 
+[Website](https://sec.cse.csusb.edu/team3/) 
+
+[Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter)
+
 ## Prerequisites
 Before you begin, make sure you have the following installed on your machine:
 - **Git**
@@ -28,19 +32,20 @@ Before you begin, make sure you have the following installed on your machine:
 4. Preliminary steps: make sure to execute all three steps given below to delete previous image
 
    To see all the running containers in your machine: 
-```
-   docker ps
-```
+   ```
+    docker ps
+   ```
   
-  To stop a running container, replace <container_id> with the one found in docker ps
-```
-  docker stop <container_id>
-```
+   To stop a running container, replace <container_id> with the one found in docker ps
+   ```
+   docker stop <container_id>
+   ```
 
-  To remove/delete a docker container, replace <container_id> with the one found in docker ps
-```
-  docker rm <container_id>
-```
+   To remove/delete a docker container, replace <container_id> with the one found in docker ps
+   ```
+   docker rm <container_id>
+   ```
+
 5. Build the Docker image using the following command:
 
    Befere running this command include API key in the end 
@@ -63,19 +68,47 @@ Before you begin, make sure you have the following installed on your machine:
     Website: [http://localhost:5003/team3](http://localhost:5003/team3)
    
     Jupyter: [http://localhost:6003/team3/jupyter](http://localhost:6003/team3/jupyter)
+    
 
 
-<!-- Accessing Jupyter Notebook http://localhost:6003/ -->
 
----
+## Evaluation Questions
+
+Below is a list of answerable and unanswerable questions related to Software Quality Assurance (SQA).
+
+| **Answerable**                                                     | **Unanswerable**                                                        |
+|--------------------------------------------------------------------|-------------------------------------------------------------------------|
+| Who is Hironori Washizaki?                                         | How many developers are ideal for any given software project?            |
+| What is software quality?                                          | Can all software bugs be prevented with enough testing?                       |
+| What is the agile methodology?                                            | What is the exact ROI of refactoring legacy code?                    |
+| How does the agile methodology impact software quality?                | How long should code reviews ideally take for maximum effectiveness?            |
+| What is software testing process?                              | Is there a universally best way to measure developer productivity?                 |
+| What is the purpose of a task network in project scheduling?        | Can software be made 100% secure?       |
+| What is a Quality Management System (QMS) in software?             | Is there a way to build a fully self-sustaining human colony on Mars with current technology?          |
+| What are some key challenges to ensuring software quality?         | What's the upper limit of computational power for classical computers?              |
+| How do risk management and SQA interact in projects?               | How could we fully eliminate all types of noise in wireless communications?     |
+| How does testability affect software testing processes?            | Is there a way to completely avoid all cyber threats in interconnected global networks?               |
+
+
+## Troubleshooting
+
+1. I ran the docker run command but the website gives me `localhost refused to connect` error
+   
+   This is probably because the application is still being spun up. Wait for a few minutes and try again.
+   
+2. I'm in light mode and the website is unreadable
+   
+   On the streamlit homepage, go to settings and select the custom theme
+   
+
 ## Project Structure
 
-- `.github/workflows/docker-publish.yml`: Defines a GitHub Action workflow to automate Docker publishing
+- `.github/workflows/docker-publish.yml`: GitHub Action workflow to automate Docker publishing
 - `app.py`: Main entry point for the application
 - `data`
 	- `default`: Contains textbook PDF and FAISS indexes
 		- `textbook` PDF
-		- `faiss_indexes`: Contains pre-built embeddings and metadata for the textbook
+		- `faiss_indexes`: Pre-built embeddings and metadata for the textbook
 - `backend`
 	- `document_loading.py`: Document loading, embedding creation and search logic
 	- `inference.py`: LLM inference and RAG logic
@@ -83,23 +116,22 @@ Before you begin, make sure you have the following installed on your machine:
 	- `citations.py`: Logic for getting sources for a response
 	- `statistics.py`: Database schema and querying
 - `frontend`
-	- `styles/`: Contains CSS styling for Streamlit
+	- `styles/`: CSS styling
 	- `streamlit.py`: Main streamlit file
 	- `pdf.py`: PDF viewer
+   - `utils.py`: Contains utility functions such as the confusion matrix
 - `jupyter`
-	- `Hello_world.ipynb`: Main Jupyter notebook file
+	- `main.ipynb`: Jupyter notebook file
 - `.env.template`: Template for what a .env file should look like
-- `.gitignore`: Specifies which files and directories should be ignored by Git
-- `Dockerfile`: Contains instructions to build the Docker image for the project
-- `README.md`: Project documentation containing setup instructions and information about the project
-- `requirements.txt`: Lists Python package dependencies required for the project
-
----
+- `.gitignore`: Files and directories should be ignored by Git
+- `Dockerfile`: Instructions to build the Docker image
+- `README.md`: Project documentation
+- `requirements.txt`: Lists required python dependencies
 
 ## Affiliation
 
-TEAM 3
+Built by `Team 3`
 
-CSE 6550: Software Engineer Concepts, Fall 24
+Course: CSE 6550, Fall '24 (Software Engineer Concepts)
 
-California State University, San Bernardino
+Institution: California State University, San Bernardino
