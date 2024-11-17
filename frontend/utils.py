@@ -83,10 +83,13 @@ def update_and_display_statistics():
             unsafe_allow_html=True,
         )
 
+def format_metric(value):
+    """Format a metric for display, returning 'N/A' if None."""
+    return f"{value:.2f}" if value is not None else "N/A"
 
 def display_confusion_matrix():
     """Display confusion matrix and associated metrics in the sidebar."""
-    st.sidebar.markdown("<h2>Evaluation Report</h2>", unsafe_allow_html=True)
+    st.sidebar.markdown("<h2><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Evaluation Report</a></h2>", unsafe_allow_html=True)
 
     # Fetch confusion matrix and metrics
     results = get_metrics()
@@ -108,12 +111,8 @@ def display_confusion_matrix():
         "F1 Score": "Harmonic mean of precision and recall."
     }
 
-    def format_metric(value):
-        """Format a metric for display, returning 'N/A' if None."""
-        return f"{value:.2f}" if value is not None else "N/A"
-
-    # Key Metrics
-    st.sidebar.markdown("<h3>Key Metrics</h3>", unsafe_allow_html=True)
+    # KEY METRICS
+    st.sidebar.markdown("<h3><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Key Metrics</a></h3>", unsafe_allow_html=True)
     st.sidebar.markdown(
         f"""
         <div class='metric-container'>
@@ -130,8 +129,8 @@ def display_confusion_matrix():
         unsafe_allow_html=True,
     )
 
-    # Confusion Matrix
-    st.sidebar.markdown("<h3>Confusion Matrix</h3>", unsafe_allow_html=True)
+    # CONFUSION MATRIX
+    st.sidebar.markdown("<h3><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Confusion Matrix</a></h3>", unsafe_allow_html=True)
     st.sidebar.markdown(
         f"""
         <table class="confusion-matrix-table">
@@ -153,8 +152,8 @@ def display_confusion_matrix():
         unsafe_allow_html=True,
     )
 
-    # Additional Metrics
-    st.sidebar.markdown("<h3>Additional Metrics</h3>", unsafe_allow_html=True)
+    # Other Metrics
+    st.sidebar.markdown("<h3><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Other Metrics</a></h3>", unsafe_allow_html=True)
     st.sidebar.markdown(
         f"""
         <div class='metric-container'>
@@ -180,6 +179,6 @@ def display_confusion_matrix():
     )
 
     # Reset Confusion Matrix Button
-    if st.sidebar.button("Reset Confusion Matrix"):
+    if st.sidebar.button("Reset"):
         reset_confusion_matrix()
         st.rerun()

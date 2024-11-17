@@ -135,7 +135,7 @@ def save_conversation_to_db(prompt: str, response: str) -> int:
         question=prompt,
         response=response,
         citations="",
-        model_name="chat_model",  # Replace with actual model name if available
+        model_name="open-mistral-7b",
         source=os.getenv("CORPUS_SOURCE", "unknown source").split("/")[-1],
         response_time=st.session_state.response_time,
         correct=None,
@@ -173,6 +173,3 @@ def main():
             f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True
         )
         handle_user_input(prompt)
-
-if __name__ == "__main__":
-    main()
