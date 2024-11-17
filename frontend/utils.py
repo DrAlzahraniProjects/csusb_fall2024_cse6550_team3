@@ -93,8 +93,8 @@ def display_confusion_matrix():
 
     # Tooltip for metrics
     m_tooltip = {
-        'Sensitivity': 'Sensitivity: Proportion of actual positives correctly identified',
-        'Specificity': 'Specificity: Proportion of actual negatives correctly identified',
+        'Sensitivity': 'Sensitivity: True positive rate',
+        'Specificity': 'Specificity: True negative rate',
         'Accuracy': 'Accuracy: Overall proportion of correct predictions',
         'Precision': 'Precision: Proportion of positive identifications that were actually correct',
         'Recall': 'Recall: Proportion of actual positives correctly identified',
@@ -107,11 +107,11 @@ def display_confusion_matrix():
         f"""
         <div class='metric-container'>
             <div class='metric-main' title="{m_tooltip['Sensitivity']}">
-                <span class='metric-label'>Sensitivity:</span>
+                <span class='metric-label'>Sensitivity (True positive rate):</span>
                 <span class='metric-value'>{f"{metrics['Sensitivity']:.2f}" if metrics['Sensitivity'] is not None else 'N/A'}</span>
             </div>
             <div class='metric-main' title="{m_tooltip['Specificity']}">
-                <span class='metric-label'>Specificity:</span>
+                <span class='metric-label'>Specificity (True negative rate):</span>
                 <span class='metric-value'>{f"{metrics['Specificity']:.2f}" if metrics['Specificity'] is not None else 'N/A'}</span>
             </div>
         </div>
