@@ -74,20 +74,20 @@ Before you begin, make sure you have the following installed on your machine:
 
 ## Evaluation Questions
 
-Below is a list of answerable and unanswerable questions related to Software Quality Assurance (SQA).
+Below is a list of answerable and unanswerable questions that will be used to evaluaute the application
 
 | **Answerable**                                                     | **Unanswerable**                                                        |
 |--------------------------------------------------------------------|-------------------------------------------------------------------------|
-| Who is Hironori Washizaki?                                         | How many developers are ideal for any given software project?            |
-| What is software quality?                                          | Can all software bugs be prevented with enough testing?                       |
-| What is the agile methodology?                                            | What is the exact ROI of refactoring legacy code?                    |
-| How does the agile methodology impact software quality?                | How long should code reviews ideally take for maximum effectiveness?            |
-| What is software testing process?                              | Is there a universally best way to measure developer productivity?                 |
-| What is the purpose of a task network in project scheduling?        | Can software be made 100% secure?       |
-| What is a Quality Management System (QMS) in software?             | Is there a way to build a fully self-sustaining human colony on Mars with current technology?          |
-| What are some key challenges to ensuring software quality?         | What's the upper limit of computational power for classical computers?              |
-| How do risk management and SQA interact in projects?               | How could we fully eliminate all types of noise in wireless communications?     |
-| How does testability affect software testing processes?            | Is there a way to completely avoid all cyber threats in interconnected global networks?               |
+| Who is Hironori Washizaki?                                         | How many developers are ideal for any given software project?           |
+| How does software testing impact the overall software development lifecycle? | Can all software bugs be prevented with enough testing?       |
+| What is the agile methodology?                                     | What is the exact ROI of refactoring legacy code?                       |
+| What are the different types of software models, and when should each be used? | How long should code reviews ideally take for maximum effectiveness? |
+| How does software configuration management ensure project success? | Is there a universally best way to measure developer productivity?      |
+| What role do user requirements play in software design and architecture? | Can software be made 100% secure?                                 |
+| How can software engineering practices be adapted for agile development? | Is there a way to build a fully self-sustaining human colony on Mars with current technology? |
+| How does project management in software engineering differ from traditional project management? | What's the upper limit of computational power for classical computers? |
+| What strategies can be used for effective risk management in software engineering projects? | How could we fully eliminate all types of noise in wireless communications? |
+| What is software testing process?                                  | Is there a way to completely avoid all cyber threats in interconnected global networks? |
 
 
 ## Troubleshooting
