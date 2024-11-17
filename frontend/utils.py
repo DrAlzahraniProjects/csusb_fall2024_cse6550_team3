@@ -93,8 +93,8 @@ def display_confusion_matrix():
 
     # Tooltip for metrics
     m_tooltip = {
-        'Sensitivity': 'Sensitivity: True positive rate',
-        'Specificity': 'Specificity: True negative rate',
+        'Sensitivity': 'Sensitivity: Proportion of actual positives correctly identified',
+        'Specificity': 'Specificity: Proportion of actual negatives correctly identified',
         'Accuracy': 'Accuracy: Overall proportion of correct predictions',
         'Precision': 'Precision: Proportion of positive identifications that were actually correct',
         'Recall': 'Recall: Proportion of actual positives correctly identified',
