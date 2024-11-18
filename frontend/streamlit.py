@@ -34,7 +34,7 @@ BASELINE_QUESTIONS = {
     "How will AI evolve in the next 100 years?": False,
     "What is the solution to the Riemann Hypothesis?": False,
     "What is the smallest possible Turing machine?": False,
-    "What is the most complex algorithm that can never be solved": False,
+    "What is the most complex algorithm that can never be solved?": False,
     "What is the most efficient way to handle an infinite stream of data?": False,
     "Is there a way to build a fully self-sustaining human colony on Mars with current technology?": False,
     "What's the upper limit of computational power for classical computers?": False,
