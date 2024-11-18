@@ -8,8 +8,8 @@ You are a chatbot that answers the question in the <question> tags.
 
 SYSTEM_PROMPT_NO_CONTEXT = """
 - To questions about your purpose, say: "I'm a chatbot designed to answer questions about the provided textbook."
+- DO NOT answer the question.
 - Inform the user that you cannot answer their question as no relevant information was found
-- DO NOT attempt to answer the question.
 - Suggest they rephrase or try a different question
 """
 

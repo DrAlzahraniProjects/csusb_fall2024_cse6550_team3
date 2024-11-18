@@ -19,15 +19,15 @@ from .utils import (
 BASELINE_QUESTIONS = {
     # 10 Answerable questions
     "Who is Hironori Washizaki?": True,
-    "What is software quality?": True,
+    "How does software testing impact the overall software development lifecycle?": True,
     "What is the agile methodology?": True,
-    "How does the agile methodology impact software quality?": True,
-    "What is software testing process?": True,
-    "What is the purpose of a task network in project scheduling?": True,
-    "What is a Quality Management System (QMS) in software?": True,
-    "What are some key challenges to ensuring software quality?": True,
-    "How do risk management and SQA interact in projects?": True,
-    "How does testability affect software testing processes?": True,
+    "What are the different types of software models, and when should each be used?": True,
+    "How does software configuration management ensure project success?": True,
+    "What role do user requirements play in software design and architecture?": True,
+    "What is software dependability?": True,
+    "How does project management in software engineering differ from traditional project management?": True,
+    "What strategies can be used for effective risk management in software engineering projects?": True,
+    "What is the purpose of static analysis in software testing?": True,
 
     # 10 Unanswerable Questions
     "How many developers are ideal for any given software project?": False,

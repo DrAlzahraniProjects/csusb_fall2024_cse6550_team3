@@ -117,11 +117,11 @@ def display_confusion_matrix():
         f"""
         <div class='metric-container'>
             <div class='metric-main' title="{metrics_tooltip['Sensitivity']}">
-                <span class='metric-label'>Sensitivity:</span>
+                <span class='metric-label'>Sensitivity (True positive rate):</span>
                 <span class='metric-value'>{format_metric(metrics.get("Sensitivity"))}</span>
             </div>
             <div class='metric-main' title="{metrics_tooltip['Specificity']}">
-                <span class='metric-label'>Specificity:</span>
+                <span class='metric-label'>Specificity (True negative rate):</span>
                 <span class='metric-value'>{format_metric(metrics.get("Specificity"))}</span>
             </div>
         </div>
