@@ -22,7 +22,9 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     build-essential \
     cmake \
+    git \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Install Mambaforge for the appropriate architecture
 RUN arch=$(uname -m) && \
@@ -55,6 +57,11 @@ RUN mamba install --yes --file requirements.txt && mamba clean --all -f -y
 # Use the specific path to install cython and NeMo toolkit's NLP components
 RUN /opt/miniforge/envs/team3_env/bin/pip install cython
 # RUN /opt/miniforge/envs/team3_env/bin/pip install nemo_toolkit[all]
+RUN /opt/miniforge/envs/team3_env/bin/pip install git+https://github.com/NVIDIA/NeMo.git
+RUN /opt/miniforge/envs/team3_env/bin/pip install git+https://github.com/NVIDIA/NeMo-Guardrails.git
+
+RUN /opt/miniforge/envs/team3_env/bin/pip install nest_asyncio
+
 
 # Install other required packages with pip
 RUN /opt/miniforge/envs/team3_env/bin/pip install rank_bm25 streamlit-pdf-viewer

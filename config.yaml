@@ -1,0 +1,39 @@
+rails_config:
+  models:
+    name: open-mistral-7b
+    temperature: 0.05
+    max_tokens: 256
+    top_p: 0.4
+    api_key_env_variable: MISTRAL_API_KEY
+  guardrails:
+    logging:
+      enabled: true
+      level: info
+    validation:
+      enabled: true
+    error_handling:
+      enabled: true
+      fallback_answer: "Sorry, I couldn’t process your request. Please try again later."
+  prompt:
+    general:
+      context_prefix: "Here is some relevant context that can help answer your question:"
+      user_prompt: "Based on the provided context and question, please generate a response."
+    citations:
+      enabled: true
+      citation_format: "[{author}, {page_number}]"
+      page_numbers: true
+  document_retrieval:
+    faiss:
+      top_k: 15
+      persist_directory: /app/data/swebok/faiss_indexes
+      source_directory: /app/data/swebok
+  streaming:
+    enabled: true
+    chunk_size: 512
+  enable_rails_exceptions: false
+  passthrough: null
+  event_source_uid: "NeMoGuardrails-Colang-2.x"
+  raw_llm_call_action: "raw llm call"
+  tracing:
+    enabled: true
+    level: info
