@@ -28,4 +28,4 @@ if __name__ == "__main__":
         # Start Streamlit as a background process
         subprocess.Popen(["streamlit", "run", __file__,"--server.port=5003", "--server.address=0.0.0.0", "--server.baseUrlPath=/team3"])
         # Start Jupyter Notebook
-        subprocess.run(["jupyter", "notebook","--ip=0.0.0.0", "--port=6003","--no-browser", "--allow-root","--NotebookApp.base_url=/team3/jupyter","--NotebookApp.token=''", "--NotebookApp.password=''" ])
+        subprocess.run(["jupyter", "notebook","--ip=0.0.0.0", "--port=6003","--no-browser", "--allow-root","--NotebookApp.base_url=/team3/jupyter","--NotebookApp.token=''", "--NotebookApp.password=''", "--notebook-dir=/jupyter''" ])
