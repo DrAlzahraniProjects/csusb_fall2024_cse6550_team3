@@ -1,122 +1,132 @@
 import os
 import yake
 import streamlit as st
-import pandas as pd
 from backend.statistics import (
     update_user_session,
     toggle_correctness,
     reset_confusion_matrix,
     get_statistics,
-    get_metrics
+    get_metrics,
 )
 
-def search_questions(search_term: str):
-    """Search function for the searchbox"""
-    if not search_term:
-        return list(baseline_questions.keys())
-    return [question for question in baseline_questions.keys() if search_term.lower() in question.lower()]
 
 def load_css():
-    """Load CSS styles"""
+    """Load custom CSS for the Streamlit app."""
     css_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "styles", "style.css")
-    with open(css_file) as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+    try:
+        with open(css_file) as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    except FileNotFoundError:
+        st.error("CSS file not found. Please check the file path.")
+
+
+def search_questions(search_term: str, questions: dict):
+    """Filter questions based on a search term."""
+    if not search_term:
+        return list(questions.keys())
+    return [q for q in questions.keys() if search_term.lower() in q.lower()]
+
 
 def handle_feedback(conversation_id):
-    """Handle feedback button click"""
+    """Handle feedback submission for a conversation."""
     feedback_value = st.session_state.get(f"feedback_{conversation_id}", None)
     if feedback_value is not None:
         toggle_correctness(conversation_id, feedback_value == 1)
         update_user_session(st.session_state.user_id)
 
-def extract_keywords(texts):
-    """Extract top N keywords from text using YAKE"""
+
+def extract_keywords(texts, max_keywords=10):
+    """
+    Extract keywords from a list of texts using YAKE.
+
+    Args:
+        texts (list): List of strings to extract keywords from.
+        max_keywords (int): Maximum number of keywords to extract.
+
+    Returns:
+        str: Comma-separated keywords.
+    """
     extractor = yake.KeywordExtractor(lan="en", n=1, features=None)
     ignore_words = {
-        'pdf', 'education', 'engineering', 'software', 'practitioner', 'file', 'textbook.pdf', 'swebok', 'app', 'view',
-        'details', 'level', 'target', 'blank', 'page', 'href', 'pressman', 'detail', 'system', 'systems'
+        "pdf", "education", "engineering", "software", "practitioner", "file", 
+        "textbook.pdf", "swebok", "app", "view", "details", "level", "target", 
+        "blank", "page", "href", "pressman", "detail", "system", "systems"
     }
     keywords = set()
     for text in texts:
         extracted = dict(extractor.extract_keywords(text)).keys()
-        filtered_keywords = {word.lower() for word in extracted if word.lower() not in ignore_words}
+        filtered_keywords = {kw.lower() for kw in extracted if kw.lower() not in ignore_words}
         keywords.update(filtered_keywords)
-    return ", ".join(list(keywords))
+    return ", ".join(list(keywords)[:max_keywords])
+
 
 def update_and_display_statistics():
-    """Updates statistics report in the left sidebar based on selected period (Daily/Overall)"""
+    """Display and update statistics in the sidebar."""
     st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
     stat_period = st.sidebar.radio(
         "Statistics period (Daily or Overall)",
-        ('Daily', 'Overall'),
+        ("Daily", "Overall"),
         key="stats_period",
         label_visibility="hidden",
-        horizontal=True
+        horizontal=True,
     )
     stats = get_statistics(stat_period)
     st.session_state.statistics = stats
-    statistics = [
-        f"Number of questions: {stats['num_questions']}",
-        f"Number of correct answers: {stats['num_correct']}",
-        f"Number of incorrect answers: {stats['num_incorrect']}",
-        f"User engagement metrics: {stats['user_engagement']:.2f} seconds",
-        f"Response time analysis: {stats['avg_response_time']:.2f} seconds",
-        f"Accuracy rate: {stats['accuracy_rate']:.2f}%",
-        f"Satisfaction rate: {stats['satisfaction_rate']:.2f}%",
-        f"Common topics or keywords: {stats['common_topics']}",
-        f"Improvement over time",
-        f"Feedback summary"
-    ]
-    for stat in statistics:
-        st.sidebar.markdown(f"""
+
+    for key, value in stats.items():
+        st.sidebar.markdown(
+            f"""
             <div class='btn-stat-container'>
-                <span class="btn-stat">{stat}</span>
+                <span class="btn-stat">{key.replace('_', ' ').capitalize()}: {value}</span>
             </div>
-        """, unsafe_allow_html=True)
+            """,
+            unsafe_allow_html=True,
+        )
+
+def format_metric(value):
+    """Format a metric for display, returning 'N/A' if None."""
+    return f"{value:.2f}" if value is not None else "N/A"
 
 def display_confusion_matrix():
-    """Display confusion matrix and evaluation metrics"""
+    """Display confusion matrix and associated metrics in the sidebar."""
     st.sidebar.markdown("<h2><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Evaluation Report</a></h2>", unsafe_allow_html=True)
 
-    # Get confusion matrix and metrics
+    # Fetch confusion matrix and metrics
     results = get_metrics()
-    matrix = results['matrix']
-    metrics = results['metrics']
+    matrix, metrics = results["matrix"], results["metrics"]
 
-    # Tooltip for confusion metrics
+    # Tooltips
     cm_tooltip = {
-        "fp": "False positive: The chatbot incorrectly answers an unanswerable question",
-        "tn": "True negative: The chatbot correctly answers an unanswerable question",
-        "tp": "True positive: The chatbot correctly answers an answerable question",
-        "fn": "False negative: The chatbot incorrectly answers an answerable question"
+        "tp": "True positive (TP): Correctly answered answerable questions.",
+        "fp": "False positive (FP): Incorrectly answered unanswerable questions.",
+        "tn": "True negative (TN): Correctly identified unanswerable questions.",
+        "fn": "False negative (FN): Failed to answer answerable questions."
+    }
+    metrics_tooltip = {
+        "Sensitivity": "Proportion of actual positives correctly identified.",
+        "Specificity": "Proportion of actual negatives correctly identified.",
+        "Accuracy": "Overall proportion of correct predictions.",
+        "Precision": "Proportion of positive identifications that were correct.",
+        "Recall": "Proportion of actual positives correctly identified.",
+        "F1 Score": "Harmonic mean of precision and recall."
     }
 
-    # Tooltip for metrics
-    m_tooltip = {
-        'Sensitivity': 'Sensitivity: Proportion of actual positives correctly identified',
-        'Specificity': 'Specificity: Proportion of actual negatives correctly identified',
-        'Accuracy': 'Accuracy: Overall proportion of correct predictions',
-        'Precision': 'Precision: Proportion of positive identifications that were actually correct',
-        'Recall': 'Recall: Proportion of actual positives correctly identified',
-        'F1 Score': 'F1 Score: Harmonic mean of precision and recall'
-    }
-    
-    # Key METRICS
+    # KEY METRICS
     st.sidebar.markdown("<h3><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Key Metrics</a></h3>", unsafe_allow_html=True)
     st.sidebar.markdown(
         f"""
         <div class='metric-container'>
-            <div class='metric-main' title="{m_tooltip['Sensitivity']}">
+            <div class='metric-main' title="{metrics_tooltip['Sensitivity']}">
                 <span class='metric-label'>Sensitivity:</span>
-                <span class='metric-value'>{f"{metrics['Sensitivity']:.2f}" if metrics['Sensitivity'] is not None else 'N/A'}</span>
+                <span class='metric-value'>{format_metric(metrics.get("Sensitivity"))}</span>
             </div>
-            <div class='metric-main' title="{m_tooltip['Specificity']}">
+            <div class='metric-main' title="{metrics_tooltip['Specificity']}">
                 <span class='metric-label'>Specificity:</span>
-                <span class='metric-value'>{f"{metrics['Specificity']:.2f}" if metrics['Specificity'] is not None else 'N/A'}</span>
+                <span class='metric-value'>{format_metric(metrics.get("Specificity"))}</span>
             </div>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     # CONFUSION MATRIX
@@ -125,9 +135,7 @@ def display_confusion_matrix():
         f"""
         <table class="confusion-matrix-table">
             <tr>
-                <th></th>
-                <th>Predicted +</th>
-                <th>Predicted -</th>
+                <th></th><th>Predicted +</th><th>Predicted -</th>
             </tr>
             <tr>
                 <th>Actual +</th>
@@ -141,36 +149,36 @@ def display_confusion_matrix():
             </tr>
         </table>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
-    # OTHER METRICS
+    # Other Metrics
     st.sidebar.markdown("<h3><a href='https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3?tab=readme-ov-file#evaluation-questions'>Other Metrics</a></h3>", unsafe_allow_html=True)
     st.sidebar.markdown(
         f"""
         <div class='metric-container'>
-            <div class='metric-item' title="{m_tooltip['Accuracy']}">
+            <div class='metric-item' title="{metrics_tooltip['Accuracy']}">
                 <span class='metric-label'>Accuracy:</span>
-                <span class='metric-value'>{f"{metrics['Accuracy']:.2f}" if metrics['Accuracy'] is not None else 'N/A'}</span>
+                <span class='metric-value'>{format_metric(metrics.get("Accuracy"))}</span>
             </div>
-            <div class='metric-item' title="{m_tooltip['Precision']}">
+            <div class='metric-item' title="{metrics_tooltip['Precision']}">
                 <span class='metric-label'>Precision:</span>
-                <span class='metric-value'>{f"{metrics['Precision']:.2f}" if metrics['Precision'] is not None else 'N/A'}</span>
+                <span class='metric-value'>{format_metric(metrics.get("Precision"))}</span>
             </div>
-            <div class='metric-item' title="{m_tooltip['Recall']}">
+            <div class='metric-item' title="{metrics_tooltip['Recall']}">
                 <span class='metric-label'>Recall:</span>
-                <span class='metric-value'>{f"{metrics['Recall']:.2f}" if metrics['Recall'] is not None else 'N/A'}</span>
+                <span class='metric-value'>{format_metric(metrics.get("Recall"))}</span>
             </div>
-            <div class='metric-item' title="{m_tooltip['F1 Score']}">
+            <div class='metric-item' title="{metrics_tooltip['F1 Score']}">
                 <span class='metric-label'>F1 Score:</span>
-                <span class='metric-value'>{f"{metrics['F1 Score']:.2f}" if metrics['F1 Score'] is not None else 'N/A'}</span>
+                <span class='metric-value'>{format_metric(metrics.get("F1 Score"))}</span>
             </div>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
-    # RESET BUTTON
+    # Reset Confusion Matrix Button
     if st.sidebar.button("Reset"):
         reset_confusion_matrix()
         st.rerun()
