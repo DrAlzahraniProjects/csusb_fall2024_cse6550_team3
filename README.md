@@ -69,9 +69,46 @@ Before you begin, make sure you have the following installed on your machine:
    
     Jupyter: [http://localhost:6003/team3/jupyter](http://localhost:6003/team3/jupyter)
     
+## Running Jupyter notebook in virtual environment
 
-
-
+1. Navigate to your project directory:
+```bash
+cd /path/to/your/project
+```
+2. Create a virtual environment:
+```bash
+python -m venv venv
+```
+3. Activate the virtual environment:
+   1. On macOS/Linux
+     ```bash
+     source venv/bin/activate
+     ```
+   2. On Windows:
+     ```bash
+     .\venv\Scripts\activate
+     ```
+5. Ensure that Python is version 3.10 or above:
+```bash
+python --version
+```
+5. Install the dependencies:
+```bash
+pip install -r requirements.txt
+```
+6. Activate the virtual environment (if not already activated):
+	1. MacOS/Linux
+	```bash
+	source venv/bin/activate
+	```
+	2. On Windows
+	```bash
+	.\venv\Scripts\activate
+	```
+ 7. Start Jupyter Notebook:
+```bash  
+jupyter notebook --port=6003
+```    
 ## Evaluation Questions
 
 Below is a list of answerable and unanswerable questions that will be used to evaluaute the application
