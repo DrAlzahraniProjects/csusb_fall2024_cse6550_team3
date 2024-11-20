@@ -30,16 +30,16 @@ BASELINE_QUESTIONS = {
     "What is the purpose of static analysis in software testing?": True,
 
     # 10 Unanswerable Questions
-    "How many developers are ideal for any given software project?": False,
-    "Can all software bugs be prevented with enough testing?": False,
-    "What is the exact ROI of refactoring legacy code?": False,
-    "How long should code reviews ideally take for maximum effectiveness?": False,
-    "Is there a universally best way to measure developer productivity?": False,
-    f"Can software be made 100% secure?": False,
+    "What is the largest possible number that could exist?": False,
+    "How will AI evolve in the next 100 years?": False,
+    "What is the solution to the Riemann Hypothesis?": False,
+    "What is the smallest possible Turing machine?": False,
+    "What is the most complex algorithm that can never be solved?": False,
+    "What is the most efficient way to handle an infinite stream of data?": False,
     "Is there a way to build a fully self-sustaining human colony on Mars with current technology?": False,
     "What's the upper limit of computational power for classical computers?": False,
     "How could we fully eliminate all types of noise in wireless communications?": False,
-    "Is there a way to completely avoid all cyber threats in interconnected global networks?": False
+    "How can we create a material that is completely indestructible?": False
 
 }
 

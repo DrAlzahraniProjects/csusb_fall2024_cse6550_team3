@@ -12,7 +12,7 @@ def get_citations(docs):
     page_numbers = [
         doc.metadata.get('page', 'Unknown page') + 1 for doc in docs
         if isinstance(doc.metadata.get('page'), int)
-    ][:2]
+    ][:1]
     return page_numbers if page_numbers else []
 
 def format_citations(page_numbers, response):
