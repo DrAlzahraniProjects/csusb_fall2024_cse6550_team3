@@ -1,7 +1,7 @@
 import os
 import time
 import streamlit as st
-from .pdf import serve_pdf
+from .pdf import serve_pdf, serve_pdf_with_highlight
 from backend.inference import chat_completion
 from backend.statistics import (
     init_user_session,
@@ -15,9 +15,8 @@ from .utils import (
     display_confusion_matrix,
 )
 
-# Define constants for baseline questions
+# Predefined baseline questions
 BASELINE_QUESTIONS = {
-    # 10 Answerable questions
     "Who is Hironori Washizaki?": True,
     "How does software testing impact the overall software development lifecycle?": True,
     "What is the agile methodology?": True,
@@ -28,44 +27,43 @@ BASELINE_QUESTIONS = {
     "How does project management in software engineering differ from traditional project management?": True,
     "What strategies can be used for effective risk management in software engineering projects?": True,
     "What is the purpose of static analysis in software testing?": True,
-
-    # 10 Unanswerable Questions
     "How many developers are ideal for any given software project?": False,
     "Can all software bugs be prevented with enough testing?": False,
     "What is the exact ROI of refactoring legacy code?": False,
     "How long should code reviews ideally take for maximum effectiveness?": False,
     "Is there a universally best way to measure developer productivity?": False,
-    f"Can software be made 100% secure?": False,
+    "Can software be made 100% secure?": False,
     "Is there a way to build a fully self-sustaining human colony on Mars with current technology?": False,
     "What's the upper limit of computational power for classical computers?": False,
     "How could we fully eliminate all types of noise in wireless communications?": False,
-    "Is there a way to completely avoid all cyber threats in interconnected global networks?": False
-
+    "Is there a way to completely avoid all cyber threats in interconnected global networks?": False,
 }
 
+
 def get_feedback_question(prompt: str) -> str:
-    """Return feedback question based on baseline questions."""
+    """Generate appropriate feedback question for the user."""
     if prompt in BASELINE_QUESTIONS:
         is_answerable = BASELINE_QUESTIONS[prompt]
         return (
             "Did the chatbot correctly answer this answerable question?"
             if is_answerable
-            else "Did the chatbot correctly answer this unanswerable question?"
+            else "Did the chatbot correctly handle this unanswerable question?"
         )
     return "Was this response helpful?"
 
+
 def initialize_session():
-    """Initialize user session and handle errors."""
+    """Initialize user session if not already initialized."""
     if "user_id" not in st.session_state:
         try:
             st.session_state.user_id = init_user_session()
-            print(f"Creating user#{st.session_state.user_id}")
         except Exception as e:
             st.error("Unable to initialize user session. Please try again later.")
             st.stop()
 
+
 def render_conversation_history():
-    """Render conversation history from session state."""
+    """Render conversation history from the session state."""
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
@@ -74,14 +72,19 @@ def render_conversation_history():
             render_assistant_message(message)
         else:
             st.markdown(
-                f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True
+                f"<div class='user-message'>{message['content']}</div>",
+                unsafe_allow_html=True,
             )
 
+
 def render_assistant_message(message):
-    """Render assistant's message and feedback options."""
+    """Render assistant message and feedback options."""
     st.markdown(
-        f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True
+        f"<div class='assistant-message'>{message['content']}</div>",
+        unsafe_allow_html=True,
     )
+
+    # Provide feedback interface
     conversation_id = message.get("conversation_id")
     if conversation_id:
         user_message = next(
@@ -103,8 +106,9 @@ def render_assistant_message(message):
             kwargs={"conversation_id": conversation_id},
         )
 
+
 def handle_user_input(prompt: str):
-    """Process user input, generate response, and update session state."""
+    """Process user input, generate a response, and update session state."""
     response_container = st.empty()
     with st.spinner("Generating response..."):
         try:
@@ -116,8 +120,9 @@ def handle_user_input(prompt: str):
         except Exception as e:
             st.error("Error generating or saving response. Please try again.")
 
+
 def generate_response(prompt: str, response_container):
-    """Generate chatbot response and update UI in real-time."""
+    """Generate response for a given user prompt."""
     start_time = time.time()
     response = ""
     for partial_response, model_name in chat_completion(prompt):
@@ -129,8 +134,9 @@ def generate_response(prompt: str, response_container):
     st.session_state.response_time = int(end_time - start_time)
     return response
 
+
 def save_conversation_to_db(prompt: str, response: str) -> int:
-    """Save conversation to the database and return conversation ID."""
+    """Save conversation to the database."""
     return insert_conversation(
         question=prompt,
         response=response,
@@ -143,8 +149,9 @@ def save_conversation_to_db(prompt: str, response: str) -> int:
         answerable=BASELINE_QUESTIONS.get(prompt, None),
     )
 
+
 def update_session_messages(prompt: str, response: str, conversation_id: int):
-    """Update session state with new conversation."""
+    """Update session state with user and assistant messages."""
     st.session_state.messages.append(
         {"role": "user", "content": prompt, "conversation_id": conversation_id}
     )
@@ -152,24 +159,31 @@ def update_session_messages(prompt: str, response: str, conversation_id: int):
         {"role": "assistant", "content": response, "conversation_id": conversation_id}
     )
 
-def main():
-    """Main Streamlit app logic."""
-    st.markdown(
-        "<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True
-    )
 
+def main():
+    """Main application logic."""
+    st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
+
+    # Check for PDF query parameters
     if "view" in st.query_params and st.query_params["view"] == "pdf":
-        serve_pdf()
+        pdf_path = st.query_params.get("file")
+        page = int(st.query_params.get("page", 1))
+        text_to_highlight = st.query_params.get("highlight", "")
+
+        if text_to_highlight:
+            serve_pdf_with_highlight(text_to_highlight, pdf_path, page)
+        else:
+            serve_pdf()
         return
 
+    # Load UI components
     load_css()
     initialize_session()
     st.sidebar.empty()
     display_confusion_matrix()
     render_conversation_history()
 
+    # Process user input
     if prompt := st.chat_input("Ask your question?"):
-        st.markdown(
-            f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True
-        )
+        st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
         handle_user_input(prompt)
