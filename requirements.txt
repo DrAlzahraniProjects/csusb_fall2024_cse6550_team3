@@ -15,3 +15,5 @@ sentence-transformers
 sqlalchemy
 tiktoken
 yake
+rapidfuzz
+pytesseract
