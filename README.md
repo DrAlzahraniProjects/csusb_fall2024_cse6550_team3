@@ -58,7 +58,7 @@ Before you begin, make sure you have the following installed on your machine:
 6. Now, run the Docker container:
  
    ```
-   docker run -d -p 5003:5003 -p 6003:6003 team3-app
+   docker run -d -p 5003:5003 team3-app
    ```
 
 7. Allow upto 5 minutes before accessing the application
