@@ -68,12 +68,13 @@ Before you begin, make sure you have the following installed on your machine:
     Website: [http://localhost:5003/team3](http://localhost:5003/team3)
    
     Jupyter: [http://localhost:6003/team3/jupyter](http://localhost:6003/team3/jupyter)
-    
+---
+
 ## Running Jupyter notebook in virtual environment
 
 1. Navigate to your project directory:
 ```bash
-cd /path/to/your/project
+cd csusb_fall2024_cse6550_team3
 ```
 2. Create a virtual environment:
 ```bash
@@ -108,7 +109,8 @@ pip install -r requirements.txt
  7. Start Jupyter Notebook:
 ```bash  
 jupyter notebook --port=6003
-```    
+```
+---
 ## Evaluation Questions
 
 Below is a list of answerable and unanswerable questions that will be used to evaluaute the application
