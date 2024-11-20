@@ -1,19 +1,37 @@
 import os
-from roman import toRoman
+import io
+import fitz  # PyMuPDF
 import streamlit as st
+from rapidfuzz import fuzz
+from PIL import Image
+import pytesseract
+from roman import toRoman
 from streamlit_pdf_viewer import pdf_viewer
 
-# Custom page handling Software Engineering: A PRACTITIONER’S APPROACH
-def serve_default_textbook(page):
-    # inference.py adjusts the pages for us
-    # Ex: Chapter 1 at pg 34 in the PDF will have a page value of 34 here
-    adjusted_page = page - 33 # Chapter 1 will be assigned page 1 but we have to handle pages before it
-    # For pages before Chapter 1
-    if adjusted_page < 1: # For pages before Chapter 1
-        # Display cover if first page else display roman numerals
-        adjusted_page = "Cover" if (page - 1) == 0 else toRoman(page - 1) # Display cover if first page else display roman numerals
-    return page, adjusted_page
 
+def normalize_text(text):
+    """Normalize text for consistent matching."""
+    return " ".join(text.lower().strip().split())
+
+
+def extract_text_with_fallback(pdf_path, page_number):
+    """
+    Extract text from a PDF using PyMuPDF. If text is not found, fallback to OCR.
+    """
+    try:
+        doc = fitz.open(pdf_path)
+        page = doc[page_number - 1]  # Pages are zero-indexed
+        text = page.get_text("text")
+        if not text.strip():
+            # Fallback to OCR if text is empty
+            pix = page.get_pixmap(dpi=150)
+            image = Image.open(io.BytesIO(pix.tobytes("png")))
+            text = pytesseract.image_to_string(image)
+        doc.close()
+        return normalize_text(text)
+    except Exception as e:
+        st.error(f"Error extracting text: {str(e)}")
+        return ""
 
 def serve_pdf():
     """Used to open PDF file when a citation is clicked"""
