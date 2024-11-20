@@ -4,8 +4,6 @@ corpus_source = "swebok" # Guide to the Software Engineering Body of Knowledge
 import os
 
 # Add corpus source to enviroment variables
-if corpus_source != "swebok" and corpus_source != "default":
-    corpus_source = "swebok"
 CORPUS_SOURCE = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"data/{corpus_source}")
 os.environ["CORPUS_SOURCE"] = CORPUS_SOURCE
 print(f"\nCorpus source: ", CORPUS_SOURCE)

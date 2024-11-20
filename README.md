@@ -87,7 +87,7 @@ Below is a list of answerable and unanswerable questions that will be used to ev
 | What is software dependability? | Is there a way to build a fully self-sustaining human colony on Mars with current technology? |
 | How does project management in software engineering differ from traditional project management? | What's the upper limit of computational power for classical computers? |
 | What strategies can be used for effective risk management in software engineering projects? | How could we fully eliminate all types of noise in wireless communications? |
-| What is the purpose of static analysis in software testing?                                  | Is there a way to completely avoid all cyber threats in interconnected global networks? |
+| What is the purpose of static analysis in software testing?                                  | How can we create a material that is completely indestructible? |
 
 
 ## Troubleshooting

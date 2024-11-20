@@ -39,7 +39,7 @@ BASELINE_QUESTIONS = {
     "Is there a way to build a fully self-sustaining human colony on Mars with current technology?": False,
     "What's the upper limit of computational power for classical computers?": False,
     "How could we fully eliminate all types of noise in wireless communications?": False,
-    "Is there a way to completely avoid all cyber threats in interconnected global networks?": False
+    "How can we create a material that is completely indestructible?": False
 
 }
 
