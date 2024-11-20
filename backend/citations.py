@@ -2,13 +2,13 @@ import os
 
 def get_citations(docs):
     """
-    Extract page numbers and content from the response context.
+    Extract page numbers and text content from the response context.
     Args:
       docs (list): List of document objects, each with metadata.
     Returns:
       list: A list of dictionaries containing page numbers and text to highlight.
     """
-    # Extract relevant information
+    # Extract max of 1 page number with text content from the context metadata in response
     citations = [
         {
             'page': doc.metadata.get('page', 'Unknown page') + 1,
@@ -16,7 +16,7 @@ def get_citations(docs):
         }
         for doc in docs
         if isinstance(doc.metadata.get('page'), int)
-    ][:2]
+    ][:1]
     return citations if citations else []
 
 def format_citations(citations, response):
@@ -34,4 +34,3 @@ def format_citations(citations, response):
         for index, citation in enumerate(citations)
     ]
     return "\n\nSources: " + "".join(links)
-
