@@ -5,14 +5,12 @@ import streamlit as st
 from rapidfuzz import fuzz
 from PIL import Image
 import pytesseract
-from roman import toRoman
 from streamlit_pdf_viewer import pdf_viewer
 
 
 def normalize_text(text):
     """Normalize text for consistent matching."""
     return " ".join(text.lower().strip().split())
-
 
 def extract_text_with_fallback(pdf_path, page_number):
     """
@@ -32,7 +30,6 @@ def extract_text_with_fallback(pdf_path, page_number):
     except Exception as e:
         st.error(f"Error extracting text: {str(e)}")
         return ""
-
 
 def fuzzy_highlight(pdf_path, search_string, page_number):
     """
@@ -68,18 +65,6 @@ def fuzzy_highlight(pdf_path, search_string, page_number):
         st.error(f"Error during highlighting: {str(e)}")
         return None, []
 
-
-def serve_default_textbook(page):
-    """
-    Handle textbook-specific page adjustments.
-    Adjusts pages to match logical numbering with physical page indexing.
-    """
-    adjusted_page = page - 33
-    if adjusted_page < 1:
-        adjusted_page = "Cover" if (page - 1) == 0 else toRoman(page - 1)
-    return page, adjusted_page
-
-
 def serve_pdf_with_highlight(text_to_highlight, pdf_path, page):
     """
     Serve a PDF with highlighted text.
@@ -101,16 +86,10 @@ def serve_pdf_with_highlight(text_to_highlight, pdf_path, page):
                     height=1000,
                     pages_to_render=[page],
                     scroll_to_page=page,
+                    render_text=True
                 )
-
-        # Display information about highlights
-        if not matches:
-            st.warning(f"No matches found for '{text_to_highlight}' on page {page}.")
-        else:
-            st.success(f"Highlighted matches for '{text_to_highlight}' on page {page}.")
     except Exception as e:
         st.error(f"An error occurred while rendering the PDF: {str(e)}")
-
 
 def serve_pdf():
     """

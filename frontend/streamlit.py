@@ -15,7 +15,6 @@ from .utils import (
     display_confusion_matrix,
 )
 
-# Predefined baseline questions
 BASELINE_QUESTIONS = {
     # 10 Answerable questions
     "Who is Hironori Washizaki?": True,
@@ -45,7 +44,7 @@ BASELINE_QUESTIONS = {
 
 
 def get_feedback_question(prompt: str) -> str:
-    """Generate appropriate feedback question for the user."""
+    """Generate appropriate feedback question"""
     if prompt in BASELINE_QUESTIONS:
         is_answerable = BASELINE_QUESTIONS[prompt]
         return (
@@ -83,10 +82,7 @@ def render_conversation_history():
 
 def render_assistant_message(message):
     """Render assistant message and feedback options."""
-    st.markdown(
-        f"<div class='assistant-message'>{message['content']}</div>",
-        unsafe_allow_html=True,
-    )
+    st.markdown(f"<div class='assistant-message'>{message['content']}</div>",unsafe_allow_html=True,)
 
     # Provide feedback interface
     conversation_id = message.get("conversation_id")
