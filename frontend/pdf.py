@@ -65,7 +65,16 @@ def fuzzy_highlight(pdf_path, search_string, page_number):
     except Exception as e:
         st.error(f"Error during highlighting: {str(e)}")
         return None, []
-        
+def serve_default_textbook(page):
+    """
+    Handle textbook-specific page adjustments.
+    Adjusts pages to match logical numbering with physical page indexing.
+    """
+    adjusted_page = page - 33
+    if adjusted_page < 1:
+        adjusted_page = "Cover" if (page - 1) == 0 else toRoman(page - 1)
+    return page, adjusted_page
+
 def serve_pdf():
     """Used to open PDF file when a citation is clicked"""
     pdf_path = st.query_params.get("file")
