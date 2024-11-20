@@ -48,9 +48,8 @@ def get_feedback_question(prompt: str) -> str:
     if prompt in BASELINE_QUESTIONS:
         is_answerable = BASELINE_QUESTIONS[prompt]
         return (
-            "Did the chatbot correctly answer this answerable question?"
-            if is_answerable
-            else "Did the chatbot correctly handle this unanswerable question?"
+            "Did the chatbot correctly answer this answerable question?" if is_answerable
+            else "Did the chatbot correctly answer this unanswerable question?"
         )
     return "Was this response helpful?"
 
