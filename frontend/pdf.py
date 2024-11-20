@@ -32,7 +32,40 @@ def extract_text_with_fallback(pdf_path, page_number):
     except Exception as e:
         st.error(f"Error extracting text: {str(e)}")
         return ""
+def fuzzy_highlight(pdf_path, search_string, page_number):
+    """
+    Highlight text in a PDF using fuzzy matching.
+    """
+    try:
+        doc = fitz.open(pdf_path)
+        page = doc[page_number - 1]
+        extracted_text = page.get_text("text")
+        extracted_lines = extracted_text.splitlines()
+        normalized_search = normalize_text(search_string)
 
+        # Find the best fuzzy matches
+        matches = []
+        for line in extracted_lines:
+            score = fuzz.partial_ratio(normalized_search, normalize_text(line))
+            if score > 80:  # Threshold for a good match
+                matches.append(line)
+
+        # Highlight all matches
+        for match in matches:
+            rects = page.search_for(match)
+            for rect in rects:
+                highlight = page.add_highlight_annot(rect)
+                highlight.update()
+
+        # Save changes to a temporary file
+        temp_pdf_path = f"{pdf_path}.temp"
+        doc.save(temp_pdf_path, garbage=4, deflate=True)  # Save optimized temporary file
+        doc.close()
+        return temp_pdf_path, matches
+    except Exception as e:
+        st.error(f"Error during highlighting: {str(e)}")
+        return None, []
+        
 def serve_pdf():
     """Used to open PDF file when a citation is clicked"""
     pdf_path = st.query_params.get("file")
