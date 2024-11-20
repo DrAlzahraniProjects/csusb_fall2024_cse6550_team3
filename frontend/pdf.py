@@ -74,6 +74,36 @@ def serve_default_textbook(page):
     if adjusted_page < 1:
         adjusted_page = "Cover" if (page - 1) == 0 else toRoman(page - 1)
     return page, adjusted_page
+def serve_pdf_with_highlight(text_to_highlight, pdf_path, page):
+    """
+    Serve a PDF with highlighted text.
+    """
+    if not os.path.exists(pdf_path):
+        st.error(f"PDF file not found at {pdf_path}")
+        return
+
+    try:
+        # Highlight text and save to a temporary file
+        temp_pdf_path, matches = fuzzy_highlight(pdf_path, text_to_highlight, page)
+
+        # Render the PDF page with highlights
+        if temp_pdf_path:
+            with st.spinner(f"Rendering page {page} with highlights..."):
+                pdf_viewer(
+                    temp_pdf_path,
+                    width=700,
+                    height=1000,
+                    pages_to_render=[page],
+                    scroll_to_page=page,
+                )
+
+        # Display information about highlights
+        if not matches:
+            st.warning(f"No matches found for '{text_to_highlight}' on page {page}.")
+        else:
+            st.success(f"Highlighted matches for '{text_to_highlight}' on page {page}.")
+    except Exception as e:
+        st.error(f"An error occurred while rendering the PDF: {str(e)}")
 
 def serve_pdf():
     """Used to open PDF file when a citation is clicked"""
