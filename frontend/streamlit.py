@@ -17,6 +17,7 @@ from .utils import (
 
 # Predefined baseline questions
 BASELINE_QUESTIONS = {
+    # 10 Answerable questions
     "Who is Hironori Washizaki?": True,
     "How does software testing impact the overall software development lifecycle?": True,
     "What is the agile methodology?": True,
@@ -27,16 +28,18 @@ BASELINE_QUESTIONS = {
     "How does project management in software engineering differ from traditional project management?": True,
     "What strategies can be used for effective risk management in software engineering projects?": True,
     "What is the purpose of static analysis in software testing?": True,
-    "How many developers are ideal for any given software project?": False,
-    "Can all software bugs be prevented with enough testing?": False,
-    "What is the exact ROI of refactoring legacy code?": False,
-    "How long should code reviews ideally take for maximum effectiveness?": False,
-    "Is there a universally best way to measure developer productivity?": False,
-    "Can software be made 100% secure?": False,
+
+    # 10 Unanswerable Questions
+    "What is the largest possible number that could exist?": False,
+    "How will AI evolve in the next 100 years?": False,
+    "What is the solution to the Riemann Hypothesis?": False,
+    "What is the smallest possible Turing machine?": False,
+    "What is the most complex algorithm that can never be solved?": False,
+    "What is the most efficient way to handle an infinite stream of data?": False,
     "Is there a way to build a fully self-sustaining human colony on Mars with current technology?": False,
     "What's the upper limit of computational power for classical computers?": False,
     "How could we fully eliminate all types of noise in wireless communications?": False,
-    "Is there a way to completely avoid all cyber threats in interconnected global networks?": False,
+    "How can we create a material that is completely indestructible?": False
 }
 
 
