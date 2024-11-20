@@ -59,7 +59,7 @@ RUN /opt/miniforge/envs/team3_env/bin/pip install cython
 # Install other required packages with pip
 RUN /opt/miniforge/envs/team3_env/bin/pip install rank_bm25 streamlit-pdf-viewer
 
-RUN pip install PyMuPDF
+RUN pip install PyMuPDF pytesseract
 
 # Download the embedding model using LangChain's HuggingFaceEmbeddings
 RUN python -c "from langchain_huggingface import HuggingFaceEmbeddings; \
