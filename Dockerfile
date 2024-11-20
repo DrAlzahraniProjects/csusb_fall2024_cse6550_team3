@@ -59,6 +59,8 @@ RUN /opt/miniforge/envs/team3_env/bin/pip install cython
 # Install other required packages with pip
 RUN /opt/miniforge/envs/team3_env/bin/pip install rank_bm25 streamlit-pdf-viewer
 
+RUN pip install PyMuPDF
+
 # Download the embedding model using LangChain's HuggingFaceEmbeddings
 RUN python -c "from langchain_huggingface import HuggingFaceEmbeddings; \
                HuggingFaceEmbeddings(model_name='Alibaba-NLP/gte-large-en-v1.5', model_kwargs={'trust_remote_code': True})"
