@@ -32,6 +32,8 @@ def extract_text_with_fallback(pdf_path, page_number):
     except Exception as e:
         st.error(f"Error extracting text: {str(e)}")
         return ""
+
+
 def fuzzy_highlight(pdf_path, search_string, page_number):
     """
     Highlight text in a PDF using fuzzy matching.
@@ -65,6 +67,8 @@ def fuzzy_highlight(pdf_path, search_string, page_number):
     except Exception as e:
         st.error(f"Error during highlighting: {str(e)}")
         return None, []
+
+
 def serve_default_textbook(page):
     """
     Handle textbook-specific page adjustments.
@@ -74,6 +78,8 @@ def serve_default_textbook(page):
     if adjusted_page < 1:
         adjusted_page = "Cover" if (page - 1) == 0 else toRoman(page - 1)
     return page, adjusted_page
+
+
 def serve_pdf_with_highlight(text_to_highlight, pdf_path, page):
     """
     Serve a PDF with highlighted text.
@@ -105,27 +111,25 @@ def serve_pdf_with_highlight(text_to_highlight, pdf_path, page):
     except Exception as e:
         st.error(f"An error occurred while rendering the PDF: {str(e)}")
 
-def serve_pdf():
-    """Used to open PDF file when a citation is clicked"""
-    pdf_path = st.query_params.get("file")
 
+def serve_pdf():
+    """
+    Fallback function to serve a PDF page without highlighting.
+    """
+    pdf_path = st.query_params.get("file")
     page = max(int(st.query_params.get("page", 1)), 1)
-    adjusted_page = page
-    if pdf_path.split("/")[-2] == "default": # "Software Engineering: A PRACTITIONER’S APPROACH"
-        page, adjusted_page = serve_default_textbook(page)
-        
-    if pdf_path:
-        if os.path.exists(pdf_path):
-            with st.spinner(f"Loading page {adjusted_page} of the textbook..."):
+
+    if pdf_path and os.path.exists(pdf_path):
+        try:
+            with st.spinner(f"Rendering page {page}..."):
                 pdf_viewer(
                     pdf_path,
                     width=700,
                     height=1000,
                     pages_to_render=[page],
                     scroll_to_page=page,
-                    render_text=True
                 )
-        else:
-            st.error(f"PDF file not found at {pdf_path}")
+        except Exception as e:
+            st.error(f"Error loading page {page}: {str(e)}")
     else:
-        st.error("No PDF file specified in query parameters")
+        st.error("No PDF file specified or file not found.")
