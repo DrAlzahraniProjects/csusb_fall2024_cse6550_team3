@@ -9,9 +9,11 @@ langchain-mistralai
 pandas
 pypdf
 python-dotenv
-roman
 streamlit
 sentence-transformers
 sqlalchemy
 tiktoken
 yake
+rapidfuzz
+pytesseract
+pillow
