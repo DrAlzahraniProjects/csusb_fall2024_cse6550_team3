@@ -60,7 +60,7 @@ def main():
     print("Starting cross-platform automation script...")
     
     # Step 1: Stop and remove existing Docker containers
-    ports = [5003, 6003]
+    ports = [5003]
     stop_and_remove_containers(ports)
 
     # Step 2: Clone or pull the repository
