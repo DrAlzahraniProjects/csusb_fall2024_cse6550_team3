@@ -29,22 +29,16 @@ else:
         if not api_key:
             raise ValueError("MISTRAL API KEY not provided.")
 
-print("Environment variables successfully setup")
-
 # 1. Navigate to your project directory
 def navigate_to_project_directory(path):
     if not os.path.exists(path):
         raise FileNotFoundError(f"The specified project directory does not exist: {path}")
     os.chdir(path)
-    print(f"Navigated to project directory: {path}")
 
 # 2. Create a virtual environment
 def create_virtual_environment():
     if not os.path.exists("venv"):
         subprocess.run(["python3", "-m", "venv", "venv"], check=True)
-        print("Virtual environment created.")
-    else:
-        print("Virtual environment already exists.")
 
 # 3. Activate the virtual environment
 def activate_virtual_environment():
@@ -55,31 +49,17 @@ def activate_virtual_environment():
         activate_script = "source venv/bin/activate"
     else:
         raise EnvironmentError("Unsupported operating system.")
-    print(f"To activate the virtual environment, run: {activate_script}")
 
 # 4. Ensure Python version is 3.10 or above
 def check_python_version():
     result = subprocess.run(["python3", "--version"], capture_output=True, text=True, check=True)
     version = result.stdout.strip()
-    print(f"Python version: {version}")
     if not (version.startswith("Python 3.10") or version.startswith("Python 3.11") or version.startswith("Python 3.12")):
         raise EnvironmentError("Python 3.10 or above is required.")
 
 # 5. Install dependencies
 def install_dependencies():
-    subprocess.run(["venv/bin/pip" if platform.system() != "Windows" else "venv\\Scripts\\pip", "install", "-r", "requirements.txt"], check=True)
-    print("Dependencies installed.")
-
-# 6. Activate the virtual environment (again, just a note for the user)
-def remind_activate_virtual_environment():
-    system = platform.system()
-    if system == "Windows":
-        activate_script = ".\\venv\\Scripts\\activate"
-    elif system == "Linux" or system == "Darwin":  # Darwin is for macOS
-        activate_script = "source venv/bin/activate"
-    else:
-        raise EnvironmentError("Unsupported operating system.")
-    print(f"Reminder: Activate the virtual environment by running: {activate_script}")
+    subprocess.run(["venv/bin/pip" if platform.system() != "Windows" else "venv\\Scripts\\pip", "install", "-r", "requirements.txt"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 # Check if a port is available
 def is_port_available(port):
@@ -93,7 +73,7 @@ def terminate_process_on_port(port):
             for conn in proc.connections(kind='inet'):
                 if conn.laddr.port == port:
                     proc.terminate()
-                    print(f"Terminated process {proc.info['name']} (PID: {proc.info['pid']}) using port {port}")
+                    proc.wait()  # Ensure the process is terminated before proceeding
         except (psutil.AccessDenied, psutil.NoSuchProcess):
             continue
 
@@ -113,7 +93,7 @@ def start_jupyter_notebook():
         notebook_path, 
         f"--port={port}", 
         "--ip=127.0.0.1"
-    ], check=True)
+    ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 if __name__ == "__main__":
     project_path = os.path.abspath(".")  # Set project path to the current directory
@@ -123,7 +103,6 @@ if __name__ == "__main__":
         activate_virtual_environment()
         check_python_version()
         install_dependencies()
-        remind_activate_virtual_environment()
         start_jupyter_notebook()
     except Exception as e:
         print(f"An error occurred: {e}")
