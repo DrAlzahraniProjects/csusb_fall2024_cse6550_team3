@@ -50,7 +50,7 @@ def build_docker_image(repo_dir, mistral_key):
 def run_docker_container():
     """Run the Docker container."""
     print("Running the Docker container...")
-    run_command("docker run -d -p 5003:5003 -p 6003:6003 team3-app", "Failed to run Docker container")
+    run_command("docker run -d -p 5003:5003 team3-app", "Failed to run Docker container")
     print("Docker container started successfully!")
     print("You can now access the application:")
     print("Website: http://localhost:5003/team3")
