@@ -7,7 +7,6 @@ from PIL import Image
 import pytesseract
 from streamlit_pdf_viewer import pdf_viewer
 
-
 def normalize_text(text):
     """Normalize text for consistent matching."""
     return " ".join(text.lower().strip().split())

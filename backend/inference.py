@@ -81,9 +81,18 @@ def chat_completion(question: str) -> tuple[str, str]:
   
     # Get relevant context
     relevant_docs, context = fetch_relevant_documents(question)
+    if len(relevant_docs) == 0:
+        yield (
+            """
+            I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge).
+            Your question appears to be about something else.
+            Could you ask a question related to software engineering fundamentals, requirements, design, construction, testing, maintenance, configuration management, engineering management, processes, models, or quality?
+            """
+        , MODEL_NAME)
+        return
 
     # Get appropriate prompt
-    prompt = get_prompt(has_context=bool(relevant_docs))
+    prompt = get_prompt()
     messages = prompt.format_messages(input=question, context=context)
 
     # Stream response from LLM
