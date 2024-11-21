@@ -54,7 +54,6 @@ def run_docker_container():
     print("Docker container started successfully!")
     print("You can now access the application:")
     print("Website: http://localhost:5003/team3")
-    print("Jupyter: http://localhost:6003/team3")
 
 def main():
     print("Starting cross-platform automation script...")
