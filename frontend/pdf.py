@@ -64,6 +64,7 @@ def fuzzy_highlight(pdf_path, search_string, page_number):
         st.error(f"Error during highlighting: {str(e)}")
         return None, []
 
+
 def serve_pdf_with_highlight(text_to_highlight, pdf_path, page):
     """
     Serve a PDF with highlighted text.
@@ -81,12 +82,15 @@ def serve_pdf_with_highlight(text_to_highlight, pdf_path, page):
             with st.spinner(f"Rendering page {page} with highlights..."):
                 pdf_viewer(
                     temp_pdf_path,
-                    width=700,
-                    height=1000,
+                    width=900,  # Increase width to show full page
+                    height=1200,  # Increase height to show full page
                     pages_to_render=[page],
                     scroll_to_page=page,
                     render_text=True
                 )
+    except Exception as e:
+        st.error(f"An error occurred while rendering the PDF: {str(e)}")
+
     except Exception as e:
         st.error(f"An error occurred while rendering the PDF: {str(e)}")
 
