@@ -78,7 +78,7 @@ def run_docker_container():
     print("Running the Docker container...")
     run_command("docker run -d -p 5003:5003 team3-app", "Failed to run Docker container")
     print("Docker container started successfully!")
-    display_loading_bar(100)
+    display_loading_bar(30)
     print("You can now access the application:")
     print("Website: http://localhost:5003/team3")
 
