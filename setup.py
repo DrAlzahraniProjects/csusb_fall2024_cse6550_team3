@@ -54,8 +54,8 @@ def display_loading_bar(duration):
     print("Waiting for the application to fully load...")
     
     # Get terminal width for a dynamic progress bar
-    terminal_width = shutil.get_terminal_size((60, 40)).columns
-    bar_width = min(100, terminal_width - 30)  # Adjust bar width dynamically
+    terminal_width = shutil.get_terminal_size((80, 20)).columns
+    bar_width = min(50, terminal_width - 20)  # Adjust bar width dynamically
     
     start_time = time.time()
     while time.time() - start_time < duration:
@@ -70,17 +70,19 @@ def display_loading_bar(duration):
         print(f"\r{bar} {int(progress * 100)}% | {time_left}s remaining", end="")
         time.sleep(0.1)  # Update every 100ms
     
-    print("\r[{'#' * bar_width}] 100% | 0s remaining")
-    print("\nApplication should now be ready!")
+    # Final clear and print
+    print(f"\r{' ' * (bar_width + 30)}", end="\r")  # Clear the line
+    print(f"[{'#' * bar_width}] 100% | 0s remaining")
+    print("Application should now be ready!")
 
 def run_docker_container():
     """Run the Docker container."""
     print("Running the Docker container...")
     run_command("docker run -d -p 5003:5003 team3-app", "Failed to run Docker container")
     print("Docker container started successfully!")
-    display_loading_bar(30)
+    display_loading_bar(30)  # 30 seconds duration
     print("You can now access the application:")
-    print("Website: http://localhost:5003/team3")
+    print("Wait 30 seconds more when accessing the webserver.")  # Additional message
 
 def main():
     print("Starting cross-platform automation script...")
