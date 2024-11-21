@@ -86,7 +86,7 @@ def run_docker_container():
     print("Wait 30 seconds more when accessing the webserver.")  # Additional message
 
 def main():
-    print("Starting cross-platform automation script...")
+    print("Starting cross-platform automation script.....")
     
     # Step 1: Stop and remove existing Docker containers
     ports = [5003]
