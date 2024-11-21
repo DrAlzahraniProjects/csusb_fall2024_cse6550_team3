@@ -3,7 +3,12 @@ import subprocess
 import platform
 import socket
 import __main__ as main
-import psutil
+
+try:
+    import psutil
+except ModuleNotFoundError:
+    subprocess.run(["pip", "install", "psutil"], check=True)
+    import psutil
 
 try:
     from dotenv import load_dotenv
