@@ -19,14 +19,6 @@ def load_css():
     except FileNotFoundError:
         st.error("CSS file not found. Please check the file path.")
 
-
-def search_questions(search_term: str, questions: dict):
-    """Filter questions based on a search term."""
-    if not search_term:
-        return list(questions.keys())
-    return [q for q in questions.keys() if search_term.lower() in q.lower()]
-
-
 def handle_feedback(conversation_id):
     """Handle feedback submission for a conversation."""
     feedback_value = st.session_state.get(f"feedback_{conversation_id}", None)
@@ -34,54 +26,11 @@ def handle_feedback(conversation_id):
         toggle_correctness(conversation_id, feedback_value == 1)
         update_user_session(st.session_state.user_id)
 
-
-def extract_keywords(texts, max_keywords=10):
-    """
-    Extract keywords from a list of texts using YAKE.
-
-    Args:
-        texts (list): List of strings to extract keywords from.
-        max_keywords (int): Maximum number of keywords to extract.
-
-    Returns:
-        str: Comma-separated keywords.
-    """
-    extractor = yake.KeywordExtractor(lan="en", n=1, features=None)
-    ignore_words = {
-        "pdf", "education", "engineering", "software", "practitioner", "file", 
-        "textbook.pdf", "swebok", "app", "view", "details", "level", "target", 
-        "blank", "page", "href", "pressman", "detail", "system", "systems"
-    }
-    keywords = set()
-    for text in texts:
-        extracted = dict(extractor.extract_keywords(text)).keys()
-        filtered_keywords = {kw.lower() for kw in extracted if kw.lower() not in ignore_words}
-        keywords.update(filtered_keywords)
-    return ", ".join(list(keywords)[:max_keywords])
-
-
-def update_and_display_statistics():
-    """Display and update statistics in the sidebar."""
-    st.sidebar.markdown("<h1 class='title-stat'>Statistics Reports</h1>", unsafe_allow_html=True)
-    stat_period = st.sidebar.radio(
-        "Statistics period (Daily or Overall)",
-        ("Daily", "Overall"),
-        key="stats_period",
-        label_visibility="hidden",
-        horizontal=True,
-    )
-    stats = get_statistics(stat_period)
-    st.session_state.statistics = stats
-
-    for key, value in stats.items():
-        st.sidebar.markdown(
-            f"""
-            <div class='btn-stat-container'>
-                <span class="btn-stat">{key.replace('_', ' ').capitalize()}: {value}</span>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+def reset_feedback():
+    """Reset all feedback values to None in the session state."""
+    for key in st.session_state:
+        if key.startswith('feedback_'):
+            st.session_state[key] = None
 
 def format_metric(value):
     """Format a metric for display, returning 'N/A' if None."""
@@ -180,5 +129,6 @@ def display_confusion_matrix():
 
     # Reset Confusion Matrix Button
     if st.sidebar.button("Reset"):
+        reset_feedback()
         reset_confusion_matrix()
         st.rerun()

@@ -10,7 +10,6 @@ from backend.statistics import (
 )
 from .utils import (
     load_css,
-    update_and_display_statistics,
     handle_feedback,
     display_confusion_matrix,
 )
