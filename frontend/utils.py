@@ -1,6 +1,7 @@
 import os
 import yake
 import streamlit as st
+from .questions import check_baseline_answerable
 from backend.statistics import (
     update_user_session,
     toggle_correctness,
@@ -9,7 +10,9 @@ from backend.statistics import (
     get_metrics,
 )
 
-
+#######
+# CSS #
+#######
 def load_css():
     """Load custom CSS for the Streamlit app."""
     css_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "styles", "style.css")
@@ -19,6 +22,10 @@ def load_css():
     except FileNotFoundError:
         st.error("CSS file not found. Please check the file path.")
 
+
+############
+# Feedback #
+############
 def handle_feedback(conversation_id):
     """Handle feedback submission for a conversation."""
     feedback_value = st.session_state.get(f"feedback_{conversation_id}", None)
@@ -26,12 +33,25 @@ def handle_feedback(conversation_id):
         toggle_correctness(conversation_id, feedback_value == 1)
         update_user_session(st.session_state.user_id)
 
+def get_feedback_question(prompt: str) -> str:
+    """Return feedback question based on baseline questions."""
+    answerable = check_baseline_answerable(prompt)
+    if answerable is not None:
+        return (
+            "Did the chatbot correctly answer this answerable question?" if answerable
+            else "Did the chatbot correctly answer this unanswerable question?"
+        )
+    return "Was this response helpful?"
+
 def reset_feedback():
     """Reset all feedback values to None in the session state."""
     for key in st.session_state:
         if key.startswith('feedback_'):
             st.session_state[key] = None
 
+###########
+# METRICS #
+###########
 def format_metric(value):
     """Format a metric for display, returning 'N/A' if None."""
     return f"{value:.2f}" if value is not None else "N/A"
