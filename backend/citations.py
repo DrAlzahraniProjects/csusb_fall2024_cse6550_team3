@@ -33,4 +33,4 @@ def format_citations(citations, response):
         f'<a href="/team3/?view=pdf&file={pdf_path}&page={citation["page"]}&highlight={citation["text"]}" target="_blank">[{index + 1}]</a>'
         for index, citation in enumerate(citations)
     ]
-    return "\n\nSources: " + "".join(links)
+    return "\n\nSource: " + "".join(links)
