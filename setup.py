@@ -54,8 +54,8 @@ def display_loading_bar(duration):
     print("Waiting for the application to fully load...")
     
     # Get terminal width for a dynamic progress bar
-    terminal_width = shutil.get_terminal_size((80, 20)).columns
-    bar_width = min(50, terminal_width - 20)  # Adjust bar width dynamically
+    terminal_width = shutil.get_terminal_size((60, 40)).columns
+    bar_width = min(100, terminal_width - 30)  # Adjust bar width dynamically
     
     start_time = time.time()
     while time.time() - start_time < duration:
