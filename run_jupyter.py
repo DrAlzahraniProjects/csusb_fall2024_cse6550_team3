@@ -3,8 +3,13 @@ import subprocess
 import platform
 import socket
 import __main__ as main
-from dotenv import load_dotenv
 import psutil
+
+try:
+    from dotenv import load_dotenv
+except ModuleNotFoundError:
+    subprocess.run(["pip", "install", "python-dotenv"], check=True)
+    from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv(override=True)
