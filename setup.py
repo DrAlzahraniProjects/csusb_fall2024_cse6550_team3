@@ -82,6 +82,7 @@ def run_docker_container():
     print("Docker container started successfully!")
     display_loading_bar(30)  # 30 seconds duration
     print("You can now access the application:")
+    print("Website: http://localhost:5003/team3")
     print("Wait 30 seconds more when accessing the webserver.")  # Additional message
 
 def main():
