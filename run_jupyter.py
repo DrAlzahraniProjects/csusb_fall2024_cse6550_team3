@@ -2,6 +2,28 @@ import os
 import subprocess
 import platform
 import socket
+import __main__ as main
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv(override=True)
+
+# Initialize the API key variable
+api_key = os.getenv("MISTRAL_API_KEY")
+
+# Check if the script is running as a standalone program (i.e., not in Jupyter Notebook)
+if not hasattr(main, '__file__'):
+    # Running in an interactive environment like Jupyter Notebook
+    if not api_key:
+        raise ValueError("MISTRAL API KEY not found in environment variables. Please set it in the .env file.")
+else:
+    # Running in a terminal or script
+    if not api_key:
+        api_key = input("MISTRAL API KEY not found in environment variables. Please enter your API key: ")
+        if not api_key:
+            raise ValueError("MISTRAL API KEY not provided.")
+
+print("Environment variables successfully setup")
 
 # 1. Navigate to your project directory
 def navigate_to_project_directory(path):
