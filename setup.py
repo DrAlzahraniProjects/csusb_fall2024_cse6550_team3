@@ -2,6 +2,8 @@ import os
 import subprocess
 import platform
 import sys
+import time
+import shutil
 
 def run_command(command, error_message):
     """Run a shell command and handle errors."""
@@ -47,11 +49,36 @@ def build_docker_image(repo_dir, mistral_key):
     run_command(f"docker build -t team3-app . --build-arg MISTRAL={mistral_key}", "Failed to build Docker image")
     os.chdir("..")
 
+def display_loading_bar(duration):
+    """Display a loading bar with time countdown for a specified duration."""
+    print("Waiting for the application to fully load...")
+    
+    # Get terminal width for a dynamic progress bar
+    terminal_width = shutil.get_terminal_size((80, 20)).columns
+    bar_width = min(50, terminal_width - 20)  # Adjust bar width dynamically
+    
+    start_time = time.time()
+    while time.time() - start_time < duration:
+        elapsed = time.time() - start_time
+        progress = elapsed / duration
+        completed = int(progress * bar_width)
+        remaining = bar_width - completed
+        time_left = duration - int(elapsed)
+        
+        # Build the loading bar
+        bar = f"[{'#' * completed}{'.' * remaining}]"
+        print(f"\r{bar} {int(progress * 100)}% | {time_left}s remaining", end="")
+        time.sleep(0.1)  # Update every 100ms
+    
+    print("\r[{'#' * bar_width}] 100% | 0s remaining")
+    print("\nApplication should now be ready!")
+
 def run_docker_container():
     """Run the Docker container."""
     print("Running the Docker container...")
     run_command("docker run -d -p 5003:5003 team3-app", "Failed to run Docker container")
     print("Docker container started successfully!")
+    display_loading_bar(100)
     print("You can now access the application:")
     print("Website: http://localhost:5003/team3")
 
