@@ -85,7 +85,7 @@ def serve_pdf_with_highlight(text_to_highlight, pdf_path, page):
                     height=1000,
                     pages_to_render=[page],
                     scroll_to_page=page,
-                    
+                    render_text=True
                 )
     except Exception as e:
         st.error(f"An error occurred while rendering the PDF: {str(e)}")
