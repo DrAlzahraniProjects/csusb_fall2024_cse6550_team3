@@ -4,6 +4,7 @@ import platform
 import socket
 import __main__ as main
 from dotenv import load_dotenv
+import psutil
 
 # Load environment variables from .env file
 load_dotenv(override=True)
@@ -80,6 +81,17 @@ def is_port_available(port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         return s.connect_ex(('127.0.0.1', port)) != 0
 
+# Terminate the process using the specified port
+def terminate_process_on_port(port):
+    for proc in psutil.process_iter(['pid', 'name']):
+        try:
+            for conn in proc.connections(kind='inet'):
+                if conn.laddr.port == port:
+                    proc.terminate()
+                    print(f"Terminated process {proc.info['name']} (PID: {proc.info['pid']}) using port {port}")
+        except (psutil.AccessDenied, psutil.NoSuchProcess):
+            continue
+
 # 7. Start Jupyter Notebook on port 6003
 def start_jupyter_notebook():
     notebook_path = "jupyter/main.ipynb"
@@ -87,9 +99,8 @@ def start_jupyter_notebook():
         raise FileNotFoundError(f"The specified notebook does not exist: {notebook_path}")
 
     port = 6003
-    while not is_port_available(port):
-        print(f"Port {port} is not available. Trying the next port...")
-        port += 1
+    if not is_port_available(port):
+        terminate_process_on_port(port)
 
     subprocess.run([
         "venv/bin/jupyter" if platform.system() != "Windows" else "venv\\Scripts\\jupyter", 
