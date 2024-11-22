@@ -1,7 +1,8 @@
 import os
+import time
 from typing import List, Dict
 from langchain_mistralai import ChatMistralAI
-from .prompts import get_prompt
+from .prompts import get_prompt, rewrite_prompt
 from .citations import get_citations, format_citations
 from .document_loading import load_documents_from_directory, load_or_create_faiss_vector_store, similarity_search
 
@@ -82,14 +83,21 @@ def chat_completion(question: str) -> tuple[str, str]:
     # Get relevant context
     relevant_docs, context = fetch_relevant_documents(question)
     if len(relevant_docs) == 0:
-        yield (
-            """
-            I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge).
-            Your question appears to be about something else.
-            Could you ask a question related to software engineering fundamentals, requirements, design, construction, testing, maintenance, configuration management, engineering management, processes, models, or quality?
-            """
-        , MODEL_NAME)
-        return
+        rewrite_template = rewrite_prompt()
+        rewrite_message = rewrite_template.format_messages(text=question)
+        question = llm.invoke(rewrite_message).content.strip()
+        print(question)
+        relevant_docs, context = fetch_relevant_documents(question)
+        if len(relevant_docs) == 0 or "NONE" in question:
+            yield (
+                """
+                I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge).
+                Your question appears to be about something else.
+                Could you ask a question related to software engineering fundamentals, requirements, design, construction, testing, maintenance, configuration management, engineering management, processes, models, or quality?
+                """
+            , MODEL_NAME)
+            return
+        time.sleep(0.5)
 
     # Get appropriate prompt
     prompt = get_prompt()
