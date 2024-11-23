@@ -12,11 +12,11 @@ The **Textbook Chatbot** project for CSE 6550 is designed to assist with queries
 Before you begin, make sure you have the following installed on your machine:
 - **Git**
 - **Docker**
-- **Python 3.8 or above**
+- **Python 3.10 or above**
 
 ---
 
-## Setup Using `setup.py`
+## Automated App Setup ##
 
 The `setup.py` script automates the setup process, including downloading the repository, building the Docker container, and running the application.
 
