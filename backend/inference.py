@@ -102,8 +102,10 @@ def chat_completion(question: str) -> tuple[str, str]:
                 I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge).
                 Your question appears to be about something else.
                 Could you ask a question related to software engineering fundamentals, requirements, design, construction, testing, maintenance, configuration management, engineering management, processes, models, or quality?
-                """
-            , MODEL_NAME)
+                """,
+                MODEL_NAME,
+                False # Unanswerable
+            )
             return
         
     # Get appropriate prompt
@@ -114,7 +116,7 @@ def chat_completion(question: str) -> tuple[str, str]:
     full_response = {"answer": "", "context": relevant_docs}
     for chunk in llm.stream(messages):
         full_response["answer"] += chunk.content
-        yield (chunk.content, MODEL_NAME)
+        yield (chunk.content, MODEL_NAME, True)
 
     # After streaming is complete, handle citations
     if relevant_docs:
@@ -123,4 +125,4 @@ def chat_completion(question: str) -> tuple[str, str]:
             response = full_response["answer"]
             citations = format_citations(page_numbers, response)
             if citations:
-                yield (citations, MODEL_NAME)
+                yield (citations, MODEL_NAME, True)

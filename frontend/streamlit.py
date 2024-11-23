@@ -57,7 +57,7 @@ def render_assistant_message(message):
             None,
         )
         feedback_question = get_feedback_question(
-            user_message["content"] if user_message else ""
+            user_message["answerable"] if user_message else None
         )
         st.caption(feedback_question)
         st.feedback(
@@ -73,9 +73,9 @@ def handle_user_input(prompt: str):
     response_container = st.empty()
     with st.spinner("Generating response..."):
         try:
-            response = generate_response(prompt, response_container)
-            conversation_id = save_conversation_to_db(prompt, response)
-            update_session_messages(prompt, response, conversation_id)
+            response, answerable = generate_response(prompt, response_container)
+            conversation_id = save_conversation_to_db(prompt, response, answerable)
+            update_session_messages(prompt, response, conversation_id, answerable)
             update_user_session(st.session_state.user_id)
             st.rerun()
         except Exception as e:
@@ -86,19 +86,19 @@ def generate_response(prompt: str, response_container):
     """Generate response for a given user prompt."""
     start_time = time.time()
     response = ""
-    for partial_response, model_name in chat_completion(prompt):
+    answerable = None
+    for partial_response, model_name, answerable in chat_completion(prompt):
         response += partial_response
         response_container.markdown(
             f"<div class='assistant-message'>{response}</div>", unsafe_allow_html=True
         )
     end_time = time.time()
     st.session_state.response_time = int(end_time - start_time)
-    return response
+    return response, answerable
 
 
-def save_conversation_to_db(prompt: str, response: str) -> int:
+def save_conversation_to_db(prompt: str, response: str, answerable: bool) -> int:
     """Save conversation to the database."""
-    answerable = check_baseline_answerable(prompt)
     return insert_conversation(
         question=prompt,
         response=response,
@@ -112,10 +112,10 @@ def save_conversation_to_db(prompt: str, response: str) -> int:
     )
 
 
-def update_session_messages(prompt: str, response: str, conversation_id: int):
+def update_session_messages(prompt: str, response: str, conversation_id: int, answerable: bool):
     """Update session state with user and assistant messages."""
     st.session_state.messages.append(
-        {"role": "user", "content": prompt, "conversation_id": conversation_id}
+        {"role": "user", "content": prompt, "conversation_id": conversation_id, "answerable": answerable}
     )
     st.session_state.messages.append(
         {"role": "assistant", "content": response, "conversation_id": conversation_id}
