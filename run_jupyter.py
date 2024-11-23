@@ -3,37 +3,43 @@ import subprocess
 import platform
 import socket
 import __main__ as main
+import sys
 
-# Ensure the required packages are installed
-try:
-    import psutil
-except ModuleNotFoundError:
-    subprocess.run(["pip", "install", "psutil"], check=True)
-    import psutil
+# Function to load environment variables from a .env file
+def load_env_file(filepath=".env"):
+    if os.path.exists(filepath):
+        with open(filepath) as f:
+            for line in f:
+                if line.strip() and not line.startswith("#"):
+                    key, value = line.strip().split("=", 1)
+                    os.environ[key] = value
 
-try:
-    from dotenv import load_dotenv
-except ModuleNotFoundError:
-    subprocess.run(["pip", "install", "python-dotenv"], check=True)
-    from dotenv import load_dotenv
+# Load environment variables from the .env file
+load_env_file()
 
-# Load environment variables from .env file
-load_dotenv(override=True)
+# Determine the correct Python command
+def get_python_command():
+    if platform.system() == "Windows":
+        try:
+            # Check if python3 can be called
+            subprocess.run(["python3", "--version"], check=True)
+            return "python3"
+        except subprocess.CalledProcessError:
+            return "python"  # Fallback if python3 is not available
+    else:
+        return "python3"  # Default to python3 on Unix-like systems
+
+python_cmd = get_python_command()  # Use the system Python command
 
 # Initialize the API key variable
 api_key = os.getenv("MISTRAL_API_KEY")
 
-# Check if the script is running as a standalone program
-if not hasattr(main, '__file__'):
-    # Running in an interactive environment like Jupyter Notebook
-    if not api_key:
-        raise ValueError("MISTRAL API KEY not found in environment variables. Please set it in the .env file.")
-else:
-    # Running as a standalone script
-    if not api_key:
-        api_key = input("MISTRAL API KEY not found in environment variables. Please enter your API key: ")
-        if not api_key:
-            raise ValueError("MISTRAL API KEY not provided.")
+# Debug statement to verify API key loading
+print(f"Loaded MISTRAL_API_KEY: {api_key}")
+
+# Ensure the API key is present in the environment variables
+if not api_key:
+    raise ValueError("MISTRAL_API_KEY not found in environment variables. Please set it in the .env file.")
 
 # Function to navigate to the project directory
 def navigate_to_project_directory(path):
@@ -41,31 +47,16 @@ def navigate_to_project_directory(path):
         raise FileNotFoundError(f"The specified project directory does not exist: {path}")
     os.chdir(path)
 
-# Function to create a virtual environment
-def create_virtual_environment():
-    if not os.path.exists("venv"):
-        subprocess.run(["python3", "-m", "venv", "venv"], check=True)
-
-# Function to activate the virtual environment
-def activate_virtual_environment():
-    system = platform.system()
-    if system == "Windows":
-        activate_script = ".\\venv\\Scripts\\activate"
-    elif system == "Linux" or system == "Darwin":  # Darwin is for macOS
-        activate_script = "source venv/bin/activate"
-    else:
-        raise EnvironmentError("Unsupported operating system.")
-
 # Function to ensure the Python version is 3.10 or above
 def check_python_version():
-    result = subprocess.run(["python3", "--version"], capture_output=True, text=True, check=True)
+    result = subprocess.run([python_cmd, "--version"], capture_output=True, text=True, check=True)
     version = result.stdout.strip()
     if not (version.startswith("Python 3.10") or version.startswith("Python 3.11") or version.startswith("Python 3.12")):
         raise EnvironmentError("Python 3.10 or above is required.")
 
 # Function to install dependencies
 def install_dependencies():
-    subprocess.run(["venv/bin/pip" if platform.system() != "Windows" else "venv\\Scripts\\pip", "install", "-r", "requirements.txt"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run([python_cmd, "-m", "pip", "install", "-r", "requirements.txt"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 # Function to check if a port is available
 def is_port_available(port):
@@ -74,14 +65,11 @@ def is_port_available(port):
 
 # Function to terminate the process using the specified port
 def terminate_process_on_port(port):
-    for proc in psutil.process_iter(['pid', 'name']):
-        try:
-            for conn in proc.connections(kind='inet'):
-                if conn.laddr.port == port:
-                    proc.terminate()
-                    proc.wait()  # Ensure the process is terminated before proceeding
-        except (psutil.AccessDenied, psutil.NoSuchProcess):
-            continue
+    cmd = f"lsof -t -i:{port}"
+    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    if result.stdout:
+        pid = result.stdout.strip()
+        subprocess.run(["kill", "-9", pid], check=True)
 
 # Function to start Jupyter Notebook on port 6003
 def start_jupyter_notebook():
@@ -94,8 +82,7 @@ def start_jupyter_notebook():
         terminate_process_on_port(port)
 
     subprocess.run([
-        "venv/bin/jupyter" if platform.system() != "Windows" else "venv\\Scripts\\jupyter", 
-        "notebook", 
+        python_cmd, "-m", "notebook", 
         notebook_path, 
         f"--port={port}", 
         "--ip=127.0.0.1"
@@ -105,8 +92,6 @@ if __name__ == "__main__":
     project_path = os.path.abspath(".")  # Set project path to the current directory
     try:
         navigate_to_project_directory(project_path)
-        create_virtual_environment()
-        activate_virtual_environment()
         check_python_version()
         install_dependencies()
         start_jupyter_notebook()
