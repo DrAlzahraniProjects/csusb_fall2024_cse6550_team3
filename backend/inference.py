@@ -107,5 +107,6 @@ def chat_completion(question: str) -> tuple[str, str]:
         if page_numbers:
             response = full_response["answer"]
             citations = format_citations(page_numbers, response)
-            if citations:
-                yield (citations, MODEL_NAME)
+            yield (citations, MODEL_NAME)  # No highlight-related logic
+
+
