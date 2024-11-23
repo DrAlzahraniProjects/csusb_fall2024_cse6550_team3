@@ -5,6 +5,25 @@ import socket
 import __main__ as main
 import sys
 
+# Function to create .env file from .env.template and insert the API key
+def create_env_file_from_template(template_filepath=".env.template", output_filepath=".env"):
+    api_key = None
+    if os.path.exists(template_filepath):
+        with open(template_filepath, "r") as template_file:
+            content = template_file.read()
+            if "MISTRAL_API_KEY=" in content and "MISTRAL_API_KEY=your_actual_api_key_here" not in content:
+                for line in content.splitlines():
+                    if line.startswith("MISTRAL_API_KEY=") and line.strip() != "MISTRAL_API_KEY=":
+                        api_key = line.split("=", 1)[1].strip()
+            if not api_key:
+                api_key = input("Enter your API key here: ")
+                content = content.replace("MISTRAL_API_KEY=", f"MISTRAL_API_KEY={api_key}")
+        
+        with open(output_filepath, "w") as env_file:
+            env_file.write(content)
+    else:
+        raise FileNotFoundError(f"The specified template file does not exist: {template_filepath}")
+
 # Function to load environment variables from a .env file
 def load_env_file(filepath=".env"):
     if os.path.exists(filepath):
@@ -14,33 +33,6 @@ def load_env_file(filepath=".env"):
                     key, value = line.strip().split("=", 1)
                     os.environ[key] = value
 
-# Load environment variables from the .env file
-load_env_file()
-
-# Determine the correct Python command
-def get_python_command():
-    if platform.system() == "Windows":
-        try:
-            # Check if python3 can be called
-            subprocess.run(["python3", "--version"], check=True)
-            return "python3"
-        except subprocess.CalledProcessError:
-            return "python"  # Fallback if python3 is not available
-    else:
-        return "python3"  # Default to python3 on Unix-like systems
-
-python_cmd = get_python_command()  # Use the system Python command
-
-# Initialize the API key variable
-api_key = os.getenv("MISTRAL_API_KEY")
-
-# Debug statement to verify API key loading
-print(f"Loaded MISTRAL_API_KEY: {api_key}")
-
-# Ensure the API key is present in the environment variables
-if not api_key:
-    raise ValueError("MISTRAL_API_KEY not found in environment variables. Please set it in the .env file.")
-
 # Function to navigate to the project directory
 def navigate_to_project_directory(path):
     if not os.path.exists(path):
@@ -49,14 +41,10 @@ def navigate_to_project_directory(path):
 
 # Function to ensure the Python version is 3.10 or above
 def check_python_version():
-    result = subprocess.run([python_cmd, "--version"], capture_output=True, text=True, check=True)
+    result = subprocess.run(["python", "--version"], capture_output=True, text=True, check=True)
     version = result.stdout.strip()
     if not (version.startswith("Python 3.10") or version.startswith("Python 3.11") or version.startswith("Python 3.12")):
         raise EnvironmentError("Python 3.10 or above is required.")
-
-# Function to install dependencies
-def install_dependencies():
-    subprocess.run([python_cmd, "-m", "pip", "install", "-r", "requirements.txt"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 # Function to check if a port is available
 def is_port_available(port):
@@ -68,8 +56,12 @@ def terminate_process_on_port(port):
     cmd = f"lsof -t -i:{port}"
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     if result.stdout:
-        pid = result.stdout.strip()
-        subprocess.run(["kill", "-9", pid], check=True)
+        pids = result.stdout.strip().split()
+        for pid in pids:
+            try:
+                subprocess.run(["kill", "-9", pid], check=True)
+            except subprocess.CalledProcessError as e:
+                print(f"Failed to kill process with PID {pid}: {e}")
 
 # Function to start Jupyter Notebook on port 6003
 def start_jupyter_notebook():
@@ -82,7 +74,7 @@ def start_jupyter_notebook():
         terminate_process_on_port(port)
 
     subprocess.run([
-        python_cmd, "-m", "notebook", 
+        "python", "-m", "notebook", 
         notebook_path, 
         f"--port={port}", 
         "--ip=127.0.0.1"
@@ -93,7 +85,21 @@ if __name__ == "__main__":
     try:
         navigate_to_project_directory(project_path)
         check_python_version()
-        install_dependencies()
+        
+        # Insert API key into the .env file from template if not present
+        create_env_file_from_template()
+
+        # Load environment variables
+        load_env_file()
+        api_key = os.getenv("MISTRAL_API_KEY")
+        if not api_key:
+            raise ValueError("MISTRAL_API_KEY not found in environment variables. Please set it in the .env file.")
+        
+        # Print only the required messages
+        print("Successfully loaded MISTRAL_API_KEY.")
+        print("Jupyter Notebook will open in a while...")
+        
+        # Start Jupyter Notebook
         start_jupyter_notebook()
     except Exception as e:
         print(f"An error occurred: {e}")
