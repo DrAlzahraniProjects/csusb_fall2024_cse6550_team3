@@ -31,8 +31,11 @@ The `setup.py` script automates the setup process, including downloading the rep
    ```bash
    cd csusb_fall2024_cse6550_team3
    ```
-
-3. **Run the Setup Script**:  
+3. **Update Local Repository**:
+   ```
+   git pull origin main
+   ```
+4. **Run the Setup Script**:  
    ```bash
    python setup.py
    ```
