@@ -1,7 +1,6 @@
-
 # Textbook Chatbot
 
-The Textbook Chatbot project for CSE 6550 is designed to assist with queries related to the textbook, *"Software Engineering: A Practitioner's Approach."* The chatbot serves as an educational tool, helping users by providing information, answering questions, and possibly retrieving content from the textbook.
+The **Textbook Chatbot** project for CSE 6550 is designed to assist with queries related to the textbook, *"Software Engineering: A Practitioner's Approach."* The chatbot serves as an educational tool, helping users by providing information, answering questions, and possibly retrieving content from the textbook.
 
 [Website](https://sec.cse.csusb.edu/team3/)  
 [Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter)
@@ -33,9 +32,13 @@ The `setup.py` script automates the setup process, including downloading the rep
    cd csusb_fall2024_cse6550_team3
    ```
 
-3. **Run the Setup Script**:
+3. **Run the Setup Script**:  
    ```bash
    python setup.py
+   ```
+   **Note:** If the above command does not work (e.g., on Linux), try using:
+   ```bash
+   python3 setup.py
    ```
 
 4. **Follow On-Screen Prompts**:
@@ -45,16 +48,13 @@ The `setup.py` script automates the setup process, including downloading the rep
 5. **Access the Application**:
    - Website: [http://localhost:5003/team3](http://localhost:5003/team3)
 
-
 ---
 
 ## Jupyter Notebook Setup (Handled Separately)
 
-################
-################
-################
-################
+For advanced testing and debugging, refer to the provided [Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter).
 
+---
 
 ## Manual Docker Setup (Alternative)
 
@@ -80,11 +80,11 @@ If for any reason you cannot use `setup.py`, follow the steps below:
      ```bash
      docker ps
      ```
-   - To stop a running container, replace <container_id> with the one found in docker ps:
+   - To stop a running container, replace `<container_id>` with the ID from the `docker ps` output:
      ```bash
      docker stop <container_id>
      ```
-   - To remove/delete a docker container, replace <container_id> with the one found in docker ps:
+   - To remove/delete a container:
      ```bash
      docker rm <container_id>
      ```
@@ -158,8 +158,6 @@ Below is a list of answerable and unanswerable questions that will be used to ev
 
 Built by **Team 3**  
 Course: CSE 6550, Fall '24 (Software Engineering Concepts)  
-Institution: California State University, San Bernardino
+Institution: California State University, San Bernardino  
 
----
-
-Let me know if there are any further adjustments!
+--- 
