@@ -70,6 +70,17 @@ def fetch_relevant_documents(question: str) -> str:
     context = "\n\n".join([doc.page_content for doc in relevant_docs])
     return relevant_docs, context
 
+def rewrite_question(question):
+    rewrite_template = rewrite_prompt()
+    rewrite_message = rewrite_template.format_messages(text=question)
+    new_question = llm.invoke(rewrite_message).content.strip()
+    relevant_docs, context = fetch_relevant_documents(new_question)
+    if len(relevant_docs) != 0:
+        time.sleep(0.3) # Avoids getting rate limited by the mistral api
+        return question, relevant_docs, context
+    else:
+        return None, None, None
+
 def chat_completion(question: str) -> tuple[str, str]:
     """
     Generate a response to a given question using simple RAG approach, streaming parts of the response as they are generated.
@@ -82,13 +93,10 @@ def chat_completion(question: str) -> tuple[str, str]:
   
     # Get relevant context
     relevant_docs, context = fetch_relevant_documents(question)
+    # If 0 relevant docs try rewriting the prompt
     if len(relevant_docs) == 0:
-        rewrite_template = rewrite_prompt()
-        rewrite_message = rewrite_template.format_messages(text=question)
-        question = llm.invoke(rewrite_message).content.strip()
-        print(question)
-        relevant_docs, context = fetch_relevant_documents(question)
-        if len(relevant_docs) == 0 or "NONE" in question:
+        question, relevant_docs, context = rewrite_question(question)
+        if question is None:
             yield (
                 """
                 I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge).
@@ -97,8 +105,7 @@ def chat_completion(question: str) -> tuple[str, str]:
                 """
             , MODEL_NAME)
             return
-        time.sleep(0.5)
-
+        
     # Get appropriate prompt
     prompt = get_prompt()
     messages = prompt.format_messages(input=question, context=context)
