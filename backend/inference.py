@@ -1,29 +1,20 @@
 import os
+import asyncio
 from typing import List, Dict
 from langchain_mistralai import ChatMistralAI
+from nemoguardrails.integrations.langchain.runnable_rails import RunnableRails
+from nemoguardrails.llm.providers import register_llm_provider
+from nemoguardrails.streaming import StreamingHandler
 from .prompts import get_prompt
 from .citations import get_citations, format_citations
-from .document_loading import load_documents_from_directory, load_or_create_faiss_vector_store, similarity_search
 from nemoguardrails import RailsConfig
-from nemoguardrails.integrations.langchain.runnable_rails import RunnableRails
-
-from nemoguardrails.llm.providers import register_llm_provider
-import asyncio
-from nemoguardrails.streaming import StreamingHandler
-
-
+from .document_loading import load_documents_from_directory, load_or_create_faiss_vector_store, similarity_search
 
 # Import and load environment variables
 from dotenv import load_dotenv
 load_dotenv(override=True)
 
-
-
-register_llm_provider("mistral", ChatMistralAI)
 config = RailsConfig.from_path("/app/backend/guardrails.yml")
-guardrails = RunnableRails(config,input_key="question", output_key="answer")
-
-
 
 ###################
 # LOAD EMBEDDINGS #
@@ -72,6 +63,8 @@ def load_llm_api(model_name: str) -> ChatMistralAI:
     )
 MODEL_NAME = "open-mistral-7b"
 llm = load_llm_api(MODEL_NAME)
+register_llm_provider("mistral", ChatMistralAI)
+guardrails = RunnableRails(config, input_key="question", output_key="answer")
 
 def fetch_relevant_documents(question: str) -> str:
     """
@@ -84,7 +77,6 @@ def fetch_relevant_documents(question: str) -> str:
     relevant_docs = similarity_search(question, faiss_store, 10)
     context = "\n\n".join([doc.page_content for doc in relevant_docs])
     return relevant_docs, context
-
 
 def chat_completion(question: str) -> tuple[str, str]:
     """
@@ -109,27 +101,26 @@ def chat_completion(question: str) -> tuple[str, str]:
         return
 
     # Prepare prompt and input
-    prompt = get_prompt(has_context=bool(relevant_docs))
+    prompt = get_prompt()
+    formatted_input = f"<question>{question}</question>\n\n<context>{context}<context>"
+    
     input_dict = {
-        "input": [
-            {"role": "user", "content": question},
-            {"role": "context", "content": context},
-        ]
+        "input": formatted_input  # Using only the input_key specified in RunnableRails
     }
 
     # Invoke LLM with Guardrails
     try:
-        invoke_response = llm_with_guardrails.invoke(input_dict)
-        if not invoke_response or "answer" not in invoke_response:
+        invoke_response = guardrails.invoke(input_dict)
+        if not invoke_response or "output" not in invoke_response:
             raise ValueError(f"Unexpected response structure: {invoke_response}")
         
-        answer = invoke_response.get("answer", "")
+        answer = invoke_response.get("output", "")
         print(f"Generated answer: {answer}")
         yield (answer, MODEL_NAME)
 
         # Handle citations if available
         if relevant_docs:
-            response = invoke_response.get("answer", "")
+            response = invoke_response.get("output", "")
             if response:
                 page_numbers = get_citations(relevant_docs)
                 if page_numbers:
