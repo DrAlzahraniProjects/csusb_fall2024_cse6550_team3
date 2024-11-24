@@ -70,7 +70,7 @@ def similarity_search(
 	question,
 	vector_store,
 	k,
-	distance_threshold = 340 # Set lower values for stricter filtering
+	distance_threshold = 400 # Set lower values for stricter filtering
 ):
 	"""
 	Get top k most similar documents using FAISS vector store.
@@ -84,7 +84,7 @@ def similarity_search(
 	"""
 	retrieved_docs = vector_store.similarity_search_with_score(question, k=k)
 	filtered_docs = [doc for doc, score in retrieved_docs if score <= distance_threshold]
-	# [print(score) for doc, score in retrieved_docs if score <= distance_threshold]
+	[print(score) for doc, score in retrieved_docs if score <= distance_threshold]
 	return filtered_docs
 
 def get_hybrid_retriever(documents, vector_store, k):
