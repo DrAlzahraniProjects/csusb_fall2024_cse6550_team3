@@ -2,7 +2,6 @@ import os
 import subprocess
 import platform
 import socket
-import __main__ as main
 import sys
 
 # Function to create .env file from .env.template and insert the API key
@@ -41,9 +40,7 @@ def navigate_to_project_directory(path):
 
 # Function to ensure the Python version is 3.10 or above
 def check_python_version():
-    result = subprocess.run(["python", "--version"], capture_output=True, text=True, check=True)
-    version = result.stdout.strip()
-    if not (version.startswith("Python 3.10") or version.startswith("Python 3.11") or version.startswith("Python 3.12")):
+    if sys.version_info < (3, 10):
         raise EnvironmentError("Python 3.10 or above is required.")
 
 # Function to check if a port is available
@@ -53,15 +50,29 @@ def is_port_available(port):
 
 # Function to terminate the process using the specified port
 def terminate_process_on_port(port):
-    cmd = f"lsof -t -i:{port}"
-    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-    if result.stdout:
-        pids = result.stdout.strip().split()
-        for pid in pids:
-            try:
-                subprocess.run(["kill", "-9", pid], check=True)
-            except subprocess.CalledProcessError as e:
-                print(f"Failed to kill process with PID {pid}: {e}")
+    if platform.system() == "Windows":
+        cmd = f"netstat -ano | findstr :{port}"
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        if result.stdout:
+            lines = result.stdout.strip().splitlines()
+            for line in lines:
+                parts = line.split()
+                if len(parts) >= 5:
+                    pid = parts[-1]
+                    try:
+                        subprocess.run(["taskkill", "/PID", pid, "/F"], check=True)
+                    except subprocess.CalledProcessError as e:
+                        print(f"Failed to kill process with PID {pid}: {e}")
+    else:
+        cmd = f"lsof -t -i:{port}"
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        if result.stdout:
+            pids = result.stdout.strip().split()
+            for pid in pids:
+                try:
+                    subprocess.run(["kill", "-9", pid], check=True)
+                except subprocess.CalledProcessError as e:
+                    print(f"Failed to kill process with PID {pid}: {e}")
 
 # Function to start Jupyter Notebook on port 6003
 def start_jupyter_notebook():
@@ -74,7 +85,7 @@ def start_jupyter_notebook():
         terminate_process_on_port(port)
 
     subprocess.run([
-        "python", "-m", "notebook", 
+        sys.executable, "-m", "notebook", 
         notebook_path, 
         f"--port={port}", 
         "--ip=127.0.0.1"
