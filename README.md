@@ -81,7 +81,7 @@ Ensure that the output shows Python 3.10 or later.
 
 9. To access the Jupyter notebook, run the following script:
    ```
-   python run_jupyter.py
+   python3 run_jupyter.py
    ```
    Enter the Mistral API key when prompted to access the Jupyter notebook.
 
