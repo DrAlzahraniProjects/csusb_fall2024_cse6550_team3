@@ -57,7 +57,7 @@ RUN python -c "from langchain_huggingface import HuggingFaceEmbeddings; \
                HuggingFaceEmbeddings(model_name='Alibaba-NLP/gte-large-en-v1.5', model_kwargs={'trust_remote_code': True})"
 
 # Install other required packages with pip
-RUN /opt/miniforge/envs/team3_env/bin/pip install rank_bm25 streamlit-pdf-viewer PyMuPDF
+RUN /opt/miniforge/envs/team3_env/bin/pip install rank_bm25 streamlit-pdf-viewer PyMuPDF nemoguardrails
 
 # Copy the current directory contents into the container at /app
 COPY . /app

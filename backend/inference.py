@@ -4,10 +4,26 @@ from langchain_mistralai import ChatMistralAI
 from .prompts import get_prompt
 from .citations import get_citations, format_citations
 from .document_loading import load_documents_from_directory, load_or_create_faiss_vector_store, similarity_search
+from nemoguardrails import RailsConfig
+from nemoguardrails.integrations.langchain.runnable_rails import RunnableRails
+
+from nemoguardrails.llm.providers import register_llm_provider
+import asyncio
+from nemoguardrails.streaming import StreamingHandler
+
+
 
 # Import and load environment variables
 from dotenv import load_dotenv
 load_dotenv(override=True)
+
+
+
+register_llm_provider("mistral", ChatMistralAI)
+config = RailsConfig.from_path("/app/backend/guardrails.yml")
+guardrails = RunnableRails(config,input_key="question", output_key="answer")
+
+
 
 ###################
 # LOAD EMBEDDINGS #
@@ -69,43 +85,58 @@ def fetch_relevant_documents(question: str) -> str:
     context = "\n\n".join([doc.page_content for doc in relevant_docs])
     return relevant_docs, context
 
+
 def chat_completion(question: str) -> tuple[str, str]:
     """
-    Generate a response to a given question using simple RAG approach, streaming parts of the response as they are generated.
+    Generate a response to a given question using simple RAG approach, yielding the full response after invocation.
     Args:
-        question (str): The user question to be answered.
+        question (str): The user's input question
     Yields:
-        tuple[str, str]: The generated response chunk and model name.
+        tuple[str, str]: The generated response and model name.
     """
     print(f"Running prompt: {question}")
   
-    # Get relevant context
+    # Fetch relevant documents
     relevant_docs, context = fetch_relevant_documents(question)
     if len(relevant_docs) == 0:
-        yield (
-            """
-            I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge).
-            Your question appears to be about something else.
-            Could you ask a question related to software engineering fundamentals, requirements, design, construction, testing, maintenance, configuration management, engineering management, processes, models, or quality?
-            """
-        , MODEL_NAME)
+        no_context_msg = """
+        I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge).
+        Your question appears to be about something else.
+        Could you ask a question related to software engineering fundamentals, requirements, design, construction, testing, maintenance, configuration management, engineering management, processes, models, or quality?
+        """
+        print("No relevant documents found. Sending default response.")
+        yield (no_context_msg, MODEL_NAME)
         return
 
-    # Get appropriate prompt
-    prompt = get_prompt()
-    messages = prompt.format_messages(input=question, context=context)
+    # Prepare prompt and input
+    prompt = get_prompt(has_context=bool(relevant_docs))
+    input_dict = {
+        "input": [
+            {"role": "user", "content": question},
+            {"role": "context", "content": context},
+        ]
+    }
 
-    # Stream response from LLM
-    full_response = {"answer": "", "context": relevant_docs}
-    for chunk in llm.stream(messages):
-        full_response["answer"] += chunk.content
-        yield (chunk.content, MODEL_NAME)
+    # Invoke LLM with Guardrails
+    try:
+        invoke_response = llm_with_guardrails.invoke(input_dict)
+        if not invoke_response or "answer" not in invoke_response:
+            raise ValueError(f"Unexpected response structure: {invoke_response}")
+        
+        answer = invoke_response.get("answer", "")
+        print(f"Generated answer: {answer}")
+        yield (answer, MODEL_NAME)
 
-    # After streaming is complete, handle citations
-    if relevant_docs:
-        page_numbers = get_citations(relevant_docs)
-        if page_numbers:
-            response = full_response["answer"]
-            citations = format_citations(page_numbers, response)
-            if citations:
-                yield (citations, MODEL_NAME)
+        # Handle citations if available
+        if relevant_docs:
+            response = invoke_response.get("answer", "")
+            if response:
+                page_numbers = get_citations(relevant_docs)
+                if page_numbers:
+                    citations = format_citations(page_numbers, response)
+                    if citations:
+                        yield (citations, MODEL_NAME)
+
+    except Exception as e:
+        print(f"Error during invocation: {e}")
+        raise
