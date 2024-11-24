@@ -1,7 +1,7 @@
 import os
 import time
 import streamlit as st
-from .pdf import serve_pdf, serve_pdf_with_highlight
+from .pdf import serve_pdf
 from .questions import check_baseline_answerable
 from backend.inference import chat_completion
 from backend.statistics import (
@@ -13,7 +13,7 @@ from .utils import (
     load_css,
     handle_feedback,
     get_feedback_question,
-    display_confusion_matrix
+    display_confusion_matrix,
 )
 
 # Add rate limit constants
@@ -64,7 +64,6 @@ def handle_user_input(prompt: str):
         except Exception as e:
             st.error("Error generating or saving response. Please try again.")
 
-
 def initialize_session():
     """Initialize user session if not already initialized."""
     if "user_id" not in st.session_state:
@@ -92,7 +91,7 @@ def render_conversation_history():
 
 def render_assistant_message(message):
     """Render assistant message and feedback options."""
-    st.markdown(f"<div class='assistant-message'>{message['content']}</div>",unsafe_allow_html=True,)
+    st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
 
     # Provide feedback interface
     conversation_id = message.get("conversation_id")
@@ -136,13 +135,13 @@ def save_conversation_to_db(prompt: str, response: str) -> int:
     return insert_conversation(
         question=prompt,
         response=response,
-        citations="",
+        citations="",  # No need to include highlighting data
         model_name="open-mistral-7b",
         source=os.getenv("CORPUS_SOURCE", "unknown source").split("/")[-1],
         response_time=st.session_state.response_time,
         correct=None,
         user_id=st.session_state.user_id,
-        answerable=answerable
+        answerable=answerable,
     )
 
 
@@ -164,12 +163,9 @@ def main():
     if "view" in st.query_params and st.query_params["view"] == "pdf":
         pdf_path = st.query_params.get("file")
         page = int(st.query_params.get("page", 1))
-        text_to_highlight = st.query_params.get("highlight", "")
 
-        if text_to_highlight:
-            serve_pdf_with_highlight(text_to_highlight, pdf_path, page)
-        else:
-            serve_pdf()
+        # Use serve_pdf only without highlighting
+        serve_pdf(pdf_path, page)
         return
 
     # Load UI components
