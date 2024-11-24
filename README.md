@@ -55,6 +55,7 @@ The `setup.py` script automates the setup process, including downloading the rep
 
 ## Jupyter Notebook Setup (Handled Separately)
 1. How to run the jupyter notebook in virtual environment.
+   
    On MacOS
    ```bash
    python3 run_jupyter.py
