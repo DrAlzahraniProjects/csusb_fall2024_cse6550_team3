@@ -26,16 +26,15 @@ def load_css():
 ############
 # Feedback #
 ############
-def handle_feedback(conversation_id):
+def handle_feedback(conversation_id: int):
     """Handle feedback submission for a conversation."""
     feedback_value = st.session_state.get(f"feedback_{conversation_id}", None)
     if feedback_value is not None:
         toggle_correctness(conversation_id, feedback_value == 1)
         update_user_session(st.session_state.user_id)
 
-def get_feedback_question(prompt: str) -> str:
+def get_feedback_question(answerable: bool) -> str:
     """Return feedback question based on baseline questions."""
-    answerable = check_baseline_answerable(prompt)
     if answerable is not None:
         return (
             "Did the chatbot correctly answer this answerable question?" if answerable
@@ -86,11 +85,11 @@ def display_confusion_matrix():
         f"""
         <div class='metric-container'>
             <div class='metric-main' title="{metrics_tooltip['Sensitivity']}">
-                <span class='metric-label'>Sensitivity (True positive rate):</span>
+                <span class='metric-label'>Sensitivity (true positive rate):</span>
                 <span class='metric-value'>{format_metric(metrics.get("Sensitivity"))}</span>
             </div>
             <div class='metric-main' title="{metrics_tooltip['Specificity']}">
-                <span class='metric-label'>Specificity (True negative rate):</span>
+                <span class='metric-label'>Specificity (true negative rate):</span>
                 <span class='metric-value'>{format_metric(metrics.get("Specificity"))}</span>
             </div>
         </div>

@@ -7,14 +7,24 @@ You are a chatbot that answers the question in the <question> tags.
 - Keep your answer short and to the point.
 """
 
+REWRITE_PROMPT = """
+- If the text is unrelated to Software engineering only return "NONE"
+- If the text is related to the Software engineering rewrite the text
+- Keep the rewritten text short
+"""
+
 def get_prompt():
     """
     Get the appropriate prompt template based on context availability.
-
-    Returns:
-        ChatPromptTemplate: Configured prompt template
     """
     return ChatPromptTemplate.from_messages([
         ("system", SYSTEM_PROMPT),
         ("human", "<question>{input}</question>\n\n<context>{context}<context>"),
+    ])
+
+def rewrite_prompt():
+    """Return a ChatPromptTemplate for prompt rewriting."""
+    return ChatPromptTemplate.from_messages([
+        ("system", REWRITE_PROMPT),
+        ("human", "{text}"),
     ])
