@@ -10,10 +10,10 @@ def create_env_file_from_template(template_filepath=".env.template", output_file
     if os.path.exists(template_filepath):
         with open(template_filepath, "r") as template_file:
             content = template_file.read()
-            if "MISTRAL_API_KEY=" in content and "MISTRAL_API_KEY=your_actual_api_key_here" not in content:
-                for line in content.splitlines():
-                    if line.startswith("MISTRAL_API_KEY=") and line.strip() != "MISTRAL_API_KEY=":
-                        api_key = line.split("=", 1)[1].strip()
+            for line in content.splitlines():
+                if line.startswith("MISTRAL_API_KEY=") and "MISTRAL_API_KEY=your_actual_api_key_here" not in line:
+                    api_key = line.split("=", 1)[1].strip()
+                    break
             if not api_key:
                 api_key = input("Enter your API key here: ")
                 content = content.replace("MISTRAL_API_KEY=", f"MISTRAL_API_KEY={api_key}")
@@ -40,7 +40,9 @@ def navigate_to_project_directory(path):
 
 # Function to ensure the Python version is 3.10 or above
 def check_python_version():
-    if sys.version_info < (3, 10):
+    result = subprocess.run(["python3", "--version"], capture_output=True, text=True, check=True)
+    version = result.stdout.strip()
+    if not (version.startswith("Python 3.10") or version.startswith("Python 3.11") or version.startswith("Python 3.12")):
         raise EnvironmentError("Python 3.10 or above is required.")
 
 # Function to check if a port is available
@@ -50,45 +52,30 @@ def is_port_available(port):
 
 # Function to terminate the process using the specified port
 def terminate_process_on_port(port):
-    if platform.system() == "Windows":
-        cmd = f"netstat -ano | findstr :{port}"
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-        if result.stdout:
-            lines = result.stdout.strip().splitlines()
-            for line in lines:
-                parts = line.split()
-                if len(parts) >= 5:
-                    pid = parts[-1]
-                    try:
-                        subprocess.run(["taskkill", "/PID", pid, "/F"], check=True)
-                    except subprocess.CalledProcessError as e:
-                        print(f"Failed to kill process with PID {pid}: {e}")
-    else:
-        cmd = f"lsof -t -i:{port}"
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-        if result.stdout:
-            pids = result.stdout.strip().split()
-            for pid in pids:
-                try:
-                    subprocess.run(["kill", "-9", pid], check=True)
-                except subprocess.CalledProcessError as e:
-                    print(f"Failed to kill process with PID {pid}: {e}")
+    cmd = f"lsof -t -i:{port}"
+    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    if result.stdout:
+        pids = result.stdout.strip().split()
+        for pid in pids:
+            try:
+                subprocess.run(["kill", "-9", pid], check=True)
+            except subprocess.CalledProcessError as e:
+                print(f"Failed to kill process with PID {pid}: {e}")
 
 # Function to start Jupyter Notebook on port 6003
 def start_jupyter_notebook():
     notebook_path = "jupyter/main.ipynb"
-    if not os.path.exists(notebook_path):
-        raise FileNotFoundError(f"The specified notebook does not exist: {notebook_path}")
-
     port = 6003
+    if not os.path.exists(notebook_path):
+        print(f"Warning: The specified notebook does not exist: {notebook_path}. Starting Jupyter Notebook in the default location.")
     if not is_port_available(port):
         terminate_process_on_port(port)
+    else:
+        print(f"Port {port} is available. Starting Jupyter Notebook...")
 
     subprocess.run([
-        sys.executable, "-m", "notebook", 
-        notebook_path, 
-        f"--port={port}", 
-        "--ip=127.0.0.1"
+        "python3", "-m", "notebook",
+        f"--port={port}", "--ip=127.0.0.1"
     ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 if __name__ == "__main__":
