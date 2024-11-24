@@ -70,7 +70,7 @@ def similarity_search(
 	question,
 	vector_store,
 	k,
-	distance_threshold = 340 # Set lower values for stricter filtering
+	distance_threshold = 400 # Set lower values for stricter filtering
 ):
 	"""
 	Get top k most similar documents using FAISS vector store.

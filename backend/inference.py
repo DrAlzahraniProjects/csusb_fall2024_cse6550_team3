@@ -1,13 +1,14 @@
 import os
+import time
 import asyncio
 from typing import List, Dict
 from langchain_mistralai import ChatMistralAI
-from nemoguardrails.integrations.langchain.runnable_rails import RunnableRails
-from nemoguardrails.llm.providers import register_llm_provider
-from nemoguardrails.streaming import StreamingHandler
-from .prompts import get_prompt
-from .citations import get_citations, format_citations
 from nemoguardrails import RailsConfig
+from nemoguardrails.streaming import StreamingHandler
+from nemoguardrails.llm.providers import register_llm_provider
+from nemoguardrails.integrations.langchain.runnable_rails import RunnableRails
+from .prompts import get_prompt, rewrite_prompt
+from .citations import get_citations, format_citations
 from .document_loading import load_documents_from_directory, load_or_create_faiss_vector_store, similarity_search
 
 # Import and load environment variables
@@ -78,6 +79,17 @@ def fetch_relevant_documents(question: str) -> str:
     context = "\n\n".join([doc.page_content for doc in relevant_docs])
     return relevant_docs, context
 
+def rewrite_question(question):
+    rewrite_template = rewrite_prompt()
+    rewrite_message = rewrite_template.format_messages(text=question)
+    new_question = llm.invoke(rewrite_message).content.strip()
+    relevant_docs, context = fetch_relevant_documents(new_question)
+    if len(relevant_docs) != 0:
+        time.sleep(0.3) # Avoids getting rate limited by the mistral api
+        return new_question, relevant_docs, context
+    else:
+        return None, None, None
+
 def chat_completion(question: str) -> tuple[str, str]:
     """
     Generate a response to a given question using simple RAG approach, yielding the full response after invocation.
@@ -90,24 +102,21 @@ def chat_completion(question: str) -> tuple[str, str]:
   
     # Fetch relevant documents
     relevant_docs, context = fetch_relevant_documents(question)
+    # If 0 relevant docs try rewriting the prompt
     if len(relevant_docs) == 0:
-        no_context_msg = """
-        I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge).
-        Your question appears to be about something else.
-        Could you ask a question related to software engineering fundamentals, requirements, design, construction, testing, maintenance, configuration management, engineering management, processes, models, or quality?
-        """
-        print("No relevant documents found. Sending default response.")
-        yield (no_context_msg, MODEL_NAME)
-        return
+        question, relevant_docs, context = rewrite_question(question)
+        if question is None:
+            no_context_msg = """
+            I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge).
+            Your question appears to be about something else.
+            Could you ask a question related to software engineering fundamentals, requirements, design, construction, testing, maintenance, configuration management, engineering management, processes, models, or quality?
+            """
+            yield (no_context_msg, MODEL_NAME, False)
+            return
 
     # Prepare prompt and input
-    prompt = get_prompt()
     formatted_input = f"<question>{question}</question>\n\n<context>{context}<context>"
-    
-    input_dict = {
-        "input": formatted_input  # Using only the input_key specified in RunnableRails
-    }
-
+    input_dict = {"input": formatted_input}
     # Invoke LLM with Guardrails
     try:
         invoke_response = guardrails.invoke(input_dict)
@@ -116,7 +125,7 @@ def chat_completion(question: str) -> tuple[str, str]:
         
         answer = invoke_response.get("output", "")
         print(f"Generated answer: {answer}")
-        yield (answer, MODEL_NAME)
+        yield (answer, MODEL_NAME, True)
 
         # Handle citations if available
         if relevant_docs:
@@ -126,8 +135,7 @@ def chat_completion(question: str) -> tuple[str, str]:
                 if page_numbers:
                     citations = format_citations(page_numbers, response)
                     if citations:
-                        yield (citations, MODEL_NAME)
-
+                        yield (citations, MODEL_NAME, True)
     except Exception as e:
         print(f"Error during invocation: {e}")
         raise

@@ -1,7 +1,7 @@
 import os
 import time
 import streamlit as st
-from .pdf import serve_pdf, serve_pdf_with_highlight
+from .pdf import serve_pdf
 from .questions import check_baseline_answerable
 from backend.inference import chat_completion
 from backend.statistics import (
@@ -13,8 +13,40 @@ from .utils import (
     load_css,
     handle_feedback,
     get_feedback_question,
-    display_confusion_matrix
+    display_confusion_matrix,
 )
+
+# Add rate limit constants
+MAX_REQUESTS_PER_MINUTE = 10  # 10 requests per minute
+BLOCK_DURATION_SECONDS = 3 * 60  # 3 minutes
+
+def check_rate_limit():
+    """Check if the user has exceeded the rate limit."""
+    now = time.time()
+    if "request_timestamps" not in st.session_state:
+        st.session_state.request_timestamps = []
+
+    # Remove timestamps older than a minute
+    st.session_state.request_timestamps = [
+        t for t in st.session_state.request_timestamps if now - t <= 60
+    ]
+
+    # Check if the rate limit has been exceeded
+    if len(st.session_state.request_timestamps) >= MAX_REQUESTS_PER_MINUTE:
+        if "block_until" in st.session_state and st.session_state.block_until > now:
+            st.error(
+                "You've reached the limit of 10 questions per minute because the server has limited resources. Please try again in 3 minutes."
+            )
+            st.stop()
+        else:
+            st.session_state.block_until = now + BLOCK_DURATION_SECONDS
+            st.error(
+                "You've reached the limit of 10 questions per minute because the server has limited resources. Please try again in 3 minutes."
+            )
+            st.stop()
+
+    # Add current timestamp to the list
+    st.session_state.request_timestamps.append(now)
 
 def initialize_session():
     """Initialize user session if not already initialized."""
@@ -40,10 +72,9 @@ def render_conversation_history():
                 unsafe_allow_html=True,
             )
 
-
 def render_assistant_message(message):
     """Render assistant message and feedback options."""
-    st.markdown(f"<div class='assistant-message'>{message['content']}</div>",unsafe_allow_html=True,)
+    st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
 
     # Provide feedback interface
     conversation_id = message.get("conversation_id")
@@ -57,7 +88,7 @@ def render_assistant_message(message):
             None,
         )
         feedback_question = get_feedback_question(
-            user_message["content"] if user_message else ""
+            user_message["answerable"] if user_message else None
         )
         st.caption(feedback_question)
         st.feedback(
@@ -67,55 +98,55 @@ def render_assistant_message(message):
             kwargs={"conversation_id": conversation_id},
         )
 
-
 def handle_user_input(prompt: str):
     """Process user input, generate a response, and update session state."""
+    check_rate_limit()
     response_container = st.empty()
     with st.spinner("Generating response..."):
         try:
-            response = generate_response(prompt, response_container)
-            conversation_id = save_conversation_to_db(prompt, response)
-            update_session_messages(prompt, response, conversation_id)
+            response, answerable = generate_response(prompt, response_container)
+            conversation_id = save_conversation_to_db(prompt, response, answerable)
+            update_session_messages(prompt, response, conversation_id, answerable)
             update_user_session(st.session_state.user_id)
             st.rerun()
         except Exception as e:
-            st.error("Error generating or saving response. Please try again.")
+            st.error(f"Error generating or saving response. Please try again. \nError: {e}")
 
 
 def generate_response(prompt: str, response_container):
     """Generate response for a given user prompt."""
     start_time = time.time()
     response = ""
-    for partial_response, model_name in chat_completion(prompt):
+    answerable = None
+    for partial_response, model_name, answerable in chat_completion(prompt):
         response += partial_response
         response_container.markdown(
             f"<div class='assistant-message'>{response}</div>", unsafe_allow_html=True
         )
     end_time = time.time()
     st.session_state.response_time = int(end_time - start_time)
-    return response
+    return response, answerable
 
 
-def save_conversation_to_db(prompt: str, response: str) -> int:
+def save_conversation_to_db(prompt: str, response: str, answerable: bool) -> int:
     """Save conversation to the database."""
-    answerable = check_baseline_answerable(prompt)
     return insert_conversation(
         question=prompt,
         response=response,
-        citations="",
+        citations="",  # No need to include highlighting data
         model_name="open-mistral-7b",
         source=os.getenv("CORPUS_SOURCE", "unknown source").split("/")[-1],
         response_time=st.session_state.response_time,
         correct=None,
         user_id=st.session_state.user_id,
-        answerable=answerable
+        answerable=answerable,
     )
 
 
-def update_session_messages(prompt: str, response: str, conversation_id: int):
+def update_session_messages(prompt: str, response: str, conversation_id: int, answerable: bool):
     """Update session state with user and assistant messages."""
     st.session_state.messages.append(
-        {"role": "user", "content": prompt, "conversation_id": conversation_id}
+        {"role": "user", "content": prompt, "conversation_id": conversation_id, "answerable": answerable}
     )
     st.session_state.messages.append(
         {"role": "assistant", "content": response, "conversation_id": conversation_id}
@@ -130,12 +161,9 @@ def main():
     if "view" in st.query_params and st.query_params["view"] == "pdf":
         pdf_path = st.query_params.get("file")
         page = int(st.query_params.get("page", 1))
-        text_to_highlight = st.query_params.get("highlight", "")
 
-        if text_to_highlight:
-            serve_pdf_with_highlight(text_to_highlight, pdf_path, page)
-        else:
-            serve_pdf()
+        # Use serve_pdf only without highlighting
+        serve_pdf(pdf_path, page)
         return
 
     # Load UI components
