@@ -16,6 +16,38 @@ from .utils import (
     display_confusion_matrix
 )
 
+# Add rate limit constants
+MAX_REQUESTS_PER_MINUTE = 10  # 10 requests per minute
+BLOCK_DURATION_SECONDS = 3 * 60  # 3 minutes
+
+def check_rate_limit():
+    """Check if the user has exceeded the rate limit."""
+    now = time.time()
+    if "request_timestamps" not in st.session_state:
+        st.session_state.request_timestamps = []
+
+    # Remove timestamps older than a minute
+    st.session_state.request_timestamps = [
+        t for t in st.session_state.request_timestamps if now - t <= 60
+    ]
+
+    # Check if the rate limit has been exceeded
+    if len(st.session_state.request_timestamps) >= MAX_REQUESTS_PER_MINUTE:
+        if "block_until" in st.session_state and st.session_state.block_until > now:
+            st.error(
+                "You've reached the limit of 10 questions per minute because the server has limited resources. Please try again in 3 minutes."
+            )
+            st.stop()
+        else:
+            st.session_state.block_until = now + BLOCK_DURATION_SECONDS
+            st.error(
+                "You've reached the limit of 10 questions per minute because the server has limited resources. Please try again in 3 minutes."
+            )
+            st.stop()
+
+    # Add current timestamp to the list
+    st.session_state.request_timestamps.append(now)
+
 def initialize_session():
     """Initialize user session if not already initialized."""
     if "user_id" not in st.session_state:
@@ -39,7 +71,6 @@ def render_conversation_history():
                 f"<div class='user-message'>{message['content']}</div>",
                 unsafe_allow_html=True,
             )
-
 
 def render_assistant_message(message):
     """Render assistant message and feedback options."""
@@ -67,9 +98,9 @@ def render_assistant_message(message):
             kwargs={"conversation_id": conversation_id},
         )
 
-
 def handle_user_input(prompt: str):
     """Process user input, generate a response, and update session state."""
+    check_rate_limit()
     response_container = st.empty()
     with st.spinner("Generating response..."):
         try:
