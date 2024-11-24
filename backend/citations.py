@@ -19,4 +19,3 @@ def format_citations(citations, response):
         for index, citation in enumerate(citations)
     ]
     return "\n\nSource: " + "".join(links)
-

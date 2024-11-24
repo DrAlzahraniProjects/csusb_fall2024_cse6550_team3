@@ -4,7 +4,6 @@ import sys
 import time
 import shutil
 
-
 def run_command(command, error_message):
     """Run a shell command and handle errors."""
     try:
