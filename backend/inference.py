@@ -60,7 +60,6 @@ def load_llm_api(model_name: str) -> ChatMistralAI:
         mistral_api_key=api_key,
         temperature=0.05,
         max_tokens=256,
-        top_p=0.4,
     )
 MODEL_NAME = "open-mistral-7b"
 llm = load_llm_api(MODEL_NAME)
@@ -84,8 +83,9 @@ def rewrite_question(question):
     rewrite_message = rewrite_template.format_messages(text=question)
     new_question = llm.invoke(rewrite_message).content.strip()
     relevant_docs, context = fetch_relevant_documents(new_question)
-    if len(relevant_docs) != 0:
-        time.sleep(0.3) # Avoids getting rate limited by the mistral api
+    print(new_question)
+    if len(relevant_docs) != 0 and "None" not in new_question:
+        time.sleep(1) # Avoids getting rate limited by the mistral api
         return new_question, relevant_docs, context
     else:
         return None, None, None
