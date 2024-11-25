@@ -8,9 +8,9 @@ You are a chatbot that answers the question in the <question> tags.
 """
 
 REWRITE_PROMPT = """
-- If the text is unrelated to Software engineering only return "NONE"
-- If the text is related to the Software engineering rewrite the text
-- Keep the rewritten text short
+- If the text is unrelated to software engineering only return "NONE"
+- If the text is related to the software engineering rewrite the text
+- Keep the rewritten text concise
 """
 
 def get_prompt():

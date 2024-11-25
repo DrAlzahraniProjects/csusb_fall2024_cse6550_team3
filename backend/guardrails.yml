@@ -33,3 +33,9 @@ models:
     model: open-mistral-7b
     config:
       api_key: "${MISTRAL_API_KEY}"  # Reference the environment variable
+      parameters:
+        system: |
+          You are a chatbot that answers the question in the <question> tags.
+          - Answer based only on provided context in <context> tags only if relevant.
+          - Always identify yourself as a chatbot, not the textbook.
+          - Keep your answer short and to the point.

@@ -60,7 +60,6 @@ def load_llm_api(model_name: str) -> ChatMistralAI:
         mistral_api_key=api_key,
         temperature=0.05,
         max_tokens=256,
-        top_p=0.4,
     )
 MODEL_NAME = "open-mistral-7b"
 llm = load_llm_api(MODEL_NAME)
