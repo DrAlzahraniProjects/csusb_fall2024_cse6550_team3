@@ -117,8 +117,8 @@ def generate_response(prompt: str, response_container):
     """Generate response for a given user prompt."""
     start_time = time.time()
     response = ""
-    answerable = None
-    for partial_response, model_name, answerable in chat_completion(prompt):
+    answerable = check_baseline_answerable(prompt)
+    for partial_response, model_name in chat_completion(prompt):
         response += partial_response
         response_container.markdown(
             f"<div class='assistant-message'>{response}</div>", unsafe_allow_html=True
