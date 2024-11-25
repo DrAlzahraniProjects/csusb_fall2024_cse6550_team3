@@ -155,25 +155,27 @@ def update_session_messages(prompt: str, response: str, conversation_id: int, an
 
 def main():
     """Main application logic."""
-    # Display loading message
-    loading_message = st.empty()
-    loading_message.markdown("<h2 style='text-align: center;'>Loading application, please wait...</h2>", unsafe_allow_html=True)
 
-    # Simulate dynamic loading steps
-    time.sleep(1)
-    loading_message.markdown("<h2 style='text-align: center;'>Initializing session...</h2>", unsafe_allow_html=True)
-    initialize_session()
+    # Initialize session state for tracking whether the app has loaded
+    if "app_loaded" not in st.session_state:
+        st.session_state.app_loaded = False
 
-    time.sleep(1)
-    loading_message.markdown("<h2 style='text-align: center;'>Loading resources...</h2>", unsafe_allow_html=True)
+    # Display the loading message only if the app has not yet loaded
+    if not st.session_state.app_loaded:
+        loading_message = st.empty()
+        loading_message.markdown("<h2 style='text-align: center;'>Loading the app, please wait...</h2>", unsafe_allow_html=True)
 
-    time.sleep(1)
-    loading_message.markdown("<h2 style='text-align: center;'>Preparing user interface...</h2>", unsafe_allow_html=True)
+        # Simulate a delay for demo purposes
+        time.sleep(2)  # Optional: Simulate loading delay
 
-    # After loading is complete, clear the loading message
-    loading_message.empty()
+        # Mark the app as loaded in session state
+        st.session_state.app_loaded = True
+
+        # Clear the loading message
+        loading_message.empty()
+
+    # Once the app is loaded, display the normal app interface
     st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
-
     # Check for PDF query parameters
     if "view" in st.query_params and st.query_params["view"] == "pdf":
         pdf_path = st.query_params.get("file")
