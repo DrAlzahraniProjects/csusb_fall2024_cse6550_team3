@@ -84,7 +84,7 @@ def rewrite_question(question):
     new_question = llm.invoke(rewrite_message).content.strip()
     relevant_docs, context = fetch_relevant_documents(new_question)
     if len(relevant_docs) != 0:
-        time.sleep(0.3) # Avoids getting rate limited by the mistral api
+        time.sleep(1) # Avoids getting rate limited by the mistral api
         return new_question, relevant_docs, context
     else:
         return None, None, None
