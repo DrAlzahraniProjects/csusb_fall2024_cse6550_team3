@@ -155,6 +155,23 @@ def update_session_messages(prompt: str, response: str, conversation_id: int, an
 
 def main():
     """Main application logic."""
+    # Display loading message
+    loading_message = st.empty()
+    loading_message.markdown("<h2 style='text-align: center;'>Loading application, please wait...</h2>", unsafe_allow_html=True)
+
+    # Simulate dynamic loading steps
+    time.sleep(1)
+    loading_message.markdown("<h2 style='text-align: center;'>Initializing session...</h2>", unsafe_allow_html=True)
+    initialize_session()
+
+    time.sleep(1)
+    loading_message.markdown("<h2 style='text-align: center;'>Loading resources...</h2>", unsafe_allow_html=True)
+
+    time.sleep(1)
+    loading_message.markdown("<h2 style='text-align: center;'>Preparing user interface...</h2>", unsafe_allow_html=True)
+
+    # After loading is complete, clear the loading message
+    loading_message.empty()
     st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
 
     # Check for PDF query parameters
