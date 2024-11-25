@@ -31,6 +31,9 @@ def load_env_file(filepath=".env"):
                 if line.strip() and not line.startswith("#"):
                     key, value = line.strip().split("=", 1)
                     os.environ[key] = value
+                    print(f"Loaded {key} from {filepath}")  # Debug statement
+    else:
+        print(f"Warning: {filepath} not found.")
 
 # Function to navigate to the project directory
 def navigate_to_project_directory(path):
@@ -40,9 +43,7 @@ def navigate_to_project_directory(path):
 
 # Function to ensure the Python version is 3.10 or above
 def check_python_version():
-    result = subprocess.run(["python3", "--version"], capture_output=True, text=True, check=True)
-    version = result.stdout.strip()
-    if not (version.startswith("Python 3.10") or version.startswith("Python 3.11") or version.startswith("Python 3.12")):
+    if sys.version_info < (3, 10):
         raise EnvironmentError("Python 3.10 or above is required.")
 
 # Function to check if a port is available
@@ -52,19 +53,31 @@ def is_port_available(port):
 
 # Function to terminate the process using the specified port
 def terminate_process_on_port(port):
-    cmd = f"lsof -t -i:{port}"
-    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-    if result.stdout:
-        pids = result.stdout.strip().split()
-        for pid in pids:
-            try:
-                subprocess.run(["kill", "-9", pid], check=True)
-            except subprocess.CalledProcessError as e:
-                print(f"Failed to kill process with PID {pid}: {e}")
+    if platform.system() == "Windows":
+        cmd = f"netstat -ano | findstr :{port}"
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        if result.stdout:
+            lines = result.stdout.strip().splitlines()
+            for line in lines:
+                pid = line.strip().split()[-1]
+                try:
+                    subprocess.run(["taskkill", "/F", "/PID", pid], check=True)
+                except subprocess.CalledProcessError as e:
+                    print(f"Failed to kill process with PID {pid}: {e}")
+    else:
+        cmd = f"lsof -t -i:{port}"
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        if result.stdout:
+            pids = result.stdout.strip().split()
+            for pid in pids:
+                try:
+                    subprocess.run(["kill", "-9", pid], check=True)
+                except subprocess.CalledProcessError as e:
+                    print(f"Failed to kill process with PID {pid}: {e}")
 
 # Function to start Jupyter Notebook on port 6003
 def start_jupyter_notebook():
-    notebook_path = "jupyter/main.ipynb"
+    notebook_path = os.path.join(os.getcwd(), "jupyter", "main.ipynb")
     port = 6003
     if not os.path.exists(notebook_path):
         print(f"Warning: The specified notebook does not exist: {notebook_path}. Starting Jupyter Notebook in the default location.")
@@ -73,13 +86,14 @@ def start_jupyter_notebook():
     else:
         print(f"Port {port} is available. Starting Jupyter Notebook...")
 
+    python_executable = sys.executable
     subprocess.run([
-        "python3", "-m", "notebook",
-        f"--port={port}", "--ip=127.0.0.1"
+        python_executable, "-m", "notebook",
+        f"--port={port}", "--ip=127.0.0.1", "--NotebookApp.base_url=/team3/jupyter", "--NotebookApp.notebook_dir=/jupyter"
     ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 if __name__ == "__main__":
-    project_path = os.path.abspath(".")  # Set project path to the current directory
+    project_path = os.path.dirname(os.path.realpath(__file__))  # Set project path to the current directory
     try:
         navigate_to_project_directory(project_path)
         check_python_version()
