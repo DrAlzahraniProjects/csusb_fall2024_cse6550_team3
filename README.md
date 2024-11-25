@@ -52,14 +52,14 @@ The `setup.py` script automates the setup process, including downloading the rep
 ## Jupyter Notebook Setup (Handled Separately)
 1. How to run the jupyter notebook in virtual environment.
    
-   On MacOS
-   ```bash
-   python3 run_jupyter.py
-   ```
-   Windows and Linux
-   ```bash
-   python run_jupyter.py
-   ```
+   * Navigate to the folder:
+     ```bash
+     cd Desktop/csusb_fall2024_cse6550_team3/jupyter
+     ```
+   * Run jupyter notebook:
+     ```bash
+     jupyter notebook --port=6003
+     ```
 
 For advanced testing and debugging, refer to the provided [Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter).
 
