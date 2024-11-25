@@ -111,7 +111,7 @@ def chat_completion(question: str) -> tuple[str, str]:
             Your question appears to be about something else.
             Could you ask a question related to software engineering fundamentals, requirements, design, construction, testing, maintenance, configuration management, engineering management, processes, models, or quality?
             """
-            yield (no_context_msg, MODEL_NAME, False)
+            yield (no_context_msg, MODEL_NAME)
             return
 
     # Prepare prompt and input
@@ -125,7 +125,7 @@ def chat_completion(question: str) -> tuple[str, str]:
         
         answer = invoke_response.get("output", "")
         print(f"Generated answer: {answer}")
-        yield (answer, MODEL_NAME, True)
+        yield (answer, MODEL_NAME)
 
         # Handle citations if available
         if relevant_docs:
@@ -135,7 +135,7 @@ def chat_completion(question: str) -> tuple[str, str]:
                 if page_numbers:
                     citations = format_citations(page_numbers, response)
                     if citations:
-                        yield (citations, MODEL_NAME, True)
+                        yield (citations, MODEL_NAME)
     except Exception as e:
         print(f"Error during invocation: {e}")
         raise
