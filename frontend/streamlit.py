@@ -110,7 +110,8 @@ def handle_user_input(prompt: str):
             update_user_session(st.session_state.user_id)
             st.rerun()
         except Exception as e:
-            st.error(f"Error generating or saving response. Please try again. \nError: {e}")
+            # st.error(f"Error generating or saving response. Please try again. \nError: {e}")
+            st.error(f"Error generating or saving response. Please try again.")
 
 
 def generate_response(prompt: str, response_container):
