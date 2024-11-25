@@ -1,6 +1,7 @@
 # Textbook Chatbot
 
-The **Textbook Chatbot** project for CSE 6550 is designed to assist with queries related to the textbook, *"Software Engineering: A Practitioner's Approach."* The chatbot serves as an educational tool, helping users by providing information, answering questions, and possibly retrieving content from the textbook.
+This chatbot is as an educational tool that's built to answer questions related to the Swebok textbook, [Software Engineering Body of Knowledge (SWEBOK)](https://www.computer.org/education/bodies-of-knowledge/software-engineering). The chatbot was built by team 3 for [CSE 6550: Software Engineering Concepts](https://catalog.csusb.edu/coursesaz/cse/)
+
 
 [Website](https://sec.cse.csusb.edu/team3/)  
 [Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter)
