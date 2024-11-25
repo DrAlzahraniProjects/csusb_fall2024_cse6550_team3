@@ -111,7 +111,7 @@ def handle_user_input(prompt: str):
             st.rerun()
         except Exception as e:
             # st.error(f"Error generating or saving response. Please try again. \nError: {e}")
-            st.error(f"Please try again.")
+            st.success(f"Our systems are overloaded. Please try again.")
 
 
 def generate_response(prompt: str, response_container):
