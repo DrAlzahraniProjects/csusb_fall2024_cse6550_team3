@@ -1,0 +1,41 @@
+rail:
+  input:
+    parameters:
+      - name: question
+        type: string
+      - name: context
+        type: string
+
+  output:
+    parameters:
+      - name: answer
+        type: string
+
+  rules:
+    - when: contains_prohibited_words(answer)
+      then: substitute('Response cannot contain inappropriate language.')
+    - when: length(answer) > 500
+      then: truncate(answer, 500)
+    - when: not has_citations(context)
+      then: substitute('Answer could not be verified from reliable sources.')
+
+  functions:
+    - name: contains_prohibited_words
+      description: Checks if response contains prohibited or inappropriate words.
+      expression: "answer.lower().contains_any(['badword1', 'badword2', 'other_unwanted_terms'])"
+    - name: has_citations
+      description: Checks if the response includes citations from retrieved documents.
+      expression: "len(context) > 0"
+
+models:
+  - type: mistral  # Specify the type of model
+    engine: mistral  # Explicitly define the engine being used
+    model: open-mistral-7b
+    config:
+      api_key: "${MISTRAL_API_KEY}"  # Reference the environment variable
+      parameters:
+        system: |
+          You are a chatbot that answers the question in the <question> tags.
+          - Answer based only on provided context in <context> tags only if relevant.
+          - Always identify yourself as a chatbot, not the textbook.
+          - Keep your answer short and to the point.

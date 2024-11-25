@@ -159,6 +159,7 @@ h3 a:hover{
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
+  gap: 0px 5px;
   align-items: center;
   padding: 8px 16px;
   border-radius: 10px;
@@ -175,7 +176,7 @@ h3 a:hover{
   font-size: 16px;
 }
 .metric-label{
-  width: 85px;
+  min-width: 80px;
 }
 
 [data-testid="stButton"]{

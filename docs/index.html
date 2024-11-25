@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Textbook Chatbot with Styled Elements</title>
+    <style>
+        h1 {text-align: center;}
+        /* General Body Styling */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            background: #000; /* Black background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Prevents scrollbars */
+        }
+
+        /* Laptop Frame */
+        .laptop {
+            position: fixed; /* Ensures it stays centered */
+            width: 95vw; /* Increase width relative to viewport */
+            max-width: 1400px; /* Increase max size for larger displays */
+            height: 80vh; /* Height relative to viewport */
+            aspect-ratio: 16 / 9; /* Maintain aspect ratio */
+            background: #d3d3d3; /* Silver laptop frame */
+            border-radius: 15px; /* Rounded corners */
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* Subtler shadow for uniformity */
+            display: flex;
+            align-items: center; /* Centering content inside the laptop */
+            justify-content: center;
+        }
+
+        /* Bezel and Screen - acts as the content container */
+        .bezel {
+            position: absolute;
+            top: 4%; /* Adjusted top for more space below camera */
+            left: 3%;
+            right: 3%;
+            bottom: 3%;
+            background: #1e1e1e; /* Dark grey background */
+            overflow: auto; /* Enables scrolling */
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Start content from top */
+            flex-direction: column;
+        }
+
+        .container {
+            width: 100%; /* Width relative to bezel size */
+            max-width: 800px; /* Max width for better readability */
+            margin: 20px auto; /* Ensures space on all sides */
+            color: #f1f1f1;
+            text-align: left; /* Text aligned left for natural reading */
+        }
+
+        h1 {
+            font-size: 2em; /* Larger font size for title */
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.1em; /* Uniform font size for paragraphs */
+            line-height: 1.6; /* Improved line height for readability */
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        /* Styled Text Background */
+        .styled-text {
+            display: inline-block;
+            background: #333; /* Dark background for contrast */
+            color: #f1f1f1; /* Light text color */
+            padding: 5px 10px;
+            border-radius: 10px; /* Rounded edges */
+            font-size: 1em; /* Font size matching text */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Slight shadow for depth */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="laptop">
+        <!-- Camera -->
+        <div class="camera">
+            <div class="camera-indicator"></div>
+        </div>
+        <!-- Screen Area - now contains the textbook chatbot content -->
+        <div class="bezel">
+            <div class="container">
+                <h1>Textbook Chatbot</h1>
+                <p>
+                    Welcome to the <span class="styled-text">"Guide to the Software Engineering Body of Knowledge (SWEBOK) v4.0"</span> chatbot. This tool is designed to provide interactive access to key concepts and principles defined in the globally recognized guide for software engineering professionals.
+                </p>
+                <p>
+                    The SWEBOK v4.0 guide is edited by the renowned software engineering expert <span class="styled-text">Hironori Washizaki</span> As an esteemed leader in the field, Washizaki has played a pivotal role in ensuring the guide serves as a comprehensive reference for engineers, educators, and organizations worldwide.
+                </p>
+                <p>
+                    SWEBOK serves as a standard framework outlining essential knowledge areas in software engineering. Covering topics such as project management, software design, testing, and more, this guide ensures that engineers, educators, and organizations have a unified understanding of best practices and methodologies.
+                </p>
+                <p>
+                    Whether you're a student, practitioner, or enthusiast, this chatbot enables you to explore the guide, ask questions, and quickly retrieve relevant information with precision and ease.
+                </p>
+                <p>
+                    For example: <span class="styled-text">What is software design?</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

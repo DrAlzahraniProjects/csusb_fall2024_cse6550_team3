@@ -2,138 +2,199 @@ import os
 import time
 import streamlit as st
 from .pdf import serve_pdf
+from .questions import check_baseline_answerable
 from backend.inference import chat_completion
 from backend.statistics import (
     init_user_session,
     update_user_session,
-    insert_conversation
+    insert_conversation,
 )
 from .utils import (
     load_css,
-    update_and_display_statistics,
     handle_feedback,
-    display_confusion_matrix
+    get_feedback_question,
+    display_confusion_matrix,
 )
 
-baseline_questions = {
-    # 10 Answerable questions
-    "Who is Hironori Washizaki?": True,
-    "What is software quality?": True,
-    "What is agile approach?": True,
-    "How does the Agile approach impact software quality?": True,
-    "What is software testing process?": True,
-    "What is ROI?": True,
-    "What is a Quality Management System (QMS) in software?": True,
-    "What are some key challenges to ensuring software quality?": True,
-    "How do risk management and SQA interact in projects?": True,
-    "How does testability affect software testing processes?": True,
+# Add rate limit constants
+MAX_REQUESTS_PER_MINUTE = 10  # 10 requests per minute
+BLOCK_DURATION_SECONDS = 3 * 60  # 3 minutes
 
-    # 10 Unanswerable Questions
-    "How many defects will occur in a specific software project?": False,
-    "What is the cost of nonconformance for a project?": False,
-    "How will a new process affect software defect rates?": False,
-    "What is the probability of a defect reoccurring in software?": False,
-    "How long will it take to resolve defects from an audit?": False,
-    "What level of software quality is `good enough` for stakeholders?": False,
-    "What is the future impact of AI on software quality standards?": False,
-    "What ROI will be achieved through additional SQA measures?": False,
-    "What specific changes improve software quality across all projects?": False,
-    "How many resources are needed to achieve a quality level?": False
-}
+def check_rate_limit():
+    """Check if the user has exceeded the rate limit."""
+    now = time.time()
+    if "request_timestamps" not in st.session_state:
+        st.session_state.request_timestamps = []
 
-def main():
-    """Main Streamlit app logic"""
-    # Application Title
-    st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
+    # Remove timestamps older than a minute
+    st.session_state.request_timestamps = [
+        t for t in st.session_state.request_timestamps if now - t <= 60
+    ]
 
-    # Load PDF if requested
-    if "view" in st.query_params and st.query_params["view"] == "pdf":
-        serve_pdf()
-    else:
-        load_css()
+    # Check if the rate limit has been exceeded
+    if len(st.session_state.request_timestamps) >= MAX_REQUESTS_PER_MINUTE:
+        if "block_until" in st.session_state and st.session_state.block_until > now:
+            st.error(
+                "You've reached the limit of 10 questions per minute because the server has limited resources. Please try again in 3 minutes."
+            )
+            st.stop()
+        else:
+            st.session_state.block_until = now + BLOCK_DURATION_SECONDS
+            st.error(
+                "You've reached the limit of 10 questions per minute because the server has limited resources. Please try again in 3 minutes."
+            )
+            st.stop()
 
-        # Create a new user session if one doesn't already exist
-        if "user_id" not in st.session_state:
+    # Add current timestamp to the list
+    st.session_state.request_timestamps.append(now)
+
+def initialize_session():
+    """Initialize user session if not already initialized."""
+    if "user_id" not in st.session_state:
+        try:
             st.session_state.user_id = init_user_session()
-            print(f"Creating user#{st.session_state.user_id}")
+        except Exception as e:
+            st.error("Unable to initialize user session. Please try again later.")
+            st.stop()
 
-        st.sidebar.empty()
-        display_confusion_matrix()
 
-        # Display the conversation history
-        if "messages" not in st.session_state:
-            st.session_state.messages = []
-        for message in st.session_state.messages:
-            if message["role"] == "assistant":
-                st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
-                conversation_id = message.get("conversation_id", None)
-                if conversation_id:
-                    # Find the corresponding user question
-                    user_message = next((msg for msg in st.session_state.messages if msg["role"] == "user" and msg["conversation_id"] == conversation_id), None)
-                    # Set feedback question based on baseline question type
-                    feedback_question = "Was this response helpful?"
-                    if user_message and user_message["content"] in baseline_questions:
-                        is_answerable = baseline_questions[user_message["content"]]
-                        feedback_question = (
-                            "Did the chatbot correctly answer this answerable question?" if is_answerable
-                            else "Did the chatbot correctly answer this unanswerable question?"
-                        )
-                    # Display feedback caption
-                    st.caption(feedback_question)
-                    # Display feedback option
-                    feedback = st.feedback(
-                        "thumbs",
-                        key=f"feedback_{conversation_id}",
-                        on_change=handle_feedback,
-                        kwargs={"conversation_id": conversation_id}
-                    )
-            else:
-                st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
+def render_conversation_history():
+    """Render conversation history from the session state."""
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
 
-        # Handle user input and display response
-        if prompt := st.chat_input("Ask your question?"):
-            st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
-
-            response_container = st.empty()
-            with st.spinner("Generating response..."):
-                start_time = time.time()
-                response = ""
-                for partial_response, model_name in chat_completion(prompt):
-                    response += partial_response
-                    response_container.markdown(f"<div class='assistant-message'>{response}</div>", unsafe_allow_html=True)
-                end_time = time.time()
-                response_time = int((end_time - start_time))
-
-                # Extract keywords (Not required)
-                # conversation_texts = [prompt + " " + response]
-                # keywords = extract_keywords(conversation_texts)
-                # print(f"Extracted Keywords: {keywords}")
-
-            # Add conversation to database
-            conversation_id = insert_conversation(
-                question=prompt,
-                response=response,
-                citations="",
-                model_name=model_name,
-                source=os.getenv("CORPUS_SOURCE").split("/")[-1],
-                response_time=response_time,
-                correct=None,
-                user_id=st.session_state.user_id,
-                answerable=baseline_questions.get(prompt, None),
+    for message in st.session_state.messages:
+        if message["role"] == "assistant":
+            render_assistant_message(message)
+        else:
+            st.markdown(
+                f"<div class='user-message'>{message['content']}</div>",
+                unsafe_allow_html=True,
             )
 
-            # Append the new conversation to session state
-            st.session_state.messages.append({
-                "role": "user",
-                "content": prompt,
-                "conversation_id": conversation_id,
-            })
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": response,
-                "conversation_id": conversation_id
-            })
+def render_assistant_message(message):
+    """Render assistant message and feedback options."""
+    st.markdown(f"<div class='assistant-message'>{message['content']}</div>", unsafe_allow_html=True)
 
-            # Update the user session
+    # Provide feedback interface
+    conversation_id = message.get("conversation_id")
+    if conversation_id:
+        user_message = next(
+            (
+                msg
+                for msg in st.session_state.messages
+                if msg["role"] == "user" and msg.get("conversation_id") == conversation_id
+            ),
+            None,
+        )
+        feedback_question = get_feedback_question(
+            user_message["answerable"] if user_message else None
+        )
+        st.caption(feedback_question)
+        st.feedback(
+            "thumbs",
+            key=f"feedback_{conversation_id}",
+            on_change=handle_feedback,
+            kwargs={"conversation_id": conversation_id},
+        )
+
+def handle_user_input(prompt: str):
+    """Process user input, generate a response, and update session state."""
+    check_rate_limit()
+    response_container = st.empty()
+    with st.spinner("Generating response..."):
+        try:
+            response, answerable = generate_response(prompt, response_container)
+            conversation_id = save_conversation_to_db(prompt, response, answerable)
+            update_session_messages(prompt, response, conversation_id, answerable)
             update_user_session(st.session_state.user_id)
             st.rerun()
+        except Exception as e:
+            # st.error(f"Error generating or saving response. Please try again. \nError: {e}")
+            st.success(f"Our systems are overloaded. Please try again.")
+
+
+def generate_response(prompt: str, response_container):
+    """Generate response for a given user prompt."""
+    start_time = time.time()
+    response = ""
+    answerable = check_baseline_answerable(prompt)
+    for partial_response, model_name in chat_completion(prompt):
+        response += partial_response
+        response_container.markdown(
+            f"<div class='assistant-message'>{response}</div>", unsafe_allow_html=True
+        )
+    end_time = time.time()
+    st.session_state.response_time = int(end_time - start_time)
+    return response, answerable
+
+
+def save_conversation_to_db(prompt: str, response: str, answerable: bool) -> int:
+    """Save conversation to the database."""
+    return insert_conversation(
+        question=prompt,
+        response=response,
+        citations="",  # No need to include highlighting data
+        model_name="open-mistral-7b",
+        source=os.getenv("CORPUS_SOURCE", "unknown source").split("/")[-1],
+        response_time=st.session_state.response_time,
+        correct=None,
+        user_id=st.session_state.user_id,
+        answerable=answerable,
+    )
+
+
+def update_session_messages(prompt: str, response: str, conversation_id: int, answerable: bool):
+    """Update session state with user and assistant messages."""
+    st.session_state.messages.append(
+        {"role": "user", "content": prompt, "conversation_id": conversation_id, "answerable": answerable}
+    )
+    st.session_state.messages.append(
+        {"role": "assistant", "content": response, "conversation_id": conversation_id}
+    )
+
+
+def main():
+    """Main application logic."""
+    # Initialize session state for tracking whether the app has loaded
+    if "app_loaded" not in st.session_state:
+        st.session_state.app_loaded = False
+
+    # Display the loading message only if the app has not yet loaded
+    if not st.session_state.app_loaded:
+        # Only define loading_message if the app is not loaded yet
+        loading_message = st.empty()
+        loading_message.markdown("<h2 style='text-align: center;'>Loading the app, please wait...</h2>", unsafe_allow_html=True)
+
+        # Simulate a delay for demo purposes (you can remove or adjust this)
+        time.sleep(2) 
+
+        # Mark the app as loaded in session state
+        st.session_state.app_loaded = True
+
+        # Clear the loading message
+        loading_message.empty()
+
+    # Once the app is loaded, display the normal app interface
+    st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
+
+    # Check for PDF query parameters
+    if "view" in st.query_params and st.query_params["view"] == "pdf":
+        pdf_path = st.query_params.get("file")
+        page = int(st.query_params.get("page", 1))
+
+        # Use serve_pdf only without highlighting
+        serve_pdf(pdf_path, page)
+        return
+
+    # Load UI components
+    load_css()
+    initialize_session()
+    st.sidebar.empty()
+    display_confusion_matrix()
+    render_conversation_history()
+
+    # Process user input
+    if prompt := st.chat_input("Ask your question?"):
+        st.markdown(f"<div class='user-message'>{prompt}</div>", unsafe_allow_html=True)
+        handle_user_input(prompt)

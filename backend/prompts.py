@@ -1,16 +1,30 @@
 from langchain_core.prompts import ChatPromptTemplate
 
-# Prompts
-system_prompt = """
+SYSTEM_PROMPT = """
 You are a chatbot that answers the question in the <question> tags.
 - Answer based only on provided context in <context> tags only if relevant.
-- If unsure, say "I don't have enough information to answer."
-- For unclear questions, ask for clarification.
 - Always identify yourself as a chatbot, not the textbook.
-- To questions about your purpose, say: "I'm a chatbot designed to answer questions about the provided textbook."
+- Keep your answer short and to the point.
 """
 
-prompt = ChatPromptTemplate.from_messages([
-  ("system", system_prompt),
-  ("human", "<question>{input}</question>\n\n<context>{context}<context>"),
-])
+REWRITE_PROMPT = """
+- If the text is unrelated to software engineering only return "NONE"
+- If the text is related to the software engineering rewrite the text
+- Keep the rewritten text concise
+"""
+
+def get_prompt():
+    """
+    Get the appropriate prompt template based on context availability.
+    """
+    return ChatPromptTemplate.from_messages([
+        ("system", SYSTEM_PROMPT),
+        ("human", "<question>{input}</question>\n\n<context>{context}<context>"),
+    ])
+
+def rewrite_prompt():
+    """Return a ChatPromptTemplate for prompt rewriting."""
+    return ChatPromptTemplate.from_messages([
+        ("system", REWRITE_PROMPT),
+        ("human", "{text}"),
+    ])
