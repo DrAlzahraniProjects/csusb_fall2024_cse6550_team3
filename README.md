@@ -54,7 +54,7 @@ The `setup.py` script automates the setup process, including downloading the rep
    
    * Navigate to the folder:
      ```bash
-     cd Desktop/csusb_fall2024_cse6550_team3/jupyter
+     cd csusb_fall2024_cse6550_team3/jupyter
      ```
    * Run jupyter notebook:
      ```bash
