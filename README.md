@@ -65,6 +65,10 @@ The `setup.py` script automates the setup process, including downloading the rep
      ```bash
      jupyter notebook --port=6003
      ```
+   * Wait for the browser to open automatically.
+     
+      If it doesn't open, use the following link: http://localhost:6003/tree
+
 
 For advanced testing and debugging, refer to the provided [Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter).
 
