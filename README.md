@@ -1,6 +1,7 @@
 # Textbook Chatbot
 
-The **Textbook Chatbot** project for CSE 6550 is designed to assist with queries related to the textbook, *"Software Engineering: A Practitioner's Approach."* The chatbot serves as an educational tool, helping users by providing information, answering questions, and possibly retrieving content from the textbook.
+This chatbot is as an educational tool that's built to answer questions related to the Swebok textbook, [Software Engineering Body of Knowledge (SWEBOK)](https://www.computer.org/education/bodies-of-knowledge/software-engineering). The chatbot was built by team 3 for [CSE 6550: Software Engineering Concepts](https://catalog.csusb.edu/coursesaz/cse/)
+
 
 [Website](https://sec.cse.csusb.edu/team3/)  
 [Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter)
@@ -56,14 +57,18 @@ The `setup.py` script automates the setup process, including downloading the rep
 ## Jupyter Notebook Setup (Handled Separately)
 1. How to run the jupyter notebook in virtual environment.
    
-   On MacOS
-   ```bash
-   python3 run_jupyter.py
-   ```
-   Windows and Linux
-   ```bash
-   python run_jupyter.py
-   ```
+   * Navigate to the folder:
+     ```bash
+     cd csusb_fall2024_cse6550_team3/jupyter
+     ```
+   * Run jupyter notebook:
+     ```bash
+     jupyter notebook --port=6003
+     ```
+   * Wait for the browser to open automatically.
+     
+      If it doesn't open, use the following link: http://localhost:6003/tree
+
 
 For advanced testing and debugging, refer to the provided [Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter).
 
@@ -111,7 +116,8 @@ If for any reason you cannot use `setup.py`, follow the steps below:
    ```bash
    docker run -d -p 5003:5003 team3-app
    ```
-
+**Access the Application**:
+   - Website: [http://localhost:5003/team3](http://localhost:5003/team3)
 ---
 
 ## Evaluation Questions
