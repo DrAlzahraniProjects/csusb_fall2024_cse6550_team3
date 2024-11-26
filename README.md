@@ -55,20 +55,30 @@ The `setup.py` script automates the setup process, including downloading the rep
 ---
 
 ## Jupyter Notebook Setup (Handled Separately)
-1. How to run the jupyter notebook in virtual environment.
-   
-   * Navigate to the folder:
-     ```bash
-     cd csusb_fall2024_cse6550_team3/jupyter
-     ```
-   * Run jupyter notebook:
-     ```bash
-     jupyter notebook --port=6003
-     ```
-   * Wait for the browser to open automatically.
-     
-      If it doesn't open, use the following link: http://localhost:6003/tree
 
+To run Jupyter Notebook independently from the repository, please download the following files:
+
+SWEBOK Corpus: [swebok.pdf](https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3/tree/main/data/swebok)
+
+Jupyter Notebook: [main.ipynb](https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3/tree/main/jupyter)
+
+- Create a new directory and place only these two files (swebok.pdf and main.ipynb) inside the directory. This will ensure there are no file path issues during execution.
+
+Navigate to the new directory in the terminal before launching Jupyter Notebook:
+Open a terminal and use the cd command to navigate to the directory where you saved swebok.pdf and main.ipynb. For example:
+```bash
+cd csusb_fall2024_cse6550_team3/jupyter
+```
+
+Run the Jupyter Notebook:
+
+In the terminal, type the following command to launch Jupyter Notebook:
+```bash
+jupyter notebook --port=6003
+```
+This will open the Jupyter Notebook interface in your web browser, where you can open main.ipynb and run it.
+
+If it doesn't open, use the following link: http://localhost:6003/tree
 
 For advanced testing and debugging, refer to the provided [Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter).
 
