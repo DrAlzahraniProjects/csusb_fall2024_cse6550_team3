@@ -112,6 +112,28 @@ If for any reason you cannot use `setup.py`, follow the steps below:
    ```bash
    docker run -d -p 5003:5003 team3-app
    ```
+### Docker Manual Setup
+
+1. **Install Docker:**
+   - Follow the official guide for your OS:
+     - [Windows](https://docs.docker.com/get-docker/)
+     - [macOS](https://docs.docker.com/get-docker/)
+     - [Linux](https://docs.docker.com/get-docker/)
+
+2. **Verify Installation:**
+   - Run the following command to check Docker version:
+     ```bash
+     docker --version
+     ```
+
+3. **Start Docker:**
+   - Ensure Docker is running by executing:
+     ```bash
+     docker info
+     ```
+
+4. **Access Full Manual:**
+   - For detailed setup instructions, visit the [Docker Setup Guide](https://docs.docker.com/get-docker/).
 
 ---
 
