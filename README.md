@@ -116,7 +116,8 @@ If for any reason you cannot use `setup.py`, follow the steps below:
    ```bash
    docker run -d -p 5003:5003 team3-app
    ```
-
+**Access the Application**:
+   - Website: [http://localhost:5003/team3](http://localhost:5003/team3)
 ---
 
 ## Evaluation Questions
