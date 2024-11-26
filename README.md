@@ -57,7 +57,7 @@ The `setup.py` script automates the setup process, including downloading the rep
 
 To run Jupyter Notebook independently from the repository, please download the following files:
 
-SWEBOK Corpus: [swebok.pdf](https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3/tree/main/data/swebok)
+SWEBOK Corpus: [swebok.pdf](https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3/blob/main/data/swebok/textbook.pdf)
 
 Jupyter Notebook: [main.ipynb](https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3/tree/main/jupyter)
 
