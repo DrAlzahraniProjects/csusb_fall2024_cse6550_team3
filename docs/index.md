@@ -2,83 +2,80 @@
 
 ## About project 
 
-The textbook chatbot project for CSE 6550 is designed to assist with queries related to the textbook "Software Engineering: A Practitioner's Approach." The chatbot serves as an educational tool, helping users by providing information, answering questions, and possibly retrieving content from the textbook.
+The textbook chatbot project for CSE 6550 is designed to assist with queries related to the textbook "Software Engineering Body of Knowledge (SWEBOK)." The chatbot serves as an educational tool, helping users by providing information, answering questions, and possibly retrieving content from the textbook.
 
 ## Table of contents
 - [Features](#features)
-- [Getting started](#getting-started)
+- [Getting started](#setup)
 - [FAQ](#faq)
 - [Community and support](#community-and-support)
 - [Contact](#contact)
 
 ## Features
-- Answers questions about SWEBOK Textbook with sources.
+- Answers questions about [SWEBOK](https://www.computer.org/education/bodies-of-knowledge/software-engineering) textbook with sources.
 - Confusion matrix and performance metrics for evaluation.
 - User feedback mechanism.
 
 ## Setup
 
-1. To get started, first clone the repository to your local machine:
-   ```
+### Steps:
+
+1. **Clone the Repository**:
+   ```bash
    git clone https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3.git
    ```
 
-2. After cloning the repository, navigate to the project directory:
-   ```
+2. **Navigate to the Project Directory**:
+   ```bash
    cd csusb_fall2024_cse6550_team3
    ```
-
-3. Update local repository
+3. **Update Local Repository**:
    ```
    git pull origin main
    ```
-
-4. Preliminary steps: make sure to execute all three steps given below to delete previous image
-
-   To see all the running containers in your machine: 
+4. **Run the Setup Script**:  
+   ```bash
+   python setup.py
    ```
-    docker ps
-   ```
-  
-   To stop a running container, replace <container_id> with the one found in docker ps
-   ```
-   docker stop <container_id>
+   **Note:** If the above command does not work (e.g., on Linux), try using:
+   ```bash
+   python3 setup.py
    ```
 
-   To remove/delete a docker container, replace <container_id> with the one found in docker ps
-   ```
-   docker rm <container_id>
-   ```
+4. **Follow On-Screen Prompts**:
+   - The script will ask for the Mistral API key (provided in the team discussion on Canvas).
+   - It will stop any existing containers, pull updates, build the Docker image, and run the container.
 
-5. Build the docker image using the following command:
+5. **Access the Application**:
+   - Website: [http://localhost:5003/team3](http://localhost:5003/team3)
 
-   Before running this command include API key in the end 
+---
 
-   Go to [team3](https://csusb.instructure.com/courses/43192/discussion_topics/419698) in canvas for API key
+## Jupyter Notebook Setup 
+1. How to run the jupyter notebook in virtual environment.
    
-   ```
-   docker build -t team3-app . --build-arg MISTRAL=
-   ```
-6. Now, run the docker container:
- 
-   ```
-   docker run -d -p 5003:5003 -p 6003:6003 team3-app
-   ```
+   * Navigate to the folder:
+     ```bash
+     cd csusb_fall2024_cse6550_team3/jupyter
+     ```
+   * Run jupyter notebook:
+     ```bash
+     jupyter notebook --port=6003
+     ```
+   * Wait for the browser to open automatically.
+     
+      If it doesn't open, use the following link: http://localhost:6003/tree
 
-7. Allow upto 5 minutes before accessing the application
-    
-   The application will be available at
-  
-    Website: [http://localhost:5003/team3](http://localhost:5003/team3)
-   
-    Jupyter: [http://localhost:6003/team3/jupyter](http://localhost:6003/team3/jupyter)
 
+For advanced testing and debugging, refer to the provided [Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter).
+
+---
 
 ## FAQ
 
 1. What is this chatbot designed to do? 
 
-   This chatbot is designed to assist users with answering questions from SE Textbook.
+   This chatbot is designed to assist users with answering questions from SWEBOK Textbook.
 
 2. How do I interact with the chatbot?
 
