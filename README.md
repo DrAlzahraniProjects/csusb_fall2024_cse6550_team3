@@ -59,7 +59,7 @@ To run Jupyter Notebook independently from the repository, please download the f
 
 SWEBOK Corpus: [swebok.pdf](https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3/blob/main/data/swebok/textbook.pdf)
 
-Jupyter Notebook: [main.ipynb](https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3/tree/main/jupyter)
+Jupyter Notebook: [main.ipynb](https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3/blob/main/jupyter/main.ipynb)
 
 - Create a new directory and place only these two files (swebok.pdf and main.ipynb) inside the directory. This will ensure there are no file path issues during execution.
 
