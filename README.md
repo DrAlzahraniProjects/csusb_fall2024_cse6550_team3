@@ -2,7 +2,6 @@
 
 This chatbot is as an educational tool that's built to answer questions related to the Swebok textbook, [Software Engineering Body of Knowledge (SWEBOK)](https://www.computer.org/education/bodies-of-knowledge/software-engineering). The chatbot was built by team 3 for [CSE 6550: Software Engineering Concepts](https://catalog.csusb.edu/coursesaz/cse/)
 
-
 [Website](https://sec.cse.csusb.edu/team3/)  
 [Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter)
 
@@ -58,9 +57,9 @@ The `setup.py` script automates the setup process, including downloading the rep
 
 To run Jupyter Notebook independently from the repository, please download the following files:
 
-SWEBOK Corpus: [swebok.pdf](https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3/tree/main/data/swebok)
+SWEBOK Corpus: [swebok.pdf](https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3/blob/main/data/swebok/textbook.pdf)
 
-Jupyter Notebook: [main.ipynb](https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3/tree/main/jupyter)
+Jupyter Notebook: [main.ipynb](https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3/blob/main/jupyter/main.ipynb)
 
 - Create a new directory and place only these two files (swebok.pdf and main.ipynb) inside the directory. This will ensure there are no file path issues during execution.
 
@@ -81,6 +80,7 @@ This will open the Jupyter Notebook interface in your web browser, where you can
 If it doesn't open, use the following link: http://localhost:6003/tree
 
 For advanced testing and debugging, refer to the provided [Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter).
+
 
 ---
 
