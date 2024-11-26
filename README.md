@@ -4,7 +4,6 @@ This chatbot is as an educational tool that's built to answer questions related 
 
 
 [Website](https://sec.cse.csusb.edu/team3/)  
-[Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter)
 
 ---
 
