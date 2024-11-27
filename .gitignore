@@ -17,4 +17,4 @@ __pycache__/
 *.temp
 
 # Tests
-results/
+test_outputs/
