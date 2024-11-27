@@ -1,0 +1,33 @@
+{
+	"questions": [
+		{
+			"answerable": [
+				"Model view controller",
+				"Table of contents",
+				"srs",
+				"R0i",
+				"software",
+				"git",
+				"low fidelity diagram",
+				"csS",
+				"scrum"
+			],
+			"unanswerable": [
+				"How does WiFi work?",
+				"1",
+				"What's your name?",
+				"wifi password",
+				"page number",
+				"reference",
+				"equation",
+				"microsoft stock price",
+				"CSE 6550",
+				"matrix"
+			]
+		},
+		{
+			"answerable": [],
+			"unanswerable": []
+		}
+	]
+}

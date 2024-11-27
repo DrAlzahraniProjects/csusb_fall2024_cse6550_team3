@@ -1,0 +1,56 @@
+[
+    {
+        "question": "Model view controller",
+        "response": "\n            I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge).\n            Your question appears to be about something else.\n            Could you ask a question related to software engineering fundamentals, requirements, design, construction, testing, maintenance, configuration management, engineering management, processes, models, or quality?\n            ",
+        "type": "answerable",
+        "passed": true
+    },
+    {
+        "question": "Table of contents",
+        "response": "The context provided is related to software engineering, specifically focusing on software architecture, design, and development. The topics covered include architecture views and viewpoints, architecture in context, goodness in architecture, reasoning about architectures, architecture reviews, architecture metrics, architectural design, architecture methods and tactics, architecture in the large, architecture styles and patterns, architecture description languages and frameworks, architecture as significant decisions, stakeholders and concerns, and uses of architecture. These topics are part of the Software Engineering Body of Knowledge (SWEBOK) and are important for understanding and designing software systems.",
+        "type": "answerable",
+        "passed": true
+    },
+    {
+        "question": "srs",
+        "response": "The Software Requirements Specification (SRS) is a document that outlines the functional and non-functional requirements of a software system. It serves as a contract between stakeholders and the development team, ensuring that everyone has a clear understanding of the software's expected behavior and performance. The SRS includes details such as system functionality, performance requirements, interface specifications, and constraints. It is an essential component of the software development process, helping to ensure that the final product meets the needs and expectations of its users.\n\nSoftware requirements can be complex and come from various sources, including clients, customers, users, regulatory authorities, and the software organization itself. They can be categorized into several types, such as functional, nonfunctional, technology constraints, and quality of service constraints. Categorizing requirements can help manage complexity and ensure that each area is addressed separately.\n\nRequirements elicitation is the process of surfacing candidate requirements, which involves identifying all potential sources of requirements and evaluating them. Requirements development activities include requirements analysis, specification, validation, scrubbing, change control, and scope matching. Requirements management includes activities such as requirements reviews, simulation and execution, and prototyping.\n\nIn conclusion, the SRS is a critical document in the software development process, and understanding the fundamentals of software requirements is essential for developing high-quality software that meets the needs of its stakeholders.",
+        "type": "answerable",
+        "passed": true
+    },
+    {
+        "question": "R0i",
+        "response": "\n            I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge).\n            Your question appears to be about something else.\n            Could you ask a question related to software engineering fundamentals, requirements, design, construction, testing, maintenance, configuration management, engineering management, processes, models, or quality?\n            ",
+        "type": "answerable",
+        "passed": true
+    },
+    {
+        "question": "software",
+        "response": "The context provided discusses various aspects of software construction and development. It covers topics such as software quality characteristics and their conflicting impacts, static and formal analysis techniques, inheritance and polymorphism in Object-Oriented Programming (OOP), distributed and parallel programming, debugging, standards and guidelines, and construction methods for distributed and cloud-based software. The text also mentions the importance of algorithms in designing software, their attributes, and the techniques for measuring their complexity.\n\nSoftware construction involves creating software that meets specific functional, performance, compatibility, usability, reliability, security, maintainability, and portability requirements. Certain quality characteristics have conflicting impacts, making it challenging to optimize all of them simultaneously. For example, enhancing security by encrypting data might adversely affect performance, privacy, and usability.\n\nStatic analysis techniques involve analyzing documents and source code without executing the software. Formal analysis techniques use mathematics and formal specification languages to analyze software. Dynamic analysis techniques involve executing the software to gather information about its behavior.\n\nInheritance and polymorphism are essential features of OOP. Inheritance allows a subclass to inherit properties from a superclass, while polymorphism allows a single interface to be used for entities of different types.\n\nDistributed programming involves writing software that runs on multiple computers connected through a network to achieve a common goal. Parallel programming is a type of computing in which different parts of the program are executed in parallel to achieve the same objective.\n\nDebugging involves identifying and fixing errors in software, such as syntax errors, runtime errors, and logical errors.\n\nStandards and guidelines help ensure consistency and reduce defects in software development projects. They can include coding standards, design patterns, and testing standards.\n\nConstruction methods for distributed and cloud-based software need to consider issues such as parallelism, communication, and fault tolerance. Cloud-based software often adopts microservice architecture and container-based deployment.\n\nPerformance analysis and tuning involve identifying hot spots in software and modifying the code to make it run more efficiently. Platform standards enable programmers to develop portable applications that can be executed in compatible environments without modification.",
+        "type": "answerable",
+        "passed": true
+    },
+    {
+        "question": "git",
+        "response": "The context provided is related to software engineering and the Software Engineering Body of Knowledge (SWEBOK). It discusses various concepts such as continuous integration, continuous delivery, continuous testing, and deployment, which are essential practices in software development. It also mentions reverse engineering, a process of analyzing software to identify its components and interrelationships. The text emphasizes the use of tools and automation in these practices to improve efficiency, reduce errors, and ensure the quality of software products.\n\nGit, as a version control system, fits well into this context. It supports continuous integration by allowing multiple developers to work on the same project simultaneously, with easy branching and merging of code. This allows for frequent integration of changes, which is a fundamental goal of continuous integration. Git also provides a robust backup system, which can be useful in the context of continuous delivery, where rollbacks may be necessary if an issue arises with a new release.\n\nIn the context of reverse engineering, Git can be used to track changes in the software over time, providing a historical record of the software's development. This can be helpful in understanding the evolution of the software and identifying potential issues or areas for improvement.\n\nOverall, Git is a versatile tool that can support various software engineering practices, making it an essential part of any software development team's toolkit.",
+        "type": "answerable",
+        "passed": true
+    },
+    {
+        "question": "low fidelity diagram",
+        "response": "A low fidelity diagram is a preliminary representation of a system or a design that focuses on the overall structure and relationships between components, without going into detailed specifications or design elements. It is often used in the early stages of design to explore and communicate ideas, identify potential issues, and guide the development of higher fidelity models.\n\nIn the context of software design, low fidelity diagrams can be created using various types of notation, such as class and object diagrams, component diagrams, or activity diagrams. These diagrams provide a high-level view of the system, showing the major components and their interconnections, without delving into the specific details of their implementation or behavior.\n\nLow fidelity diagrams are useful because they allow for rapid prototyping and iterative design, enabling designers to quickly test and refine their ideas before investing time and resources in more detailed models. They also facilitate communication among stakeholders, helping to ensure that everyone involved in the project has a shared understanding of the overall system architecture and its intended behavior.\n\nOverall, low fidelity diagrams are an essential tool in the software design process, providing a simple and effective way to explore and communicate design ideas, identify potential issues, and guide the development of higher fidelity models.",
+        "type": "answerable",
+        "passed": true
+    },
+    {
+        "question": "csS",
+        "response": "\n            I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge).\n            Your question appears to be about something else.\n            Could you ask a question related to software engineering fundamentals, requirements, design, construction, testing, maintenance, configuration management, engineering management, processes, models, or quality?\n            ",
+        "type": "answerable",
+        "passed": true
+    },
+    {
+        "question": "scrum",
+        "response": "Scrum is an Agile methodology that is more focused on project management within the context of software development. It follows an iterative and incremental approach, breaking down the project into smaller units called \"sprints\" which last no more than 30 days. The product owner is responsible for determining which items go into the product backlog, and the tasks from this list are identified, defined, prioritized, and estimated. A working version of the software is then tested and released at the end of each sprint. Daily Scrum meetings ensure that work is managed according to the plan. This methodology encourages self-organization, continuous improvement, and frequent customer involvement.",
+        "type": "answerable",
+        "passed": true
+    }
+]

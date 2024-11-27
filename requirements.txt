@@ -8,6 +8,7 @@ langchain-huggingface
 langchain-mistralai
 pandas
 pypdf
+pytest
 python-dotenv
 streamlit
 sentence-transformers
