@@ -133,7 +133,7 @@ If for any reason you cannot use `setup.py`, follow the steps below:
    ```
 2. **Run tests**
    ```bash
-   docker run --env-file .env -v $(pwd):/app --entrypoint python team3-app -m pytest -v tests/test_questions.py -p no:warnings
+   docker run --env-file .env -v $(pwd):/app --entrypoint python team3-app -m pytest tests/test_questions.py -p no:warnings --tb=no -s
    ```
 
 ## Evaluation Questions

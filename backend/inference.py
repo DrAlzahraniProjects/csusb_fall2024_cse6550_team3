@@ -83,7 +83,7 @@ def rewrite_question(question):
     rewrite_message = rewrite_template.format_messages(text=question)
     new_question = llm.invoke(rewrite_message).content.strip()
     relevant_docs, context = fetch_relevant_documents(new_question)
-    print(new_question)
+    # print(new_question)
     if len(relevant_docs) != 0 and "None" not in new_question:
         time.sleep(1) # Avoids getting rate limited by the mistral api
         return new_question, relevant_docs, context
@@ -98,7 +98,7 @@ def chat_completion(question: str) -> tuple[str, str]:
     Yields:
         tuple[str, str]: The generated response and model name.
     """
-    print(f"Running prompt: {question}")
+    # print(f"Running prompt: {question}")
   
     # Fetch relevant documents
     relevant_docs, context = fetch_relevant_documents(question)
@@ -124,7 +124,7 @@ def chat_completion(question: str) -> tuple[str, str]:
             raise ValueError(f"Unexpected response structure: {invoke_response}")
         
         answer = invoke_response.get("output", "")
-        print(f"Generated answer: {answer}")
+        # print(f"Generated answer: {answer}")
         yield (answer, MODEL_NAME)
 
         # Handle citations if available
