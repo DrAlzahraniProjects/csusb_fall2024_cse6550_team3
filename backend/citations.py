@@ -4,6 +4,7 @@ def get_citations(docs):
     """
     Extract page numbers without text content.
     """
+    # print(docs)
     citations = [
         {'page': doc.metadata.get('page', 'Unknown page') + 1, 'text': ''}  # No text
         for doc in docs

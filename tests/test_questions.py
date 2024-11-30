@@ -14,7 +14,7 @@ from backend.inference import chat_completion
 class TestQuestionAnswers:
     """Test suite for Textbook Chatbot."""
     
-    NO_CONTEXT_MSG = "\n            I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge).\n            Your question appears to be about something else.\n            Could you ask a question related to software engineering fundamentals, requirements, design, construction, testing, maintenance, configuration management, engineering management, processes, models, or quality?\n            "
+    NO_CONTEXT_MSG = "\n    I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge).\n    Your question appears to be about something else.\n    Could you ask a question related to software engineering fundamentals, requirements, design, construction, testing, maintenance, configuration management, engineering management, processes, models, or quality?\n    "
     
     @staticmethod
     def load_test_questions(file_path: Path) -> Dict:
@@ -156,7 +156,7 @@ class TestQuestionAnswers:
                     
                 total_questions += 1
                 response, model_name = self.get_chat_response(question)
-                is_correct = self.NO_CONTEXT_MSG.strip() in response.strip()
+                is_correct = self.NO_CONTEXT_MSG in response
                 
                 if is_correct:
                     correct_answers += 1
