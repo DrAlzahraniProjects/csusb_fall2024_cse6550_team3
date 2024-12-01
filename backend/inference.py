@@ -9,7 +9,7 @@ from nemoguardrails.llm.providers import register_llm_provider
 from nemoguardrails.integrations.langchain.runnable_rails import RunnableRails
 from .prompts import get_prompt, rewrite_prompt, sanitize_question, validate_question, replace_text
 from .citations import get_citations, format_citations
-from .document_loading import load_documents_from_directory, load_or_create_faiss_vector_store, similarity_search
+from .document_loading import load_documents_from_directory, load_or_create_faiss_vector_store, similarity_search, clean_text
 
 # Import and load environment variables
 from dotenv import load_dotenv
@@ -77,6 +77,8 @@ def fetch_relevant_documents(question: str) -> str:
     low_distance_docs = [[doc, score] for doc, score in similar_docs if score < 320]
     relevant_docs = low_distance_docs[:2] if len(low_distance_docs) != 0 else similar_docs[:1]
     relevant_docs = [doc_pair[0] for doc_pair in relevant_docs]
+    for doc in relevant_docs:
+       doc.page_content = clean_text(doc.page_content)
     context = "\n\n".join([doc.page_content for doc in relevant_docs])
     # print("Relevant docs", relevant_docs)
     # print("Context", context)
@@ -96,7 +98,7 @@ def rewrite_question(question):
 
 def chat_completion(question: str) -> tuple[str, str]:
     """Generate a response to a given question using simple RAG approach, yielding the full response after invocation"""
-    # print(f"Running prompt: {question}")
+    print(f"Running prompt: {question}")
     
     # Validate question
     is_valid = validate_question(question)

@@ -114,3 +114,7 @@ def get_hybrid_retriever(documents, vector_store, k):
 		weights=[0.2, 0.8]
 	)
 	return fusion_retriever
+
+def clean_text(text: str) -> str:
+  """Remove any special characters from text"""
+  return ''.join(char for char in text if char.isalpha() or char.isspace() or char in '.,!?\'";:()')
