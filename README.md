@@ -5,8 +5,6 @@ This chatbot is as an educational tool that's built to answer questions related 
 [Website](https://sec.cse.csusb.edu/team3/)  
 [Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter)
 
----
-
 ## Prerequisites
 
 Before you begin, make sure you have the following installed on your machine:
@@ -14,7 +12,6 @@ Before you begin, make sure you have the following installed on your machine:
 - **Docker**
 - **Python 3.10 or above**
 
----
 
 ## Automated App Setup ##
 
@@ -51,7 +48,6 @@ The `setup.py` script automates the setup process, including downloading the rep
 5. **Access the Application**:
    - Website: [http://localhost:5003/team3](http://localhost:5003/team3)
 
----
 
 ## Jupyter Notebook Setup (Handled Separately)
 
@@ -82,7 +78,6 @@ If it doesn't open, use the following link: http://localhost:6003/tree
 For advanced testing and debugging, refer to the provided [Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter).
 
 
----
 
 ## Manual Docker Setup (Alternative)
 
@@ -128,7 +123,18 @@ If for any reason you cannot use `setup.py`, follow the steps below:
    ```
 **Access the Application**:
    - Website: [http://localhost:5003/team3](http://localhost:5003/team3)
----
+
+
+## Testing
+
+1. **Build Docker image**
+   ```bash
+   docker build -t team3-app .
+   ```
+2. **Run tests**
+   ```bash
+   docker run --env-file .env -v $(pwd):/app --entrypoint python team3-app -m pytest tests/test_questions.py -p no:warnings --tb=no -s
+   ```
 
 ## Evaluation Questions
 
@@ -147,7 +153,6 @@ Below is a list of answerable and unanswerable questions that will be used to ev
 | What strategies can be used for effective risk management in software engineering projects? | How could we fully eliminate all types of noise in wireless communications? |
 | What is the purpose of static analysis in software testing?        | How can we create a material that is completely indestructible?         |
 
----
 
 ## Troubleshooting
 
@@ -157,7 +162,6 @@ Below is a list of answerable and unanswerable questions that will be used to ev
 2. **"Website is unreadable in light mode"**:
    - On the Streamlit homepage, go to settings and select the custom theme.
 
----
 
 ## Project Structure
 
@@ -181,7 +185,6 @@ Below is a list of answerable and unanswerable questions that will be used to ev
   - `README.md`: Project documentation.
   - `.env.template`: Template for environment variables.
 
----
 
 ## Affiliation
 
@@ -189,4 +192,3 @@ Built by **Team 3**
 Course: CSE 6550, Fall '24 (Software Engineering Concepts)  
 Institution: California State University, San Bernardino  
 
---- 

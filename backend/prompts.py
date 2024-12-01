@@ -1,3 +1,5 @@
+import re
+from .abb import abbreviations
 from langchain_core.prompts import ChatPromptTemplate
 
 SYSTEM_PROMPT = """
@@ -8,9 +10,7 @@ You are a chatbot that answers the question in the <question> tags.
 """
 
 REWRITE_PROMPT = """
-- If the text is unrelated to software engineering only return "NONE"
-- If the text is related to the software engineering rewrite the text
-- Keep the rewritten text concise
+- Rewrite the text to be more descriptive
 """
 
 def get_prompt():
@@ -28,3 +28,24 @@ def rewrite_prompt():
         ("system", REWRITE_PROMPT),
         ("human", "{text}"),
     ])
+
+def sanitize_question(question: str) -> str:
+    return ''.join(char for char in question if char.isalpha() or char.isspace())
+
+def remove_spaces(question: str) -> str:
+    return question.replace(" ", "")
+
+def validate_question(question: str) -> bool:
+    return len(remove_spaces(sanitize_question(question))) > 0
+
+def replace_text(question: str) -> str:
+    """Replace abbreviations in the question with their full forms"""
+    words = question.split()
+    result = []
+    for word in words:
+        replaced_word = word
+        for abbrev, full_form in abbreviations.items():
+            if abbrev in word:
+                replaced_word = word.replace(abbrev, full_form)
+        result.append(replaced_word)
+    return ' '.join(result)

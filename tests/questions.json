@@ -1,0 +1,134 @@
+{
+	"questions": [
+		{
+			"answerable": [
+				"Who is Hironori Washizaki?",
+				"How does software testing impact the overall software development lifecycle?",
+				"What is the agile methodology?",
+				"What are the different types of software models, and when should each be used?",
+				"How does software configuration management ensure project success?",
+				"What role do user requirements play in software design and architecture?",
+				"What is software dependability?",
+				"How does project management in software engineering differ from traditional project management?",
+				"What strategies can be used for effective risk management in software engineering projects?",
+				"What is the purpose of static analysis in software testing?"
+			],
+			"unanswerable": [
+				"What is the largest possible number that could exist?",
+				"How will AI evolve in the next 100 years?",
+				"What is the solution to the Riemann Hypothesis?",
+				"What is the smallest possible Turing machine?",
+				"What is the most complex algorithm that can never be solved?",
+				"What is the most efficient way to handle an infinite stream of data?",
+				"Is there a way to build a fully self-sustaining human colony on Mars with current technology?",
+				"What's the upper limit of computational power for classical computers?",
+				"How could we fully eliminate all types of noise in wireless communications?",
+				"How can we create a material that is completely indestructible?"
+			]
+		},
+		{
+			"answerable": [
+				"What is break-even analysis in software projects?",
+				"How does teamwork impact software development?",
+				"Software process",
+				"What is a version control system?",
+				"What is the role of encryption in software security?",
+				"Software quality?",
+				"Project's life cycle?",
+				"Test automation?",
+				"Software construction?",
+				"How does architectural evaluation performed?"
+			],
+			"unanswerable": [
+				"What is username?",
+				"who is charls babage?",
+				"What is a chatbot?",
+				"What is the weather at San Bernardino?",
+				"Where is California located in USA?",
+				"Who is the president of USA?(OK)",
+				"Is theory of algorithm a core subject at CSUSB?",
+				"How to create a textbook chatbot?",
+				"What is cse?",
+				"who teach the course cse6550?"
+			]
+		},
+		{
+			"answerable": [
+				"Beta testing?",
+				"Data Persistence?",
+				"What is code refactoring?",
+				"Construction design?",
+				"Measures and metrics?",
+				"Construction in life cycle methods?",
+				"What is usability testing?",
+				"Managing dependencies?",
+				"Deployement?",
+				"Reverse engineering?"
+			],
+			"unanswerable": [
+				"Use of coyote onecard?",
+				"Super computer?",
+				"What subject does Dr. Alzharani teach?",
+				"Radiography?",
+				"Affiliate marketing?",
+				"What are the core subjects for MS students at CSUSB?",
+				"Virtual environment?",
+				"Python script?",
+				"Leading IT company in USA?",
+				"How to connect eduroam?"
+			]
+		},
+		{
+			"answerable": [
+				"swebok",
+				"software requirement",
+				"life cycle",
+				"agile",
+				"What is project management?",
+				"What are ADs?",
+				"What are architecture metrics?",
+				"API",
+				"AOD",
+				"Aspect-Oriented Design"
+			],
+			"unanswerable": [
+				"What is your name?",
+				"What is your first and last name?",
+				"hi",
+				"ZAP",
+				"How to use Jupyter notebook?",
+				"How to run docker?",
+				"1 + 1",
+				" ",
+				".",
+				"How to create a chatbot?"
+			]
+		},
+		{
+			"answerable": [
+				"MVC",
+				"Model view controller",
+				"Table of contents",
+				"srs",
+				"ROI",
+				"software",
+				"git",
+				"low fidelity diagram",
+				"CSS",
+				"scrum"
+			],
+			"unanswerable": [
+				"WiFi username",
+				"1",
+				"What's your name?",
+				"wifi password",
+				"page number",
+				"reference",
+				"equation",
+				"microsoft stock price",
+				"CSE 6550",
+				"matrix"
+			]
+		}
+	]
+}

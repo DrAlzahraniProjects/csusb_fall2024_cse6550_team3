@@ -83,8 +83,7 @@ def similarity_search(
 		list[Document]: Top k most similar documents
 	"""
 	retrieved_docs = vector_store.similarity_search_with_score(question, k=k)
-	filtered_docs = [doc for doc, score in retrieved_docs if score <= distance_threshold]
-	# [print(score) for doc, score in retrieved_docs if score <= distance_threshold]
+	filtered_docs = [[doc, score] for doc, score in retrieved_docs if score <= distance_threshold]
 	return filtered_docs
 
 def get_hybrid_retriever(documents, vector_store, k):
@@ -115,3 +114,7 @@ def get_hybrid_retriever(documents, vector_store, k):
 		weights=[0.2, 0.8]
 	)
 	return fusion_retriever
+
+def clean_text(text: str) -> str:
+  """Remove any special characters from text"""
+  return ''.join(char for char in text if char.isalpha() or char.isspace() or char in '.,!?\'";:()')
