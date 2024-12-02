@@ -110,6 +110,7 @@ def handle_user_input(prompt: str):
             update_user_session(st.session_state.user_id)
             st.rerun()
         except Exception as e:
+            print(f"{e}")
             st.success(f"Our systems are overloaded. Please try again.")
 
 
