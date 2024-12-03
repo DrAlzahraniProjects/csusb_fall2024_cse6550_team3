@@ -14,7 +14,7 @@ from backend.inference import chat_completion
 class TestQuestionAnswers:
     """Test suite for Textbook Chatbot."""
     
-    NO_CONTEXT_MSG = "\n    I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge).\n    Your question appears to be about something else.\n    Could you ask a question related to software engineering fundamentals, requirements, design, construction, testing, maintenance, configuration management, engineering management, processes, models, or quality?\n    "
+    NO_CONTEXT_MSG = """I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge). Your question appears to be about something else. Could you ask a question related to the corpus?\n\nCorpus: <a href="https://www.computer.org/education/bodies-of-knowledge/software-engineering">SWEBOK (Software Engineering Body of Knowledge)</a>"""
     
     @staticmethod
     def load_test_questions(file_path: Path) -> Dict:
