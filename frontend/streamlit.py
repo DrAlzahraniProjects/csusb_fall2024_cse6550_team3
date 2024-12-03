@@ -162,18 +162,11 @@ def main():
 
     # Display the loading message only if the app has not yet loaded
     if not st.session_state.app_loaded:
-        # Only define loading_message if the app is not loaded yet
         loading_message = st.empty()
         loading_message.markdown("<h2 style='text-align: center;'>Loading the app, please wait...</h2>", unsafe_allow_html=True)
-
-        # Simulate a delay for demo purposes (you can remove or adjust this)
-        time.sleep(2) 
-
-        # Mark the app as loaded in session state
-        st.session_state.app_loaded = True
-
-        # Clear the loading message
-        loading_message.empty()
+        time.sleep(2) # Simulate a delay for demo purposes (you can remove or adjust this)
+        st.session_state.app_loaded = True # Mark the app as loaded in session state
+        loading_message.empty() # Clear the loading message
 
     # Once the app is loaded, display the normal app interface
     st.markdown("<h1 style='text-align: center;'>Textbook Chatbot</h1>", unsafe_allow_html=True)
@@ -182,8 +175,6 @@ def main():
     if "view" in st.query_params and st.query_params["view"] == "pdf":
         pdf_path = st.query_params.get("file")
         page = int(st.query_params.get("page", 1))
-
-        # Use serve_pdf only without highlighting
         serve_pdf(pdf_path, page)
         return
 
