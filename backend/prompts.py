@@ -2,25 +2,7 @@ import re
 from .abb import abbreviations
 from langchain_core.prompts import ChatPromptTemplate
 
-SYSTEM_PROMPT = """
-You are a chatbot that answers the question in the <question> tags.
-- Answer based only on provided context in <context> tags only if relevant.
-- Always identify yourself as a chatbot, not the textbook.
-- Keep your answer short and to the point.
-"""
-
-REWRITE_PROMPT = """
-- Rewrite the text to be more descriptive
-"""
-
-def get_prompt():
-    """
-    Get the appropriate prompt template based on context availability.
-    """
-    return ChatPromptTemplate.from_messages([
-        ("system", SYSTEM_PROMPT),
-        ("human", "<question>{input}</question>\n\n<context>{context}<context>"),
-    ])
+REWRITE_PROMPT = """Rewrite this text to be more descriptive. Be focused."""
 
 def rewrite_prompt():
     """Return a ChatPromptTemplate for prompt rewriting."""
@@ -30,16 +12,39 @@ def rewrite_prompt():
     ])
 
 def sanitize_question(question: str) -> str:
+    """
+    # Purpose: Clean user input by removing non-alphabetic characters
+    # Input: Raw question string
+    # Output: Sanitized question string
+    # Processing: Filters out all characters except letters and spaces
+    """
     return ''.join(char for char in question if char.isalpha() or char.isspace())
 
 def remove_spaces(question: str) -> str:
+    """
+    # Purpose: Remove all spaces from input text
+    # Input: Question string
+    # Output: String without spaces
+    # Processing: Removes all whitespace characters from the input
+    """
     return question.replace(" ", "")
 
 def validate_question(question: str) -> bool:
+    """
+    # Purpose: Verify if a question is valid for processing
+    # Input: Question string
+    # Output: Boolean indicating validity
+    # Processing: Checks if sanitized question contains non-empty content
+    """
     return len(remove_spaces(sanitize_question(question))) > 0
 
 def replace_text(question: str) -> str:
-    """Replace abbreviations in the question with their full forms"""
+    """
+    # Purpose: Replace abbreviations with their full forms
+    # Input: Question string containing potential abbreviations
+    # Output: Question string with expanded abbreviations
+    # Processing: Identifies and replaces known abbreviations with full forms
+    """
     words = question.split()
     result = []
     for word in words:

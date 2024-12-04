@@ -6,9 +6,8 @@ from langchain_mistralai import ChatMistralAI
 from nemoguardrails import RailsConfig
 from nemoguardrails.llm.providers import register_llm_provider
 from nemoguardrails.integrations.langchain.runnable_rails import RunnableRails
-from .citations import get_citations, format_citations
+from .citations import handle_citations
 from .prompts import (
-    get_prompt, 
     rewrite_prompt, 
     sanitize_question, 
     validate_question, 
@@ -28,7 +27,7 @@ load_dotenv(override=True)
 config = RailsConfig.from_path("/app/backend/guardrails.yml")
 
 CORPUS_LINK = f"<a href=\"https://www.computer.org/education/bodies-of-knowledge/software-engineering\">SWEBOK (Software Engineering Body of Knowledge)</a>"
-UNANSWERABLE_MSG = f"<p>I'm a chatbot that only answers questions about {CORPUS_LINK}<br> Your question appears to be about something else. Could you ask a question related to SWEBOK?</p>"
+UNANSWERABLE_MSG = f"<p>I'm a chatbot that only answers questions about {CORPUS_LINK}.<br> Your question appears to be about something else. Could you ask a question related to SWEBOK?</p>"
 
 ###################
 # LOAD EMBEDDINGS #
@@ -133,9 +132,30 @@ def rewrite_question(question: str) -> Tuple[str, List[str], str]:
     else:
         return None, None, None
 
+def update_question(question: str) -> Tuple[str, List[str], str]:
+    """
+    # Purpose: Process and improve question through multiple refinement steps
+    # Input: Original user question string
+    # Output: Tuple of processed question, relevant documents, and context
+    # Processing: Applies text replacement, sanitization, and rewriting as needed
+    """
+    # Replace any abbreviations or acronyms
+    new_question = replace_text(question)
+    relevant_docs, context = fetch_relevant_documents(question)
+    if relevant_docs:
+        return new_question, relevant_docs, context
+    # Sanitize prompt
+    new_question = sanitize_question(question)
+    relevant_docs, context = fetch_relevant_documents(question)
+    if relevant_docs:
+        return new_question, relevant_docs, context
+    # Rewrite prompt with an LLM
+    new_question, relevant_docs, context = rewrite_question(question)
+    return new_question, relevant_docs, context
+
 def chat_completion(question: str) -> Tuple[str, str]:
     """
-    Purpose: Generate a response to a user query using the LLM and relevant context.
+    Purpose: Generate a response to a user query using the LLM and relevant citations.
     Input:
         - question (str): User query to process.
     Output:
@@ -149,32 +169,23 @@ def chat_completion(question: str) -> Tuple[str, str]:
         yield (UNANSWERABLE_MSG, "N/A")
         return
 
+    # Update the user question to get better results
     relevant_docs, context = fetch_relevant_documents(question)
     if not relevant_docs:
-        question = replace_text(question)
-        relevant_docs, context = fetch_relevant_documents(question)
-        if not relevant_docs:
-            question = sanitize_question(question)
-            relevant_docs, context = fetch_relevant_documents(question)
-            if not relevant_docs:
-                question, relevant_docs, context = rewrite_question(question)
-                if question is None:
-                    yield UNANSWERABLE_MSG, MODEL_NAME
-                    return
+        question, relevant_docs, context = update_question(question)
+        if question is None:
+            yield UNANSWERABLE_MSG, MODEL_NAME
+            return
 
-    formatted_input = f"<question>{question}</question>\n\n<context>{context}<context>"
-    input_dict = {"input": formatted_input}
-    invoke_response = guardrails.invoke(input_dict)
-    answer = invoke_response.get("output", "")
+    # LLM inference using Nemo Guardrails
+    input_dict = {"input": f"<question>{question}</question>\n\n<context>{context}</context>"}
+    llm_response = guardrails.invoke(input_dict)
+    answer = llm_response.get("output", "")
     yield (answer, MODEL_NAME)
 
     # Handle citations if available
     if relevant_docs:
-        response = invoke_response.get("output", "")
-        if response:
-            page_numbers = get_citations(relevant_docs)
-            if page_numbers:
-                citations = format_citations(page_numbers, response)
-                if citations:
-                    yield citations, MODEL_NAME
-                    return
+        citations = handle_citations(relevant_docs)
+        if citations:
+            yield citations, MODEL_NAME
+            return
