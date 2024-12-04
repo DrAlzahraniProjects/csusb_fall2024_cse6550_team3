@@ -27,7 +27,7 @@ load_dotenv(override=True)
 # Configuration for Guardrails
 config = RailsConfig.from_path("/app/backend/guardrails.yml")
 
-UNANSWERABLE_MSG = """I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge). Your question appears to be about something else. Could you ask a question related to the corpus?\n\nCorpus: <a href="https://www.computer.org/education/bodies-of-knowledge/software-engineering">SWEBOK (Software Engineering Body of Knowledge)</a>"""
+UNANSWERABLE_MSG = """<div style="display: inline;">I'm a chatbot that answers questions about <a style="display: inline; margin: 0; padding: 0;" href="https://www.computer.org/education/bodies-of-knowledge/software-engineering">SWEBOK (Software Engineering Body of Knowledge)</a>. Your question appears to be about something else. Could you ask a question related to the corpus? </div>"""
 
 ###################
 # LOAD EMBEDDINGS #
