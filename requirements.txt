@@ -4,6 +4,7 @@ ipykernel
 jupyter
 langchain
 langchain-community
+langchain-groq
 langchain-huggingface
 langchain-mistralai
 pandas
@@ -14,4 +15,3 @@ streamlit
 sentence-transformers
 sqlalchemy
 tiktoken
-yake

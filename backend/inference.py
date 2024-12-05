@@ -2,6 +2,7 @@ import os
 import time
 from typing import List, Tuple
 from dotenv import load_dotenv
+from langchain_groq import ChatGroq
 from langchain_mistralai import ChatMistralAI
 from nemoguardrails import RailsConfig
 from nemoguardrails.llm.providers import register_llm_provider
@@ -114,23 +115,14 @@ def fetch_relevant_documents(question: str) -> Tuple[List[str], str]:
 def rewrite_question(question: str) -> Tuple[str, List[str], str]:
     """
     Purpose: Rewrite a user question for improved clarity or relevance.
-    Input:
-        - question (str): Original user question.
-    Output:
-        - new_question (str): Rewritten question.
-        - relevant_docs (List[str]): List of relevant documents.
-        - context (str): Context generated from the relevant documents.
+    Input: question (str): Original user question.
+    Output: new_question (str): Rewritten question.
     Processing: Uses a pre-defined template and language model to rewrite the question.
     """
     rewrite_template = rewrite_prompt()
     rewrite_message = rewrite_template.format_messages(text=question)
     new_question = rewrite_llm.invoke(rewrite_message).content.strip()
-    relevant_docs, context = fetch_relevant_documents(new_question)
-    if relevant_docs:
-        time.sleep(1) # Avoids getting rate limited by the mistral api
-        return new_question, relevant_docs, context
-    else:
-        return None, None, None
+    return new_question
 
 def update_question(question: str) -> Tuple[str, List[str], str]:
     """
@@ -141,17 +133,24 @@ def update_question(question: str) -> Tuple[str, List[str], str]:
     """
     # Replace any abbreviations or acronyms
     new_question = replace_text(question)
-    relevant_docs, context = fetch_relevant_documents(question)
+    relevant_docs, context = fetch_relevant_documents(new_question)
+    # print("Replaced q: ", new_question)
     if relevant_docs:
         return new_question, relevant_docs, context
     # Sanitize prompt
-    new_question = sanitize_question(question)
-    relevant_docs, context = fetch_relevant_documents(question)
+    new_question = sanitize_question(new_question)
+    relevant_docs, context = fetch_relevant_documents(new_question)
+    # print("Sanitized q: ", new_question)
     if relevant_docs:
         return new_question, relevant_docs, context
     # Rewrite prompt with an LLM
-    new_question, relevant_docs, context = rewrite_question(question)
-    return new_question, relevant_docs, context
+    new_question = rewrite_question(new_question.lower())
+    relevant_docs, context = fetch_relevant_documents(new_question)
+    # print("Question rewritten: ", new_question)
+    if relevant_docs:
+        time.sleep(1) # Avoids getting rate limited by the mistral api
+        return new_question, relevant_docs, context
+    return None, None, None
 
 def chat_completion(question: str) -> Tuple[str, str]:
     """
