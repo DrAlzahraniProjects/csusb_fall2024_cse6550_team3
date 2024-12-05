@@ -2,13 +2,26 @@ import re
 from .abb import abbreviations
 from langchain_core.prompts import ChatPromptTemplate
 
+SYSTEM_PROMPT = """
+You are a chatbot that answers the question inside the <question_start><question_end> tags.
+Use the context provided to answer the question.
+If the context is not relavent answer the question if it's related to software engineering.
+The context is present within the <context_start> and <context_end> tags.
+"""
 REWRITE_PROMPT = """Rewrite this text to be more descriptive. Be focused."""
+
+def get_prompt():
+    """Get the appropriate prompt template based on context availability. """
+    return ChatPromptTemplate.from_messages([
+        ("system", SYSTEM_PROMPT),
+        ("human", "<question_start>{input}<question_end>\n\n<context_start>{context}<context_end>"),
+    ])
 
 def rewrite_prompt():
     """Return a ChatPromptTemplate for prompt rewriting."""
     return ChatPromptTemplate.from_messages([
         ("system", REWRITE_PROMPT),
-        ("human", "{text}"),
+        ("human", "<start_of_text>{text}<end_of_text>"),
     ])
 
 def sanitize_question(question: str) -> str:
@@ -36,7 +49,8 @@ def validate_question(question: str) -> bool:
     # Output: Boolean indicating validity
     # Processing: Checks if sanitized question contains non-empty content
     """
-    return len(remove_spaces(sanitize_question(question))) > 0
+    sanitized_question = remove_spaces(sanitize_question(question))
+    return len(sanitized_question) > 0 and len(sanitized_question) <= 200
 
 def replace_text(question: str) -> str:
     """
