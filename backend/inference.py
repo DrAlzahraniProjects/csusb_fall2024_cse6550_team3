@@ -2,13 +2,14 @@ import os
 import time
 from typing import List, Tuple
 from dotenv import load_dotenv
+from langchain_groq import ChatGroq
 from langchain_mistralai import ChatMistralAI
 from nemoguardrails import RailsConfig
 from nemoguardrails.llm.providers import register_llm_provider
 from nemoguardrails.integrations.langchain.runnable_rails import RunnableRails
-from .citations import get_citations, format_citations
+from .citations import handle_citations
 from .prompts import (
-    get_prompt, 
+    get_prompt,
     rewrite_prompt, 
     sanitize_question, 
     validate_question, 
@@ -27,7 +28,8 @@ load_dotenv(override=True)
 # Configuration for Guardrails
 config = RailsConfig.from_path("/app/backend/guardrails.yml")
 
-UNANSWERABLE_MSG = """I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge). Your question appears to be about something else. Could you ask a question related to the corpus?\n\nCorpus: <a href="https://www.computer.org/education/bodies-of-knowledge/software-engineering">SWEBOK (Software Engineering Body of Knowledge)</a>"""
+CORPUS_LINK = f"<a href=\"https://www.computer.org/education/bodies-of-knowledge/software-engineering\">SWEBOK (Software Engineering Body of Knowledge).</a>"
+UNANSWERABLE_MSG = f"<p>I'm a chatbot that only answers questions about {CORPUS_LINK}<br> Your question appears to be about something else. Could you ask a question related to SWEBOK?</p>"
 
 ###################
 # LOAD EMBEDDINGS #
@@ -49,7 +51,7 @@ def load_faiss_vector_store(document_path: str, persist_directory: str) -> any:
     documents = load_documents_from_directory(document_path)
     return load_or_create_faiss_vector_store(documents, persist_directory)
 
-def get_api_key() -> str:
+def get_api_key(key_name: str) -> str:
     """
     Purpose: Retrieve the API key for Mistral AI from environment variables.
     Input: None
@@ -61,19 +63,6 @@ def get_api_key() -> str:
         raise ValueError("MISTRAL_API_KEY not found or invalid in .env")
     return api_key
 
-def load_llm_api(model_name: str, max_tokens: int) -> ChatMistralAI:
-    """
-    Purpose: Load and configure the Mistral AI language model.
-    Input:
-        - model_name (str): Name of the Mistral model to load.
-        - max_tokens (int): Maximum tokens for model output.
-    Output: Configured ChatMistralAI object.
-    Processing: Initializes the ChatMistralAI object using the API key.
-    """
-    api_key = get_api_key()
-    return ChatMistralAI(model=model_name, mistral_api_key=api_key, temperature=0, max_tokens=max_tokens)
-
-
 # -------------------------------
 # Core Functions
 # -------------------------------
@@ -84,9 +73,11 @@ persist_directory = os.path.join(document_path, "faiss_indexes")
 faiss_store = load_faiss_vector_store(document_path, persist_directory)
 
 # Initialize the LLM
-MODEL_NAME = "open-mistral-7b"
-llm = load_llm_api(MODEL_NAME, 256)
-rewrite_llm = load_llm_api(MODEL_NAME, 40)
+MODEL_NAME = "mistral-large-2411"
+llm = ChatMistralAI(model=MODEL_NAME, mistral_api_key=get_api_key("MISTRAL_API_KEY"), temperature=0, max_tokens=256)
+rewrite_llm = ChatMistralAI(model="open-mistral-7b", mistral_api_key=get_api_key("MISTRAL_API_KEY"), temperature=0, max_tokens=40)
+
+# Guardrails
 register_llm_provider("mistral", ChatMistralAI)
 guardrails = RunnableRails(config, input_key="question", output_key="answer")
 
@@ -114,27 +105,45 @@ def fetch_relevant_documents(question: str) -> Tuple[List[str], str]:
 def rewrite_question(question: str) -> Tuple[str, List[str], str]:
     """
     Purpose: Rewrite a user question for improved clarity or relevance.
-    Input:
-        - question (str): Original user question.
-    Output:
-        - new_question (str): Rewritten question.
-        - relevant_docs (List[str]): List of relevant documents.
-        - context (str): Context generated from the relevant documents.
+    Input: question (str): Original user question.
+    Output: new_question (str): Rewritten question.
     Processing: Uses a pre-defined template and language model to rewrite the question.
     """
-    rewrite_template = rewrite_prompt()
-    rewrite_message = rewrite_template.format_messages(text=question)
+    rewrite_message = rewrite_prompt().format_messages(text=question)
     new_question = rewrite_llm.invoke(rewrite_message).content.strip()
+    return new_question
+
+def update_question(question: str) -> Tuple[str, List[str], str]:
+    """
+    # Purpose: Process and improve question through multiple refinement steps
+    # Input: Original user question string
+    # Output: Tuple of processed question, relevant documents, and context
+    # Processing: Applies text replacement, sanitization, and rewriting as needed
+    """
+    # Replace any abbreviations or acronyms
+    new_question = replace_text(question)
     relevant_docs, context = fetch_relevant_documents(new_question)
+    # print("Replaced q: ", new_question)
+    if relevant_docs:
+        return new_question, relevant_docs, context
+    # Sanitize prompt
+    new_question = sanitize_question(new_question)
+    relevant_docs, context = fetch_relevant_documents(new_question)
+    # print("Sanitized q: ", new_question)
+    if relevant_docs:
+        return new_question, relevant_docs, context
+    # Rewrite prompt with an LLM
+    new_question = rewrite_question(new_question.lower())
+    relevant_docs, context = fetch_relevant_documents(new_question)
+    # print("Question rewritten: ", new_question)
     if relevant_docs:
         time.sleep(1) # Avoids getting rate limited by the mistral api
         return new_question, relevant_docs, context
-    else:
-        return None, None, None
+    return None, None, None
 
 def chat_completion(question: str) -> Tuple[str, str]:
     """
-    Purpose: Generate a response to a user query using the LLM and relevant context.
+    Purpose: Generate a response to a user query using the LLM and relevant citations.
     Input:
         - question (str): User query to process.
     Output:
@@ -144,36 +153,30 @@ def chat_completion(question: str) -> Tuple[str, str]:
     """
     print(f"Running prompt: {question}")
     is_valid = validate_question(question)
+    question = question.strip()
     if not is_valid:
         yield (UNANSWERABLE_MSG, "N/A")
         return
 
+    # Update the user question to get better results
     relevant_docs, context = fetch_relevant_documents(question)
     if not relevant_docs:
-        question = replace_text(question)
-        relevant_docs, context = fetch_relevant_documents(question)
-        if not relevant_docs:
-            question = sanitize_question(question)
-            relevant_docs, context = fetch_relevant_documents(question)
-            if not relevant_docs:
-                question, relevant_docs, context = rewrite_question(question)
-                if question is None:
-                    yield UNANSWERABLE_MSG, MODEL_NAME
-                    return
+        question, relevant_docs, context = update_question(question)
+        if question is None:
+            yield UNANSWERABLE_MSG, MODEL_NAME
+            return
 
-    formatted_input = f"<question>{question}</question>\n\n<context>{context}<context>"
-    input_dict = {"input": formatted_input}
-    invoke_response = guardrails.invoke(input_dict)
-    answer = invoke_response.get("output", "")
-    yield (answer, MODEL_NAME)
+    # LLM inference using Nemo Guardrails
+    messages = get_prompt().format_messages(input=question, context=context)
+    # Stream response from LLM
+    full_response = {"answer": ""}
+    for chunk in llm.stream(messages):
+        full_response["answer"] += chunk.content
+        yield (chunk.content, MODEL_NAME)
 
     # Handle citations if available
     if relevant_docs:
-        response = invoke_response.get("output", "")
-        if response:
-            page_numbers = get_citations(relevant_docs)
-            if page_numbers:
-                citations = format_citations(page_numbers, response)
-                if citations:
-                    yield citations, MODEL_NAME
-                    return
+        citations = handle_citations(relevant_docs)
+        if citations:
+            yield citations, MODEL_NAME
+            return

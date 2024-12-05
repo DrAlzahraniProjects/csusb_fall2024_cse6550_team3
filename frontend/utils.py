@@ -1,5 +1,4 @@
 import os
-import yake
 import streamlit as st
 from .questions import check_baseline_answerable
 from backend.statistics import (
