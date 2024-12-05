@@ -53,6 +53,8 @@ The `setup.py` script automates the setup process, including downloading the rep
 
 To run the Jupyter Notebook independently from the repository, please follow these steps:
 
+ Jupyter Notebook: [main.ipynb](https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3/blob/main/jupyter/main.ipynb)
+
 1. Download the Required File:
 
 - Jupyter Notebook: ```main.ipynb```.
