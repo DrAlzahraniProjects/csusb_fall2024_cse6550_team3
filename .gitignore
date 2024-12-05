@@ -3,6 +3,7 @@
 
 # Jupyter Notebook
 .ipynb_checkpoints
+team3_env
 
 # Python
 __pycache__/
