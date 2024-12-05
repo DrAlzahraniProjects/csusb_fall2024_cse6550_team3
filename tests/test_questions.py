@@ -14,7 +14,7 @@ from backend.inference import chat_completion
 class TestQuestionAnswers:
     """Test suite for Textbook Chatbot."""
     
-    NO_CONTEXT_MSG = """I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge). Your question appears to be about something else. Could you ask a question related to the corpus?\n\nCorpus: <a href="https://www.computer.org/education/bodies-of-knowledge/software-engineering">SWEBOK (Software Engineering Body of Knowledge)</a>"""
+    NO_CONTEXT_MSG = "<p>I'm a chatbot that only answers questions about <a href=\"https://www.computer.org/education/bodies-of-knowledge/software-engineering\">SWEBOK (Software Engineering Body of Knowledge).</a><br> Your question appears to be about something else. Could you ask a question related to SWEBOK?</p>"
     
     @staticmethod
     def load_test_questions(file_path: Path) -> Dict:
@@ -57,11 +57,16 @@ class TestQuestionAnswers:
             }
         }
 
-    def get_chat_response(self, question: str) -> Tuple[str, str]:
+    def get_chat_response(self, question: str) -> str:
         """Helper method to get response from chat completion."""
         try:
             time.sleep(1)
-            return next(chat_completion(question))
+            full_response = ""
+            model_name = ""
+            for chunk, model in chat_completion(question):
+                full_response += chunk
+                model_name = model
+            return full_response, model_name
         except Exception as e:
             pytest.fail(f"Chat completion failed for question '{question}': {str(e)}")
 
