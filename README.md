@@ -51,32 +51,40 @@ The `setup.py` script automates the setup process, including downloading the rep
 
 ## Jupyter Notebook Setup (Handled Separately)
 
-To run Jupyter Notebook independently from the repository, please download the following files:
+To run the Jupyter Notebook independently from the repository, please follow these steps:
 
-SWEBOK Corpus: [swebok.pdf](https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3/blob/main/jupyter/swebok.pdf)
+1. Download the Required File:
 
-Jupyter Notebook: [main.ipynb](https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3/blob/main/jupyter/main.ipynb)
+- Jupyter Notebook: ```main.ipynb```.
 
-- Create a new directory and place only these two files (swebok.pdf and main.ipynb) inside the directory. This will ensure there are no file path issues during execution.
+2. Create a New Directory:
 
-Navigate to the new directory in the terminal before launching Jupyter Notebook:
-Open a terminal and use the cd command to navigate to the directory where you saved swebok.pdf and main.ipynb. For example:
+- Ensure a clean environment by creating a new directory to avoid file path issues during execution.
+
+3. Move the File:
+
+- Place the ```main.ipynb``` file in the newly created directory.
+
+4. Navigate to the New Directory:
+
+- Open a terminal and use the `cd` command to navigate to the directory where you saved ```main.ipynb```. For example:
 ```bash
-cd csusb_fall2024_cse6550_team3/jupyter
+  cd ~/csusb_fall2024_cse6550_team3/jupyter
 ```
+5. Launch Jupyter Notebook:
 
-Run the Jupyter Notebook:
-
-In the terminal, type the following command to launch Jupyter Notebook:
+- In the terminal, type the following command to start Jupyter Notebook:
 ```bash
 jupyter notebook --port=6003
 ```
-This will open the Jupyter Notebook interface in your web browser, where you can open main.ipynb and run it.
 
-If it doesn't open, use the following link: http://localhost:6003/tree
+Jupyter Notebook: [main.ipynb](https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3/blob/main/jupyter/main.ipynb)
 
-For advanced testing and debugging, refer to the provided [Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter).
+- This will open the Jupyter Notebook interface in your web browser, where you can open ```main.ipynb``` and run it.
 
+- If it doesn't open, use the following link: http://localhost:6003/tree
+
+- For advanced testing and debugging, refer to the provided [Jupyter notebook](https://sec.cse.csusb.edu/team3/jupyter).
 
 
 ## Manual Docker Setup (Alternative)
