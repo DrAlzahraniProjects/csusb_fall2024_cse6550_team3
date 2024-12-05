@@ -80,8 +80,6 @@ To run the Jupyter Notebook independently from the repository, please follow the
 jupyter notebook --port=6003
 ```
 
-Jupyter Notebook: [main.ipynb](https://github.com/DrAlzahraniProjects/csusb_fall2024_cse6550_team3/blob/main/jupyter/main.ipynb)
-
 - This will open the Jupyter Notebook interface in your web browser, where you can open ```main.ipynb``` and run it.
 
 - If it doesn't open, use the following link: http://localhost:6003/tree
