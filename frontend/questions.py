@@ -18,7 +18,7 @@ BASELINE_QUESTIONS = {
     "What is the smallest possible Turing machine?": False,
     "What is the most efficient way to handle an infinite stream of data?": False,
     "Is there a way to build a fully self-sustaining human colony on Mars?": False,
-    "What is chapter 20 about?": False,
+    "What is chapter 200 about?": False,
     "How could we fully eliminate all types of noise in wireless communications?": False,
     "How can we create a material that is completely indestructible?": False,
     "Microsoft stock price?": False
