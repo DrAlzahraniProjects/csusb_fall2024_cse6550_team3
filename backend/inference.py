@@ -94,6 +94,7 @@ def fetch_relevant_documents(question: str) -> Tuple[List[str], str]:
     top_k = 2
     distance_threshold = 400
     similar_docs = similarity_search(question, faiss_store, top_k, distance_threshold)
+    # print("similar_docs", similar_docs)
     low_distance_docs = [[doc, score] for doc, score in similar_docs if score < 320]
     relevant_docs = low_distance_docs[:2] if len(low_distance_docs) != 0 else similar_docs[:1]
     relevant_docs = [doc_pair[0] for doc_pair in relevant_docs]

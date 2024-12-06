@@ -12,9 +12,9 @@ BASELINE_QUESTIONS = {
     "What is the purpose of static analysis in software testing?": True,
 
     # 10 Unanswerable Questions
-    "What is the largest possible number that could exist?": False,
+    "What class does Dr. Alzahrani teach?": False,
     "How will AI evolve in the next 100 years?": False,
-    "What is the solution to the Riemann Hypothesis?": False,
+    "What GPA do you have?": False,
     "What is the smallest possible Turing machine?": False,
     "What is the most efficient way to handle an infinite stream of data?": False,
     "Is there a way to build a fully self-sustaining human colony on Mars?": False,

@@ -12,8 +12,8 @@ EMBEDDING_FUNCTION = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL_NAME, mode
 
 def load_documents_from_directory(
 	document_path: str, 
-	chunk_size: int = 2048, 
-	chunk_overlap: int = 200
+	chunk_size: int = 200, 
+	chunk_overlap: int = 50
 ):
 	"""
 	Load PDF documents from a directory and split them into chunks.
@@ -117,4 +117,4 @@ def get_hybrid_retriever(documents, vector_store, k):
 
 def clean_text(text: str) -> str:
   """Remove any special characters from text"""
-  return ''.join(char for char in text if char.isalpha() or char.isspace() or char in '.,!?\'";:()')
+  return ''.join(char for char in text if char.isalpha() or char.isspace() or char.isnumeric() or char in '.,!?\'";:()')
