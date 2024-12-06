@@ -62,15 +62,16 @@ def replace_text(question: str) -> str:
     # Output: Question string with expanded abbreviations
     # Processing: Identifies and replaces known abbreviations with full forms
     """
-    if question.lower().startswith("what is"):
-        question = question.replace(question[:7], "Explain")
-    if question.lower().startswith("what's"):
-        question = question.replace(question[:6], "Explain")
-    elif question.lower().startswith("explain"):
-        question = question.replace(question[:7], "What is")
-    else:
-        question = "What is " + question
-        
+    if not question.lower().startswith(("how", "when", "why", "who")):
+        if question.lower().startswith("what is"):
+            question = question.replace(question[:7], "Explain")
+        elif question.lower().startswith("what's"):
+            question = question.replace(question[:6], "Explain")
+        elif question.lower().startswith("explain"):
+            question = question.replace(question[:7], "What is")
+        else:
+            question = "What is " + question
+
     words = question.split()
     result = []
     for word in words:
