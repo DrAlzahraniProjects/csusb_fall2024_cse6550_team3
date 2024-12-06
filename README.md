@@ -157,8 +157,8 @@ Below is a list of answerable and unanswerable questions that will be used to ev
 | How does software configuration management ensure project success? | Microsoft stock price?                                                    |
 | What role do user requirements play in software design and architecture? | What is the most efficient way to handle an infinite stream of data?    |
 | What is software dependability?                                    | Is there a way to build a fully self-sustaining human colony on Mars?   |
-| How does project management in software engineering differ from traditional project management? | What's the upper limit of computational power for classical computers? |
-| What strategies can be used for effective risk management in software engineering projects? | How could we fully eliminate all types of noise in wireless communications? |
+| How does project management in software engineering differ from traditional project management? | What is chapter 20 about? |
+| What is chapter 11 about?                                          | How could we fully eliminate all types of noise in wireless communications? |
 | What is the purpose of static analysis in software testing?        | How can we create a material that is completely indestructible?         |
 
 

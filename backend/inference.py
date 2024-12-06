@@ -72,7 +72,7 @@ faiss_store = load_faiss_vector_store(document_path, persist_directory)
 
 # Initialize the LLM
 MODEL_NAME = "mistral-large-2411"
-llm = ChatMistralAI(model=MODEL_NAME, mistral_api_key=get_api_key("MISTRAL_API_KEY"), temperature=0, max_tokens=256)
+llm = ChatMistralAI(model=MODEL_NAME, mistral_api_key=get_api_key("MISTRAL_API_KEY"), temperature=0, max_tokens=500)
 rewrite_llm = ChatMistralAI(model="open-mistral-7b", mistral_api_key=get_api_key("MISTRAL_API_KEY"), temperature=0, max_tokens=40)
 
 # Guardrails
@@ -160,10 +160,15 @@ def chat_completion(question: str) -> Tuple[str, str]:
     # Check if this question can be found in common questions (eg: summarize chapter)
     new_question, context = match_question(question)
     if new_question is not None and context is not None:
+        if "chapter does not exist in the contents" in context:
+            yield UNANSWERABLE_MSG, MODEL_NAME
+            return
         relevant_docs, new_context = fetch_relevant_documents(new_question)
         if new_context is not None:
             question = new_question
             context += new_context
+        
+
     # Update the user question to get better results
     else:
         relevant_docs, context = fetch_relevant_documents(question)
