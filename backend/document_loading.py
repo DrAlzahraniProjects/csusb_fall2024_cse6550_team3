@@ -12,8 +12,8 @@ EMBEDDING_FUNCTION = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL_NAME, mode
 
 def load_documents_from_directory(
 	document_path: str, 
-	chunk_size: int = 2048, 
-	chunk_overlap: int = 200
+	chunk_size: int = 512, 
+	chunk_overlap: int = 50
 ):
 	"""
 	Load PDF documents from a directory and split them into chunks.
@@ -70,7 +70,8 @@ def similarity_search(
 	question,
 	vector_store,
 	k,
-	distance_threshold = 400 # Set lower values for stricter filtering
+	distance_threshold = 400
+	  # Set lower values for stricter filtering
 ):
 	"""
 	Get top k most similar documents using FAISS vector store.
@@ -83,6 +84,7 @@ def similarity_search(
 		list[Document]: Top k most similar documents
 	"""
 	retrieved_docs = vector_store.similarity_search_with_score(question, k=k)
+	print(retrieved_docs)
 	filtered_docs = [[doc, score] for doc, score in retrieved_docs if score <= distance_threshold]
 	return filtered_docs
 

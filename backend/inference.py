@@ -25,7 +25,7 @@ from .document_loading import (
 load_dotenv(override=True)
 
 # Configuration for Guardrails
-config = RailsConfig.from_path("/app/backend/guardrails.yml")
+config = RailsConfig.from_path("backend/guardrails.yml")
 
 UNANSWERABLE_MSG = """I'm a chatbot that answers questions about SWEBOK (Software Engineering Body of Knowledge). Your question appears to be about something else. Could you ask a question related to the corpus?\n\nCorpus: <a href="https://www.computer.org/education/bodies-of-knowledge/software-engineering">SWEBOK (Software Engineering Body of Knowledge)</a>"""
 
