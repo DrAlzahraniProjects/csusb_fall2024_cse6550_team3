@@ -49,9 +49,12 @@ def validate_question(question: str) -> bool:
     # Output: Boolean indicating validity
     # Processing: Checks if sanitized question contains non-empty content
     """
+    pattern = r'(?:what\s+is\s+)?[A-Z]{2,4}\s\d{3,4}'
+    if re.match(pattern, question):
+        return False
     sanitized_question = remove_spaces(sanitize_question(question))
     return len(sanitized_question) > 0 and len(sanitized_question) <= 200
-
+    
 def replace_text(question: str) -> str:
     """
     # Purpose: Replace abbreviations with their full forms
