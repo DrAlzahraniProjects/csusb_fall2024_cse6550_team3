@@ -18,7 +18,8 @@ from .prompts import (
 from .document_loading import (
     load_documents_from_directory, 
     load_or_create_faiss_vector_store, 
-    similarity_search, 
+    similarity_search,
+    match_question,
     clean_text
 )
 
@@ -28,12 +29,9 @@ load_dotenv(override=True)
 # Configuration for Guardrails
 config = RailsConfig.from_path("/app/backend/guardrails.yml")
 
+# Generic responses
 CORPUS_LINK = f"<a href=\"https://www.computer.org/education/bodies-of-knowledge/software-engineering\">SWEBOK (Software Engineering Body of Knowledge).</a>"
 UNANSWERABLE_MSG = f"<p>I'm a chatbot that only answers questions about {CORPUS_LINK}<br> Your question appears to be about something else. Could you ask a question related to SWEBOK?</p>"
-
-###################
-# LOAD EMBEDDINGS #
-###################
 
 # -------------------------------
 # Helper Functions
@@ -159,13 +157,21 @@ def chat_completion(question: str) -> Tuple[str, str]:
         yield (UNANSWERABLE_MSG, "N/A")
         return
 
+    # Check if this question can be found in common questions (eg: summarize chapter)
+    new_question, context = match_question(question)
+    if new_question is not None and context is not None:
+        relevant_docs, new_context = fetch_relevant_documents(new_question)
+        if new_context is not None:
+            question = new_question
+            context += new_context
     # Update the user question to get better results
-    relevant_docs, context = fetch_relevant_documents(question)
-    if not relevant_docs:
-        question, relevant_docs, context = update_question(question)
-        if question is None:
-            yield UNANSWERABLE_MSG, MODEL_NAME
-            return
+    else:
+        relevant_docs, context = fetch_relevant_documents(question)
+        if not relevant_docs:
+            question, relevant_docs, context = update_question(question)
+            if question is None:
+                yield UNANSWERABLE_MSG, MODEL_NAME
+                return
 
     # LLM inference using Nemo Guardrails
     messages = get_prompt().format_messages(input=question, context=context)

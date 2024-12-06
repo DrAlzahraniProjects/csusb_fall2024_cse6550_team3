@@ -7,6 +7,7 @@ langchain-community
 langchain-groq
 langchain-huggingface
 langchain-mistralai
+numpy
 pandas
 pypdf
 pytest
