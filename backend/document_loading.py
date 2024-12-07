@@ -182,7 +182,8 @@ def get_content(tag: str, question: str) -> tuple[str, str]:
     else:
       # Try to match word-based chapter
       for chapter in CONTENTS["chapters"]:
-        if f"{chapter['chapter_number_text']}" in question.lower():
+        word_pattern = rf"\b{chapter['chapter_number_text']}\b"
+        if re.search(word_pattern, question.lower()):
           chapter_num = chapter["chapter"]
           break
     if not chapter_num:
