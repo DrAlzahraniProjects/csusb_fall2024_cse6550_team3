@@ -171,8 +171,19 @@ def get_content(tag: str, question: str) -> tuple[str, str]:
     return None, None
 	
   if tag == "number": return question, CONTENTS["chapter_count"]
-  elif tag == "title": return f"What is the title of this book?", CONTENTS["title"]
+  elif tag == "title": return f"What is the title of this book? SWEBOK", CONTENTS["title"]
   elif tag == "author": return f"Who is the author? {CONTENTS['author']}", CONTENTS["author"]
+  elif tag == "chapter_title":
+    chapter_match = re.search(r'chapter\s*0?(\d+)', question.lower())
+    if not chapter_match:
+      return f"{question} is invalid", "The specified chapter does not exist. Select a chapter from 1 to 18"
+    if chapter_match:
+      chapter_num = chapter_match.group(1)
+      for chapter in CONTENTS["chapters"]:
+        if chapter["chapter"] == chapter_num.zfill(2):
+          context = f"{chapter['title']}"
+          return f"{question} {chapter['title']}", context
+      return f"Chapter {chapter_num}", "The specified chapter does not exist in the contents."
   elif tag == "summary_chapter":
     # Extract chapter number from question
     chapter_match = re.search(r'chapter\s*0?(\d+)', question.lower())
