@@ -1,0 +1,266 @@
+{ 
+  "title": "SWEBOK: Guide to the Software Engineering Body of Knowledge",
+  "author": "Editor Hironori Washizaki (IEEE Computer Society)",
+  "chapter_count": "18 chapters and 3 appendices",
+  "chapters": [
+    {
+      "chapter": "01",
+      "chapter_number_text": "one",
+      "title": "Software Requirements",
+      "sections": [
+        "Software Requirements Fundamentals",
+        "Requirements Elicitation",
+        "Requirements Analysis",
+        "Requirements Specification",
+        "Requirements Validation",
+        "Requirements Management Activities",
+        "Practical Considerations",
+        "Software Requirements Tools"
+      ]
+    },
+    {
+      "chapter": "02",
+      "chapter_number_text": "two",
+      "title": "Software Architecture",
+      "sections": [
+        "Software Architecture Fundamentals",
+        "Software Architecture Description",
+        "Software Architecture Process",
+        "Software Architecture Evaluation"
+      ]
+    },
+    {
+      "chapter": "03",
+      "chapter_number_text": "three",
+      "title": "Software Design",
+      "sections": [
+        "Software Design Fundamentals",
+        "Software Design Processes",
+        "Software Design Qualities",
+        "Recording Software Designs",
+        "Software Design Strategies and Methods",
+        "Software Design Quality Analysis and Evaluation"
+      ]
+    },
+    {
+      "chapter": "04",
+      "chapter_number_text": "four",
+      "title": "Software Construction",
+      "sections": [
+        "Software Construction Fundamentals",
+        "Managing Construction",
+        "Practical Considerations",
+        "Construction Technologies",
+        "Software Construction Tools"
+      ]
+    },
+    {
+      "chapter": "05",
+      "chapter_number_text": "five",
+      "title": "Software Testing",
+      "sections": [
+        "Software Testing Fundamentals",
+        "Test Levels",
+        "Test Techniques",
+        "Test-Related Measures",
+        "Test Process",
+        "Software Testing in Development Processes",
+        "Testing of and Through Emerging Technologies",
+        "Software Testing Tools"
+      ]
+    },
+    {
+      "chapter": "06",
+      "chapter_number_text": "six",
+      "title": "Software Engineering Operations",
+      "sections": [
+        "Software Engineering Operations Fundamentals",
+        "Software Engineering Operations Planning",
+        "Software Engineering Operations Delivery",
+        "Software Engineering Operations Control",
+        "Practical Considerations",
+        "Software Engineering Operations Tools"
+      ]
+    },
+    {
+      "chapter": "07",
+      "chapter_number_text": "seven",
+      "title": "Software Maintenance",
+      "sections": [
+        "Software Maintenance Fundamentals",
+        "Key Issues in Software Maintenance",
+        "Software Maintenance Processes",
+        "Software Maintenance Techniques",
+        "Software Maintenance Tools"
+      ]
+    },
+    {
+      "chapter": "08",
+      "chapter_number_text": "eight",
+      "title": "Software Configuration Management",
+      "sections": [
+        "Management of the SCM Process",
+        "Software Configuration Identification",
+        "Software Configuration Change Control",
+        "Software Configuration Status Accounting",
+        "Software Configuration Auditing",
+        "Software Release Management and Delivery",
+        "Software Configuration Management Tools"
+      ]
+    },
+    {
+      "chapter": "09",
+      "chapter_number_text": "nine",
+      "title": "Software Engineering Management",
+      "sections": [
+        "Initiation and Scope Definition",
+        "Software Project Planning",
+        "Software Project Execution",
+        "Software Review and Evaluation",
+        "Closure",
+        "Software Engineering Measurement",
+        "Software Engineering Management Tools"
+      ]
+    },
+    {
+      "chapter": "10",
+      "chapter_number_text": "ten",
+      "title": "Software Engineering Process",
+      "sections": [
+        "Software Engineering Process Fundamentals",
+        "Life Cycles",
+        "Software Process Assessment and Improvement"
+      ]
+    },
+    {
+      "chapter": "11",
+      "chapter_number_text": "eleven",
+      "title": "Software Engineering Models and Methods",
+      "sections": [
+        "Modeling",
+        "Types of Models",
+        "Analysis of Models",
+        "Software Engineering Methods"
+      ]
+    },
+    {
+      "chapter": "12",
+      "chapter_number_text": "twelve",
+      "title": "Software Quality",
+      "sections": [
+        "Software Quality Fundamentals",
+        "Software Quality Management Process",
+        "Software Quality Assurance Process",
+        "Software Quality Tools"
+      ]
+    },
+    {
+      "chapter": "13",
+      "chapter_number_text": "thirteen",
+      "title": "Software Security",
+      "sections": [
+        "Software Security Fundamentals",
+        "Security Management and Organization",
+        "Software Security Engineering and Processes",
+        "Security Engineering for Software Systems",
+        "Software Security Tools",
+        "Domain-Specific Software Security"
+      ]
+    },
+    {
+      "chapter": "14",
+      "chapter_number_text": "fourteen",
+      "title": "Software Engineering Professional Practice",
+      "sections": [
+        "Professionalism",
+        "Group Dynamics and Psychology",
+        "Communication Skills"
+      ]
+    },
+    {
+      "chapter": "15",
+      "chapter_number_text": "fifteen",
+      "title": "Software Engineering Economics",
+      "sections": [
+        "Software Engineering Economics Fundamentals",
+        "The Engineering Decision-Making Process",
+        "For-Profit Decision-Making",
+        "Nonprofit Decision-Making",
+        "Present Economy Decision-Making",
+        "Multiple-Attribute Decision-Making",
+        "Identifying and Characterizing Intangible Assets",
+        "Estimation",
+        "Practical Considerations",
+        "Related Concepts"
+      ]
+    },
+    {
+      "chapter": "16",
+      "chapter_number_text": "sixteen",
+      "title": "Computing Foundations",
+      "sections": [
+        "Basic Concepts of a System or Solution",
+        "Computer Architecture and Organization",
+        "Data Structures and Algorithms",
+        "Programming Fundamentals and Languages",
+        "Operating Systems",
+        "Database Management",
+        "Computer Networks and Communications",
+        "User and Developer Human Factors",
+        "Artificial Intelligence and Machine Learning"
+      ]
+    },
+    {
+      "chapter": "17",
+      "chapter_number_text": "seventeen",
+      "title": "Mathematical Foundations",
+      "sections": [
+        "Basic Logic",
+        "Proof Techniques",
+        "Set, Relation, Function",
+        "Graph and Tree",
+        "Finite-State Machine",
+        "Grammar",
+        "Number Theory",
+        "Basics of Counting",
+        "Discrete Probability",
+        "Numerical Precision, Accuracy, and Error",
+        "Algebraic Structures",
+        "Engineering Calculus",
+        "New Advancements"
+      ]
+    },
+    {
+      "chapter": "18",
+      "chapter_number_text": "eighteen",
+      "title": "Engineering Foundations",
+      "sections": [
+        "The Engineering Process",
+        "Engineering Design",
+        "Abstraction and Encapsulation",
+        "Empirical Methods and Experimental Techniques",
+        "Statistical Analysis",
+        "Modeling, Simulation, and Prototyping",
+        "Measurement",
+        "Standards",
+        "Root Cause Analysis",
+        "Industry 4.0 and Software Engineering"
+      ]
+    }
+  ],
+	
+  "appendices": [
+		{
+			"chapter": "A",
+			"title": "Knowledge Area Description Specifications"
+		},
+		{
+			"chapter": "B",
+			"title": "IEEE and ISO/IEC Standards Supporting the Software Engineering Body of Knowledge (SWEBOK)"
+		},
+		{
+			"chapter": "C",
+			"title": "Consolidated Reference List"
+		}
+  ]
+}

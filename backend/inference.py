@@ -18,7 +18,8 @@ from .prompts import (
 from .document_loading import (
     load_documents_from_directory, 
     load_or_create_faiss_vector_store, 
-    similarity_search, 
+    similarity_search,
+    match_question,
     clean_text
 )
 
@@ -28,12 +29,9 @@ load_dotenv(override=True)
 # Configuration for Guardrails
 config = RailsConfig.from_path("/app/backend/guardrails.yml")
 
+# Generic responses
 CORPUS_LINK = f"<a href=\"https://www.computer.org/education/bodies-of-knowledge/software-engineering\">SWEBOK (Software Engineering Body of Knowledge).</a>"
 UNANSWERABLE_MSG = f"<p>I'm a chatbot that only answers questions about {CORPUS_LINK}<br> Your question appears to be about something else. Could you ask a question related to SWEBOK?</p>"
-
-###################
-# LOAD EMBEDDINGS #
-###################
 
 # -------------------------------
 # Helper Functions
@@ -74,7 +72,7 @@ faiss_store = load_faiss_vector_store(document_path, persist_directory)
 
 # Initialize the LLM
 MODEL_NAME = "mistral-large-2411"
-llm = ChatMistralAI(model=MODEL_NAME, mistral_api_key=get_api_key("MISTRAL_API_KEY"), temperature=0, max_tokens=256)
+llm = ChatMistralAI(model=MODEL_NAME, mistral_api_key=get_api_key("MISTRAL_API_KEY"), temperature=0, max_tokens=500)
 rewrite_llm = ChatMistralAI(model="open-mistral-7b", mistral_api_key=get_api_key("MISTRAL_API_KEY"), temperature=0, max_tokens=40)
 
 # Guardrails
@@ -94,6 +92,7 @@ def fetch_relevant_documents(question: str) -> Tuple[List[str], str]:
     top_k = 2
     distance_threshold = 400
     similar_docs = similarity_search(question, faiss_store, top_k, distance_threshold)
+    # print("similar_docs", similar_docs)
     low_distance_docs = [[doc, score] for doc, score in similar_docs if score < 320]
     relevant_docs = low_distance_docs[:2] if len(low_distance_docs) != 0 else similar_docs[:1]
     relevant_docs = [doc_pair[0] for doc_pair in relevant_docs]
@@ -158,13 +157,26 @@ def chat_completion(question: str) -> Tuple[str, str]:
         yield (UNANSWERABLE_MSG, "N/A")
         return
 
-    # Update the user question to get better results
-    relevant_docs, context = fetch_relevant_documents(question)
-    if not relevant_docs:
-        question, relevant_docs, context = update_question(question)
-        if question is None:
+    # Check if this question can be found in common questions (eg: summarize chapter)
+    new_question, context = match_question(question)
+    if new_question is not None and context is not None:
+        if "chapter does not exist in the contents" in context:
             yield UNANSWERABLE_MSG, MODEL_NAME
             return
+        relevant_docs, new_context = fetch_relevant_documents(new_question)
+        if new_context is not None:
+            question = new_question
+            context += new_context
+        
+
+    # Update the user question to get better results
+    else:
+        relevant_docs, context = fetch_relevant_documents(question)
+        if not relevant_docs:
+            question, relevant_docs, context = update_question(question)
+            if question is None:
+                yield UNANSWERABLE_MSG, MODEL_NAME
+                return
 
     # LLM inference using Nemo Guardrails
     messages = get_prompt().format_messages(input=question, context=context)

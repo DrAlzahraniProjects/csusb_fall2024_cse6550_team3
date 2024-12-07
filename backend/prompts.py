@@ -49,9 +49,20 @@ def validate_question(question: str) -> bool:
     # Output: Boolean indicating validity
     # Processing: Checks if sanitized question contains non-empty content
     """
-    sanitized_question = remove_spaces(sanitize_question(question))
+    pattern = r'(?:what\s+is\s+)?[A-Z]{2,4}\s\d{3,4}'
+    if re.match(pattern, question):
+        return False
+    # Remove incomplete questions
+    ignore_list = [
+        "what", "whatis", "what's", "explain",
+        "how", "howdoes", "howis", "when", "whenis", "why", "whyis", "who", "whois"
+    ]
+    cleaned_question = remove_spaces(question.lower().strip())
+    sanitized_question = remove_spaces(sanitize_question(question)).lower()
+    if cleaned_question in ignore_list or sanitized_question in ignore_list:
+        return False
     return len(sanitized_question) > 0 and len(sanitized_question) <= 200
-
+    
 def replace_text(question: str) -> str:
     """
     # Purpose: Replace abbreviations with their full forms
@@ -59,6 +70,16 @@ def replace_text(question: str) -> str:
     # Output: Question string with expanded abbreviations
     # Processing: Identifies and replaces known abbreviations with full forms
     """
+    if not question.lower().startswith(("how", "when", "why", "who")):
+        if question.lower().startswith("what is"):
+            question = question.replace(question[:7], "Explain")
+        elif question.lower().startswith("what's"):
+            question = question.replace(question[:6], "Explain")
+        elif question.lower().startswith("explain"):
+            question = question.replace(question[:7], "What is")
+        else:
+            question = "What is " + question
+
     words = question.split()
     result = []
     for word in words:

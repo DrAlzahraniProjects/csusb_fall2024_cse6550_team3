@@ -8,17 +8,17 @@ BASELINE_QUESTIONS = {
     "What role do user requirements play in software design and architecture?": True,
     "What is software dependability?": True,
     "How does project management in software engineering differ from traditional project management?": True,
-    "What strategies can be used for effective risk management in software engineering projects?": True,
+    "What is chapter 11 about?": True,
     "What is the purpose of static analysis in software testing?": True,
 
     # 10 Unanswerable Questions
-    "What is the largest possible number that could exist?": False,
+    "What class does Dr. Alzahrani teach?": False,
     "How will AI evolve in the next 100 years?": False,
-    "What is the solution to the Riemann Hypothesis?": False,
+    "What GPA do you have?": False,
     "What is the smallest possible Turing machine?": False,
     "What is the most efficient way to handle an infinite stream of data?": False,
     "Is there a way to build a fully self-sustaining human colony on Mars?": False,
-    "What's the upper limit of computational power for classical computers?": False,
+    "What is chapter 200 about?": False,
     "How could we fully eliminate all types of noise in wireless communications?": False,
     "How can we create a material that is completely indestructible?": False,
     "Microsoft stock price?": False
