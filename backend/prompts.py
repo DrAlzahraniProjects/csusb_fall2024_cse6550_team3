@@ -52,7 +52,15 @@ def validate_question(question: str) -> bool:
     pattern = r'(?:what\s+is\s+)?[A-Z]{2,4}\s\d{3,4}'
     if re.match(pattern, question):
         return False
-    sanitized_question = remove_spaces(sanitize_question(question))
+    # Remove incomplete questions
+    ignore_list = [
+        "what", "whatis", "what's", "explain",
+        "how", "howdoes", "howis", "when", "whenis", "why", "whyis", "who", "whois"
+    ]
+    cleaned_question = remove_spaces(question.lower().strip())
+    sanitized_question = remove_spaces(sanitize_question(question)).lower()
+    if cleaned_question in ignore_list or sanitized_question in ignore_list:
+        return False
     return len(sanitized_question) > 0 and len(sanitized_question) <= 200
     
 def replace_text(question: str) -> str:
