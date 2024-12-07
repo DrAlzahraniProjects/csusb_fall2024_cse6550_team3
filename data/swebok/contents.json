@@ -5,6 +5,7 @@
   "chapters": [
     {
       "chapter": "01",
+      "chapter_number_text": "one",
       "title": "Software Requirements",
       "sections": [
         "Software Requirements Fundamentals",
@@ -19,6 +20,7 @@
     },
     {
       "chapter": "02",
+      "chapter_number_text": "two",
       "title": "Software Architecture",
       "sections": [
         "Software Architecture Fundamentals",
@@ -29,6 +31,7 @@
     },
     {
       "chapter": "03",
+      "chapter_number_text": "three",
       "title": "Software Design",
       "sections": [
         "Software Design Fundamentals",
@@ -41,6 +44,7 @@
     },
     {
       "chapter": "04",
+      "chapter_number_text": "four",
       "title": "Software Construction",
       "sections": [
         "Software Construction Fundamentals",
@@ -52,6 +56,7 @@
     },
     {
       "chapter": "05",
+      "chapter_number_text": "five",
       "title": "Software Testing",
       "sections": [
         "Software Testing Fundamentals",
@@ -66,6 +71,7 @@
     },
     {
       "chapter": "06",
+      "chapter_number_text": "six",
       "title": "Software Engineering Operations",
       "sections": [
         "Software Engineering Operations Fundamentals",
@@ -78,6 +84,7 @@
     },
     {
       "chapter": "07",
+      "chapter_number_text": "seven",
       "title": "Software Maintenance",
       "sections": [
         "Software Maintenance Fundamentals",
@@ -89,6 +96,7 @@
     },
     {
       "chapter": "08",
+      "chapter_number_text": "eight",
       "title": "Software Configuration Management",
       "sections": [
         "Management of the SCM Process",
@@ -102,6 +110,7 @@
     },
     {
       "chapter": "09",
+      "chapter_number_text": "nine",
       "title": "Software Engineering Management",
       "sections": [
         "Initiation and Scope Definition",
@@ -115,6 +124,7 @@
     },
     {
       "chapter": "10",
+      "chapter_number_text": "ten",
       "title": "Software Engineering Process",
       "sections": [
         "Software Engineering Process Fundamentals",
@@ -124,6 +134,7 @@
     },
     {
       "chapter": "11",
+      "chapter_number_text": "eleven",
       "title": "Software Engineering Models and Methods",
       "sections": [
         "Modeling",
@@ -134,6 +145,7 @@
     },
     {
       "chapter": "12",
+      "chapter_number_text": "twelve",
       "title": "Software Quality",
       "sections": [
         "Software Quality Fundamentals",
@@ -144,6 +156,7 @@
     },
     {
       "chapter": "13",
+      "chapter_number_text": "thirteen",
       "title": "Software Security",
       "sections": [
         "Software Security Fundamentals",
@@ -156,6 +169,7 @@
     },
     {
       "chapter": "14",
+      "chapter_number_text": "fourteen",
       "title": "Software Engineering Professional Practice",
       "sections": [
         "Professionalism",
@@ -165,6 +179,7 @@
     },
     {
       "chapter": "15",
+      "chapter_number_text": "fifteen",
       "title": "Software Engineering Economics",
       "sections": [
         "Software Engineering Economics Fundamentals",
@@ -181,6 +196,7 @@
     },
     {
       "chapter": "16",
+      "chapter_number_text": "sixteen",
       "title": "Computing Foundations",
       "sections": [
         "Basic Concepts of a System or Solution",
@@ -196,6 +212,7 @@
     },
     {
       "chapter": "17",
+      "chapter_number_text": "seventeen",
       "title": "Mathematical Foundations",
       "sections": [
         "Basic Logic",
@@ -215,6 +232,7 @@
     },
     {
       "chapter": "18",
+      "chapter_number_text": "eighteen",
       "title": "Engineering Foundations",
       "sections": [
         "The Engineering Process",
